@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c91157498f533347a82e63f771a6347, type: 3}
+  m_Name: Ceramica_Talavera
+  m_EditorClassIdentifier: Alfarero.Runtime::CeramicaData
+  nombre: Talavera de Dolores
+  tipo: 0
+  icono: {fileID: 21300000, guid: d9504d4580deb9147b38dc14501cee23, type: 3}
+  prefabProyectil: {fileID: 5446623660935629810, guid: f329770ef651d8341aa82f7d1dafbf1a, type: 3}
+  dano: 10
+  velocidadProyectil: 18
+  tiempoVida: 1.5
+  capasImpacto:
+    serializedVersion: 2
+    m_Bits: 320
+  prefabImpacto: {fileID: 6682518104235544122, guid: da0a585442101ab4a8e46b548d717497, type: 3}
+  disparosPorSegundo: 8
+  proyectilesPorDisparo: 1
+  dispersionGrados: 2
