@@ -6,6 +6,15 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/MenuPrincipal.unity
+    guid: 289d53cfda8a9f3489bfbf0e48c036a9
+  - enabled: 1
+    path: Assets/Scenes/Intro.unity
+    guid: c3088b3922d3dbb45a875193468c1fc4
+  - enabled: 1
+    path: Assets/Scenes/Nivel1_Dolores.unity
+    guid: ad4de451df589504eb9eab70273f4423
+  - enabled: 1
     path: Assets/Scenes/Sandbox.unity
     guid: 9751e4d69832b5f49ae3947eba6a97c7
   m_configObjects:

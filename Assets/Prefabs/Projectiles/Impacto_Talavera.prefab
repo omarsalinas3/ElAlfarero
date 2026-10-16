@@ -114,3 +114,5 @@ MonoBehaviour:
   - {fileID: 21300000, guid: e690ff73c851e904eb10d301a2f1ae1a, type: 3}
   - {fileID: 21300000, guid: 2e54252bd2e35eb49bcc6ea4d2959ba8, type: 3}
   cuadrosPorSegundo: 20
+  mantenerUltimo: 0
+  segundosUltimo: 3

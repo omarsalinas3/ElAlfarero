@@ -24,7 +24,10 @@ public class ImportadorSprites : AssetPostprocessor
         importador.textureType = TextureImporterType.Sprite;
         importador.spriteImportMode = SpriteImportMode.Single;
         importador.filterMode = FilterMode.Point;
-        importador.textureCompression = TextureImporterCompression.Uncompressed;
+        // Fondos e ilustraciones (2752x1536 / 1600x900) se comprimen en alta calidad (BC7): ~4 veces menos memoria de
+        // video, clave en GPUs integradas. El resto son sprites chicos y se dejan sin compresión para no perder nitidez.
+        bool grande = carpeta == "Environment" && !nombre.StartsWith("pixel_") || carpeta == "Intro";
+        importador.textureCompression = grande ? TextureImporterCompression.CompressedHQ : TextureImporterCompression.Uncompressed;
         importador.mipmapEnabled = false;
         importador.alphaIsTransparency = true;
         importador.maxTextureSize = 4096;
@@ -32,10 +35,16 @@ public class ImportadorSprites : AssetPostprocessor
 
         var ajustes = new TextureImporterSettings();
         importador.ReadTextureSettings(ajustes);
-        bool pivoteEnPies = carpeta == "Player" || carpeta == "Enemies" || carpeta == "Allies" || carpeta == "Bosses";
+        bool pivoteEnPies = carpeta == "Player" || carpeta == "Enemies" || carpeta == "Allies" || carpeta == "Bosses"
+                            || (carpeta == "Obstacles" && !nombre.StartsWith("maceta"));
         ajustes.spriteAlignment = (int)(pivoteEnPies ? SpriteAlignment.BottomCenter : SpriteAlignment.Center);
         ajustes.spriteMeshType = SpriteMeshType.FullRect;
         importador.SetTextureSettings(ajustes);
+
+        // Botones y paneles de la interfaz se estiran con 9-slice sin deformar el borde
+        if (carpeta == "UI" && nombre.StartsWith("boton")) importador.spriteBorder = new Vector4(8, 8, 8, 8);
+        else if (carpeta == "UI" && nombre.StartsWith("panel")) importador.spriteBorder = new Vector4(20, 20, 20, 20);
+        else importador.spriteBorder = Vector4.zero;
     }
 
     static float PixelesPorUnidad(string carpeta, string nombre)
@@ -46,6 +55,8 @@ public class ImportadorSprites : AssetPostprocessor
             case "Environment": return 128f;                  // Fondo 2752x1536 -> 21.5 x 12 unidades
             case "Projectiles": return nombre.Contains("impact") ? 250f : 400f;
             case "Items": return 300f;
+            case "UI": return 100f;                           // Igual que el Canvas: 1 px del sprite = 1 px de referencia
+            case "Intro": return 100f;
             default: return 280f;                             // Personajes y enemigos (~2.6 unidades de alto)
         }
     }
