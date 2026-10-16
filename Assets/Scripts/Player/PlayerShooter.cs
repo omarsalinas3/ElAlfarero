@@ -14,6 +14,7 @@ public class PlayerShooter : MonoBehaviour
 
     InputAction accionDisparar;
     Camera camara;
+    PlayerController controlador;
     float proximoDisparo;
 
     /// <summary>Dirección normalizada desde el punto de disparo hacia el mouse.</summary>
@@ -23,6 +24,7 @@ public class PlayerShooter : MonoBehaviour
     void Awake()
     {
         camara = Camera.main;
+        controlador = GetComponent<PlayerController>();
         accionDisparar = new InputAction("Disparar", InputActionType.Button, "<Mouse>/leftButton");
 
         if (puntoDisparo == null)
@@ -37,6 +39,9 @@ public class PlayerShooter : MonoBehaviour
 
     void Update()
     {
+        // En pausa, muerto o en una cinemática no se apunta ni se dispara (el clic es para los menús)
+        if (Time.timeScale == 0f || (controlador != null && !controlador.ControlActivo)) return;
+
         ActualizarApuntado();
 
         if (ceramicaActual == null || ceramicaActual.prefabProyectil == null) return;
@@ -84,7 +89,8 @@ public class PlayerShooter : MonoBehaviour
             proyectil.Inicializar(ceramicaActual, direccion);
         }
 
-        // TODO (Sprint 2/6): animación de disparo y SFX
+        GestorAudio.Reproducir(Sfx.Lanzar, 0.1f);
+        // TODO (Sprint 2/6): animación de disparo
     }
 
     /// <summary>Se usará en el Sprint 3 al recoger cerámicas / cambiar de arma.</summary>
