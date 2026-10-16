@@ -42,7 +42,7 @@ public class Projectile : MonoBehaviour
         if (salud != null) salud.RecibirDano(datos.dano);
 
         if (datos.prefabImpacto != null) Instantiate(datos.prefabImpacto, transform.position, Quaternion.identity);
-        // TODO (Sprint 6): SFX según el tipo de cerámica
+        GestorAudio.Reproducir(Sfx.ImpactoCeramica, 0.12f);
         Destroy(gameObject);
     }
 }

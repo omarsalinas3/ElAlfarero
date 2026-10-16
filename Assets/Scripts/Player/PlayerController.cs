@@ -36,6 +36,9 @@ public class PlayerController : MonoBehaviour
     public bool EstaEvadiendo { get; private set; }
     public int DireccionMirada { get; private set; } = 1;   // 1 = derecha, -1 = izquierda
 
+    /// <summary>False durante pausa, muerte, victoria o cinemáticas: ignora la entrada del jugador.</summary>
+    public bool ControlActivo { get; set; } = true;
+
     // --- Componentes ---
     Rigidbody2D rb;
     PlayerShooter tirador;
@@ -53,6 +56,7 @@ public class PlayerController : MonoBehaviour
     float temporizadorBuffer;
     float temporizadorEvasion;
     float temporizadorCooldown;
+    float temporizadorEmpuje;
     int direccionEvasion;
 
     void Awake()
@@ -102,8 +106,17 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        entradaHorizontal = accionMover.ReadValue<float>();
         EstaEnSuelo = Physics2D.OverlapBox(puntoSuelo.position, tamanoCajaSuelo, 0f, capaSuelo);
+        temporizadorEmpuje -= Time.deltaTime;
+
+        if (!ControlActivo || Time.timeScale == 0f)
+        {
+            entradaHorizontal = 0f;
+            if (EstaEvadiendo) TerminarEvasion();
+            return;
+        }
+
+        entradaHorizontal = accionMover.ReadValue<float>();
 
         ProcesarSalto();
         ProcesarEvasion();
@@ -119,7 +132,7 @@ public class PlayerController : MonoBehaviour
             // Durante la evasión: velocidad fija horizontal, sin caer
             velocidad = new Vector2(direccionEvasion * velocidadEvasion, 0f);
         }
-        else
+        else if (temporizadorEmpuje <= 0f)
         {
             // Aceleración / frenado hacia la velocidad objetivo
             float objetivo = entradaHorizontal * velocidadMaxima;
@@ -151,6 +164,7 @@ public class PlayerController : MonoBehaviour
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, fuerzaSalto);
             temporizadorBuffer = 0f;   // Consumidos: evitan doble salto accidental
             temporizadorCoyote = 0f;
+            GestorAudio.Reproducir(Sfx.Salto);
         }
 
         // Altura variable: si sueltas el botón mientras subes, cortamos el impulso
@@ -186,6 +200,15 @@ public class PlayerController : MonoBehaviour
         direccionEvasion = Mathf.Abs(entradaHorizontal) > 0.01f ? (int)Mathf.Sign(entradaHorizontal) : DireccionMirada;
 
         if (salud != null) salud.Invulnerable = true;   // Frames de invulnerabilidad
+        GestorAudio.Reproducir(Sfx.Evadir);
+    }
+
+    /// <summary>Empujón al recibir un golpe: durante unos instantes la entrada no frena el retroceso.</summary>
+    public void AplicarEmpuje(Vector2 velocidad, float duracion = 0.25f)
+    {
+        if (EstaEvadiendo) TerminarEvasion();
+        rb.linearVelocity = velocidad;
+        temporizadorEmpuje = duracion;
     }
 
     void TerminarEvasion()

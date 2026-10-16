@@ -205,6 +205,8 @@ GameObject:
   - component: {fileID: 1249372482990453904}
   - component: {fileID: 4669905040724343524}
   - component: {fileID: 5409312673286811505}
+  - component: {fileID: 2774056816171636830}
+  - component: {fileID: 8276759989327676707}
   m_Layer: 7
   m_Name: Alfarero
   m_TagString: Untagged
@@ -374,3 +376,34 @@ MonoBehaviour:
   m_EditorClassIdentifier: Alfarero.Runtime::PlayerShooter
   ceramicaActual: {fileID: 11400000, guid: deab4b6b2a3cffd4886162de870b1380, type: 2}
   puntoDisparo: {fileID: 4680568810494731066}
+--- !u!114 &2774056816171636830
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8166566346976236820}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b51658e0b1e6dd42b3fd81d300ba14e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Alfarero.Runtime::InventarioJugador
+  maximoCaguamas: 3
+  caguamasIniciales: 0
+  duracionCaguama: 5
+  spriteJugador: {fileID: 0}
+  colorDorado: {r: 1, g: 0.85, b: 0.25, a: 1}
+--- !u!114 &8276759989327676707
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8166566346976236820}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec2661ec9309cce4784dc4ad0a2a59bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Alfarero.Runtime::ReaccionDanoJugador
+  invulnerabilidadTrasGolpe: 1
+  spriteJugador: {fileID: 0}

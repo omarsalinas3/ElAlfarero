@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 409103897910551696}
   - component: {fileID: 7794364583123337364}
   - component: {fileID: 3233284282268501187}
+  - component: {fileID: 3499592410453804325}
+  - component: {fileID: 3346740235453371024}
   m_Layer: 8
   m_Name: Minero_Dummy
   m_TagString: Untagged
@@ -170,3 +172,34 @@ MonoBehaviour:
   sprite: {fileID: 0}
   colorGolpe: {r: 1, g: 0.45, b: 0.45, a: 1}
   duracion: 0.07
+--- !u!114 &3499592410453804325
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6462113502650259556}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b34f5fb62eb030e4596760c8bc3c2093, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Alfarero.Runtime::EnemigoBasico
+  efectoMuerte: {fileID: 1272105928858678871, guid: 3737080decd406844ae77495b6e4e151, type: 3}
+  sonidoMuerte: 6
+--- !u!114 &3346740235453371024
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6462113502650259556}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f8697abd04dfc841b148e8877f5da23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Alfarero.Runtime::DanoPorContacto
+  dano: 10
+  empuje: 7
+  capasObjetivo:
+    serializedVersion: 2
+    m_Bits: 128

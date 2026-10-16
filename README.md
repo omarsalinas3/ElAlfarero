@@ -32,6 +32,9 @@ Público objetivo: jugadores de 12 años en adelante y adultos nostálgicos de l
 | Evadir (invulnerable un instante) | Shift izquierdo |
 | Apuntar | Mouse |
 | Lanzar cerámica | Clic izquierdo (mantener) |
+| Beber caguama (invencible 5 s) | E o Q |
+| Pausa | Esc o P |
+| Menús | Mouse o flechas + Enter |
 
 ## Hasta dónde llega el proyecto
 
@@ -48,9 +51,15 @@ El plan son **6 sprints de 2 semanas** (12 semanas). Estado:
 
 **Meta final:** publicar el juego en [itch.io](https://itch.io) con una página temática (Día de Muertos y alfarería), con un nivel jugable por zona y los jefes de leyenda.
 
-Lo que **ya existe**: Mateo se mueve, salta (con coyote time y salto variable), evade y lanza Talavera con el mouse; hay enemigos de prueba que reciben daño; el Nivel 1 tiene un mapa continuo de cinco segmentos con su fondo; hay pruebas automáticas del movimiento y el disparo.
+Lo que **ya existe**:
+- **Flujo completo de juego:** pantalla de título con "presiona cualquier tecla", menú principal (Jugar, Controles, Opciones de volumen, Salir), intro de la historia con viñetas y texto, y el Nivel 1 jugable de principio a fin.
+- **Nivel 1 (Dolores Hidalgo):** mapa continuo de cinco segmentos con letrero "MISIÓN 1 · ¡A LA CARGA!", huacales y hornos de barro que se rompen y sueltan monedas, Guacamayas y Caguamas, macetas que caen de lo alto, brasas que queman, mineros esqueleto que lastiman al tocarlos, y la meta frente a la parroquia.
+- **HUD rústico:** jarrito de barro con barra de vida, caguamas guardadas con temporizador dorado de invencibilidad, munición de Talavera y monedas.
+- **Pausa, game over y misión cumplida** con resumen (enemigos, monedas, tiempo), reintentar y volver al menú.
+- **Sonido:** música de menú, intro y nivel, más efectos (salto, lanzar, cerámica rota, golpes, pickups, menús, jingles).
+- **Pruebas automáticas** del movimiento, el disparo, la pausa, el game over, la caguama, los pickups, los huacales, la meta y el menú.
 
-Lo que **todavía no**: oleadas y jefes, el resto de armas y consumibles, HUD, música y sonido, pantalla de título y los demás niveles.
+Lo que **todavía no**: IA de enemigos (por ahora están quietos), oleadas, jefes, Barro Negro / Barro Vidriado / Maceta Escudo y los demás niveles.
 
 ## Cómo ejecutarlo
 
@@ -58,9 +67,11 @@ Requisitos: **Unity 6.6 (6000.6.0f1)**, con soporte para 2D/URP.
 
 1. Clona el repositorio y ábrelo desde Unity Hub (*Add project from disk*).
 2. Espera a que Unity importe los assets.
-3. Abre `Assets/Scenes/Sandbox.unity` y presiona Play.
+3. Abre `Assets/Scenes/MenuPrincipal.unity` y presiona Play (o `Nivel1_Dolores.unity` para ir directo al nivel).
 
-Si cambias sprites o scripts del Sprint 1, el menú **Alfarero > Sprint 1 > Construir Sandbox** regenera los prefabs, animaciones y la escena.
+Si cambias sprites, sonidos o scripts, el menú **Alfarero > Construir juego completo** regenera prefabs, la biblioteca de audio y las escenas (menú, intro, Nivel 1 y Sandbox). `Sandbox.unity` sigue siendo la escena de pruebas del Sprint 1.
+
+Los archivos de audio (`.wav`) se suben con **Git LFS**: corre `git lfs install` una vez en cada computadora antes de clonar o hacer commit.
 
 Pruebas automáticas: *Window > General > Test Runner > PlayMode*.
 
@@ -68,12 +79,15 @@ Pruebas automáticas: *Window > General > Test Runner > PlayMode*.
 
 ```
 Assets/
-  Art/Sprites/        Personajes, enemigos, proyectiles, items y fondos
+  Art/Sprites/        Personajes, enemigos, proyectiles, items, obstáculos, HUD, intro y fondos
+  Art/Fonts/          Fuente pixel Press Start 2P (licencia OFL)
   Art/Animations/     Animaciones y Animator de Mateo
-  Prefabs/            Alfarero, proyectil, impacto y enemigo de prueba
+  Audio/              Música (Music) y efectos (SFX)
+  Prefabs/            Alfarero, proyectiles, obstáculos, pickups y efectos
+  Resources/          BibliotecaAudio (qué archivo suena para cada efecto/música)
   ScriptableObjects/  Datos de las cerámicas (daño, velocidad, cadencia)
-  Scenes/             Sandbox (escena de pruebas del Nivel 1)
-  Scripts/            Player, Combat, Core y herramientas de editor
+  Scenes/             MenuPrincipal, Intro, Nivel1_Dolores y Sandbox (pruebas)
+  Scripts/            Core, Player, Combat, Enemies, UI y herramientas de editor
   Tests/PlayMode/     Pruebas automáticas
 Docs/ARQUITECTURA.md  Cómo está organizado el código y el flujo de datos
 ```
@@ -85,6 +99,11 @@ Más detalle en [Docs/ARQUITECTURA.md](Docs/ARQUITECTURA.md) y en [SETUP.md](SET
 - **Omar Salinas** ([@omarsalinas3](https://github.com/omarsalinas3))
 - **Noé Chavero Martínez** ([@SekiroK5](https://github.com/SekiroK5))
 
-## Nota sobre el arte
+## Nota sobre el arte y el sonido
 
-Los sprites y fondos se generaron con herramientas de inteligencia artificial (Google Flow) y se procesaron para el juego (recorte, fondo transparente y unión de segmentos). Es arte provisional pensado para el proyecto académico.
+- Los sprites y fondos se generaron con herramientas de inteligencia artificial (Google Flow) y se procesaron para el juego (recorte, fondo transparente y unión de segmentos). Las viñetas de la intro combinan esos fondos y personajes.
+- La música (menú, intro y Nivel 1) se generó con Google Flow Music.
+- Los efectos de sonido y jingles se sintetizaron por código para este proyecto.
+- Fuente: [Press Start 2P](https://fonts.google.com/specimen/Press+Start+2P) de CodeMan38, licencia SIL Open Font License (ver `Assets/Art/Fonts/PressStart2P-OFL.txt`).
+
+Es material provisional pensado para el proyecto académico.
