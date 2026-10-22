@@ -24,6 +24,9 @@ public static class ConstructorJuego
     const string CarpetaObstaculos = "Assets/Prefabs/Obstacles/";
     const string CarpetaRecogibles = "Assets/Prefabs/Pickups/";
     const string CarpetaEfectos = "Assets/Prefabs/Effects/";
+    const string RutaPrefabEsqueleto = "Assets/Prefabs/Enemies/Minero_Esqueleto.prefab";
+    const string RutaPrefabAlebrije = "Assets/Prefabs/Bosses/Alebrije.prefab";
+    const int CapaProyectilEnemigo = 10;
 
     static readonly Color Crema = new Color(1f, 0.94f, 0.8f);
     static readonly Color Dorado = new Color(1f, 0.8f, 0.25f);
@@ -37,6 +40,8 @@ public static class ConstructorJuego
     {
         public GameObject huacalMonedas, huacalGuacamaya, huacalCaguama, hornoCaguama, hornoMonedas;
         public GameObject escombros, maceta, guacamaya, caguama, moneda;
+        public IABandido revolver, rifle, escopeta, machete;
+        public JefeAlebrije alebrije;
     }
 
     [MenuItem("Alfarero/Construir juego completo")]
@@ -57,6 +62,7 @@ public static class ConstructorJuego
         sprPanel = Spr("UI/panel.png");
 
         CrearBibliotecaAudio();
+        ConstructorAnimaciones.Construir();
         Prefabs p = CrearPrefabs();
 
         CrearEscenaNivel1(p);
@@ -128,6 +134,10 @@ public static class ConstructorJuego
             (Sfx.JingleGameOver, new[] { "jingle_game_over" }, 0.85f),
             (Sfx.JingleVictoria, new[] { "jingle_victoria" }, 0.85f),
             (Sfx.JingleMision, new[] { "jingle_mision" }, 0.75f),
+            (Sfx.Disparo, new[] { "disparo" }, 0.5f),
+            (Sfx.Escopetazo, new[] { "escopetazo" }, 0.6f),
+            (Sfx.Machetazo, new[] { "machetazo" }, 0.55f),
+            (Sfx.RugidoAlebrije, new[] { "rugido_alebrije" }, 0.95f),
         };
         b.efectos = efectos.Select(e => new BibliotecaAudio.EntradaSfx
         {
@@ -196,7 +206,57 @@ public static class ConstructorJuego
         Asignar(minero.GetComponent<EnemigoBasico>(), "efectoMuerte", restosMaceta);
         PrefabUtility.SaveAsPrefabAsset(minero, RutaPrefabMinero);
         PrefabUtility.UnloadPrefabContents(minero);
+
+        CrearPrefabEsqueleto();
+
+        ConfigurarCapaBalasEnemigas();
+        BalaEnemiga bala = CrearBala("Bala_Bandido", 2f);
+        BalaEnemiga perdigon = CrearBala("Perdigon_Bandido", 0.45f);
+        p.revolver = CrearBandido("revolver", IABandido.Arma.Revolver, 30, 10, 6f, 0.45f, 1.6f, 1, 0f, 11f, bala, new Vector2(1.3f, 1.67f));
+        p.rifle = CrearBandido("rifle", IABandido.Arma.Rifle, 30, 15, 8.5f, 0.7f, 2.4f, 1, 0f, 16f, bala, new Vector2(1.4f, 1.68f));
+        p.escopeta = CrearBandido("escopeta", IABandido.Arma.Escopeta, 35, 8, 4f, 0.5f, 2f, 3, 12f, 10f, perdigon, new Vector2(1.2f, 1.66f));
+        p.machete = CrearBandido("machete", IABandido.Arma.Machete, 40, 15, 1.2f, 0.35f, 1.1f, 0, 0f, 0f, null, Vector2.zero);
+        p.alebrije = CrearPrefabAlebrije();
         return p;
+    }
+
+    /// <summary>
+    /// Minero_Esqueleto: el dummy del Sprint 1 con IA (patrulla, persigue y embiste). El dummy se queda quieto
+    /// para la escena Sandbox y sus pruebas; el Nivel 1 usa este.
+    /// </summary>
+    static void CrearPrefabEsqueleto()
+    {
+        var go = PrefabUtility.LoadPrefabContents(RutaPrefabMinero);
+        go.name = "Minero_Esqueleto";
+
+        // El sprite pasa a un hijo para que la IA lo balancee al caminar sin mover el collider
+        var srRaiz = go.GetComponent<SpriteRenderer>();
+        var visual = new GameObject("Visual") { layer = go.layer };
+        visual.transform.SetParent(go.transform, false);
+        var sr = visual.AddComponent<SpriteRenderer>();
+        sr.sprite = srRaiz.sprite;
+        sr.sortingOrder = srRaiz.sortingOrder;
+        Object.DestroyImmediate(srRaiz);
+        Asignar(go.GetComponent<ParpadeoDano>(), "sprite", sr);
+
+        var rb = go.AddComponent<Rigidbody2D>();
+        rb.gravityScale = 3f;
+        rb.mass = 5f;
+        rb.freezeRotation = true;
+        rb.interpolation = RigidbodyInterpolation2D.Interpolate;
+        go.GetComponent<Collider2D>().sharedMaterial = AssetDatabase.LoadAssetAtPath<PhysicsMaterial2D>("Assets/Settings/SinFriccion.physicsMaterial2D");
+
+        var ia = go.AddComponent<IAEsqueleto>();
+        var so = new SerializedObject(ia);
+        so.FindProperty("capaSuelo").FindPropertyRelative("m_Bits").intValue = 1 << CapaGround;
+        so.FindProperty("visual").objectReferenceValue = visual.transform;
+        so.ApplyModifiedPropertiesWithoutUndo();
+
+        PrefabUtility.SaveAsPrefabAsset(go, RutaPrefabEsqueleto);
+        PrefabUtility.UnloadPrefabContents(go);
+
+        // Los esqueletos no se estorban entre sí al patrullar zonas cercanas
+        Physics2D.IgnoreLayerCollision(CapaEnemy, CapaEnemy, true);
     }
 
     static Sprite[] Cuadros(string prefijo, int n) =>
@@ -337,13 +397,205 @@ public static class ConstructorJuego
         return Guardar(go, CarpetaObstaculos + "Maceta_Que_Cae.prefab");
     }
 
+    // ------------------------------------------------------------------ Bandidos y jefe
+    /// <summary>Capa de las balas enemigas: solo chocan con Mateo y con el escenario.</summary>
+    static void ConfigurarCapaBalasEnemigas()
+    {
+        var tagManager = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]);
+        tagManager.FindProperty("layers").GetArrayElementAtIndex(CapaProyectilEnemigo).stringValue = "EnemyProjectile";
+        tagManager.ApplyModifiedPropertiesWithoutUndo();
+        for (int i = 0; i < 32; i++)
+            Physics2D.IgnoreLayerCollision(CapaProyectilEnemigo, i, i != CapaPlayer && i != CapaGround);
+    }
+
+    static BalaEnemiga CrearBala(string nombre, float tiempoVida)
+    {
+        var go = new GameObject(nombre) { layer = CapaProyectilEnemigo };
+        var sr = go.AddComponent<SpriteRenderer>();
+        sr.sprite = Spr("Projectiles/bala_bandido.png");
+        sr.sortingOrder = 20;
+        go.transform.localScale = Vector3.one * 2.5f;
+        var rb = go.AddComponent<Rigidbody2D>();
+        rb.bodyType = RigidbodyType2D.Kinematic;
+        rb.gravityScale = 0f;
+        var col = go.AddComponent<CircleCollider2D>();
+        col.isTrigger = true;
+        col.radius = 0.04f;
+        col.offset = new Vector2(0.06f, 0f);
+        var bala = go.AddComponent<BalaEnemiga>();
+        var so = new SerializedObject(bala);
+        so.FindProperty("tiempoVida").floatValue = tiempoVida;
+        so.ApplyModifiedPropertiesWithoutUndo();
+        return Guardar(go, "Assets/Prefabs/Projectiles/" + nombre + ".prefab").GetComponent<BalaEnemiga>();
+    }
+
+    static IABandido CrearBandido(string arma, IABandido.Arma tipo, int vida, int dano, float distancia, float preparacion,
+                                  float enfriamiento, int balas, float dispersion, float velocidadBala, BalaEnemiga bala, Vector2 boca)
+    {
+        string nombre = "Bandido_" + char.ToUpper(arma[0]) + arma.Substring(1);
+        var go = new GameObject(nombre) { layer = CapaEnemy };
+
+        var visual = new GameObject("Visual") { layer = CapaEnemy };
+        visual.transform.SetParent(go.transform, false);
+        var sr = visual.AddComponent<SpriteRenderer>();
+        sr.sprite = Spr($"Enemies/bandido_{arma}_ataque_00.png");
+        sr.sortingOrder = 5;
+        var anim = visual.AddComponent<Animator>();
+        anim.runtimeAnimatorController = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>($"Assets/Art/Animations/Bandidos/{nombre}.controller");
+
+        var rb = go.AddComponent<Rigidbody2D>();
+        rb.gravityScale = 3f;
+        rb.mass = 3f;
+        rb.freezeRotation = true;
+        rb.interpolation = RigidbodyInterpolation2D.Interpolate;
+        var col = go.AddComponent<BoxCollider2D>();
+        col.size = new Vector2(0.8f, 2.1f);
+        col.offset = new Vector2(0f, 1.05f);
+        col.sharedMaterial = AssetDatabase.LoadAssetAtPath<PhysicsMaterial2D>("Assets/Settings/SinFriccion.physicsMaterial2D");
+
+        var salud = go.AddComponent<Health>();
+        var soS = new SerializedObject(salud);
+        soS.FindProperty("vidaMaxima").intValue = vida;
+        soS.FindProperty("destruirAlMorir").boolValue = false;   // Primero se ve la animación de muerte
+        soS.ApplyModifiedPropertiesWithoutUndo();
+        Asignar(go.AddComponent<ParpadeoDano>(), "sprite", sr);
+        var basico = go.AddComponent<EnemigoBasico>();
+        var soB = new SerializedObject(basico);
+        soB.FindProperty("sonidoMuerte").enumValueIndex = (int)Sfx.Golpe;
+        soB.ApplyModifiedPropertiesWithoutUndo();
+
+        var ia = go.AddComponent<IABandido>();
+        var so = new SerializedObject(ia);
+        so.FindProperty("arma").enumValueIndex = (int)tipo;
+        so.FindProperty("dano").intValue = dano;
+        so.FindProperty("distanciaPreferida").floatValue = distancia;
+        so.FindProperty("preparacion").floatValue = preparacion;
+        so.FindProperty("enfriamiento").floatValue = enfriamiento;
+        so.FindProperty("balasPorDisparo").intValue = balas;
+        so.FindProperty("dispersionGrados").floatValue = dispersion;
+        so.FindProperty("velocidadBala").floatValue = velocidadBala;
+        so.FindProperty("prefabBala").objectReferenceValue = bala;
+        so.FindProperty("puntoDisparo").vector2Value = boca;
+        so.FindProperty("velocidad").floatValue = tipo == IABandido.Arma.Machete ? 3.8f : 3.2f;
+        so.FindProperty("capaSuelo").FindPropertyRelative("m_Bits").intValue = 1 << CapaGround;
+        so.FindProperty("animator").objectReferenceValue = anim;
+        so.ApplyModifiedPropertiesWithoutUndo();
+
+        return Guardar(go, $"Assets/Prefabs/Enemies/{nombre}.prefab").GetComponent<IABandido>();
+    }
+
+    static JefeAlebrije CrearPrefabAlebrije()
+    {
+        Directory.CreateDirectory("Assets/Prefabs/Bosses");
+        var go = new GameObject("Alebrije") { layer = CapaEnemy };
+
+        var visual = new GameObject("Visual") { layer = CapaEnemy };
+        visual.transform.SetParent(go.transform, false);
+        var sr = visual.AddComponent<SpriteRenderer>();
+        sr.sprite = Spr("Bosses/alebrije_caminar_00.png");
+        sr.sortingOrder = 6;
+        var anim = visual.AddComponent<Animator>();
+        anim.runtimeAnimatorController = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>("Assets/Art/Animations/Alebrije/Alebrije.controller");
+
+        var rb = go.AddComponent<Rigidbody2D>();
+        rb.gravityScale = 3f;
+        rb.mass = 50f;                                   // Mateo no lo puede empujar
+        rb.freezeRotation = true;
+        rb.interpolation = RigidbodyInterpolation2D.Interpolate;
+        var col = go.AddComponent<BoxCollider2D>();
+        col.size = new Vector2(4.2f, 3.2f);              // El cuerpo; alas y cola no cuentan
+        col.offset = new Vector2(-0.3f, 1.6f);
+        col.sharedMaterial = AssetDatabase.LoadAssetAtPath<PhysicsMaterial2D>("Assets/Settings/SinFriccion.physicsMaterial2D");
+
+        var salud = go.AddComponent<Health>();
+        var soS = new SerializedObject(salud);
+        soS.FindProperty("vidaMaxima").intValue = 400;
+        soS.FindProperty("destruirAlMorir").boolValue = false;
+        soS.ApplyModifiedPropertiesWithoutUndo();
+        Asignar(go.AddComponent<ParpadeoDano>(), "sprite", sr);
+        var basico = go.AddComponent<EnemigoBasico>();
+        var soB = new SerializedObject(basico);
+        soB.FindProperty("sonidoMuerte").enumValueIndex = (int)Sfx.RugidoAlebrije;
+        soB.ApplyModifiedPropertiesWithoutUndo();
+
+        var dano = go.AddComponent<DanoPorContacto>();
+        var soD = new SerializedObject(dano);
+        soD.FindProperty("dano").intValue = 15;
+        soD.FindProperty("empuje").floatValue = 9f;
+        soD.FindProperty("capasObjetivo").FindPropertyRelative("m_Bits").intValue = 1 << CapaPlayer;
+        soD.ApplyModifiedPropertiesWithoutUndo();
+
+        var jefe = go.AddComponent<JefeAlebrije>();
+        var so = new SerializedObject(jefe);
+        so.FindProperty("animator").objectReferenceValue = anim;
+        so.FindProperty("danoContacto").objectReferenceValue = dano;
+        so.FindProperty("capaSuelo").FindPropertyRelative("m_Bits").intValue = 1 << CapaGround;
+        so.ApplyModifiedPropertiesWithoutUndo();
+
+        return Guardar(go, RutaPrefabAlebrije).GetComponent<JefeAlebrije>();
+    }
+
+    static T Cargar<T>(string ruta) where T : Component => AssetDatabase.LoadAssetAtPath<GameObject>(ruta).GetComponent<T>();
+
+    static IABandido PonerBandido(IABandido prefab, float x, int mirada, Transform padre)
+    {
+        var b = (GameObject)PrefabUtility.InstantiatePrefab(prefab.gameObject, padre);
+        b.transform.position = new Vector3(x, YSuelo, 0f);
+        Vector3 e = b.transform.localScale;
+        b.transform.localScale = new Vector3(Mathf.Abs(e.x) * mirada, e.y, e.z);
+        return b.GetComponent<IABandido>();
+    }
+
+    static Emboscada CrearEmboscada(Prefabs p, float x)
+    {
+        var go = new GameObject("Emboscada");
+        go.transform.position = new Vector3(x, YSuelo + 2f, 0f);
+        var col = go.AddComponent<BoxCollider2D>();
+        col.isTrigger = true;
+        col.size = new Vector2(1f, 8f);
+        var e = go.AddComponent<Emboscada>();
+
+        // Oleada 1: machetes por la derecha y un pistolero por la izquierda. Oleada 2: entran los de rifle y escopeta
+        (IABandido prefab, bool derecha, float retraso)[][] oleadas =
+        {
+            new[] { (p.machete, true, 0f), (p.revolver, false, 0.8f), (p.machete, true, 1.2f) },
+            new[] { (p.escopeta, true, 0f), (p.rifle, false, 1f), (p.revolver, true, 1f), (p.machete, false, 0.8f) },
+        };
+        var so = new SerializedObject(e);
+        var lista = so.FindProperty("oleadas");
+        lista.arraySize = oleadas.Length;
+        for (int i = 0; i < oleadas.Length; i++)
+        {
+            var bandidos = lista.GetArrayElementAtIndex(i).FindPropertyRelative("bandidos");
+            bandidos.arraySize = oleadas[i].Length;
+            for (int j = 0; j < oleadas[i].Length; j++)
+            {
+                var entrada = bandidos.GetArrayElementAtIndex(j);
+                entrada.FindPropertyRelative("prefab").objectReferenceValue = oleadas[i][j].prefab;
+                entrada.FindPropertyRelative("porLaDerecha").boolValue = oleadas[i][j].derecha;
+                entrada.FindPropertyRelative("retraso").floatValue = oleadas[i][j].retraso;
+            }
+        }
+        so.FindProperty("ySuelo").floatValue = YSuelo;
+        so.ApplyModifiedPropertiesWithoutUndo();
+        return e;
+    }
+
+
     // ================================================================== Nivel 1
     static void CrearEscenaNivel1(Prefabs p)
     {
         Scene escena = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         var prefabAlfarero = AssetDatabase.LoadAssetAtPath<GameObject>(RutaPrefabAlfarero);
-        var prefabMinero = AssetDatabase.LoadAssetAtPath<GameObject>(RutaPrefabMinero);
+        var prefabMinero = AssetDatabase.LoadAssetAtPath<GameObject>(RutaPrefabEsqueleto);
         GameObject jugador = CrearBaseNivel(prefabAlfarero, out _, out float derecha);
+
+        // Al guardar prefabs y cambiar capas Unity puede invalidar las referencias en memoria: se recargan de disco
+        p.revolver = Cargar<IABandido>("Assets/Prefabs/Enemies/Bandido_Revolver.prefab");
+        p.rifle = Cargar<IABandido>("Assets/Prefabs/Enemies/Bandido_Rifle.prefab");
+        p.escopeta = Cargar<IABandido>("Assets/Prefabs/Enemies/Bandido_Escopeta.prefab");
+        p.machete = Cargar<IABandido>("Assets/Prefabs/Enemies/Bandido_Machete.prefab");
+        p.alebrije = Cargar<JefeAlebrije>(RutaPrefabAlebrije);
 
         var obstaculos = new GameObject("Obstaculos").transform;
         var enemigos = new GameObject("Enemigos").transform;
@@ -355,13 +607,16 @@ public static class ConstructorJuego
         Poner(p.huacalMonedas, 3f, YSuelo, obstaculos);
         Minero(prefabMinero, 7f, enemigos);
         Poner(p.maceta, 10.5f, 0f, obstaculos);
+        PonerBandido(p.machete, 12f, -1, enemigos);
         Poner(p.hornoCaguama, 14f, YSuelo, obstaculos);
+        PonerBandido(p.revolver, 16.5f, -1, enemigos);
         Poner(p.escombros, 18.5f, YSuelo, obstaculos);
         Poner(p.huacalMonedas, 23f, YSuelo, obstaculos);
         Poner(p.huacalGuacamaya, 23f, YSuelo + altoHuacal, obstaculos);
         Minero(prefabMinero, 27f, enemigos);
         Poner(p.maceta, 31f, 0f, obstaculos);
         Poner(p.hornoMonedas, 35f, YSuelo, obstaculos);
+        PonerBandido(p.rifle, 37f, -1, enemigos);                // Se cubre detrás del horno
         Minero(prefabMinero, 39f, enemigos);
         Minero(prefabMinero, 42f, enemigos);
         Poner(p.escombros, 46f, YSuelo, obstaculos);
@@ -370,23 +625,34 @@ public static class ConstructorJuego
         Poner(p.maceta, 54.5f, 0f, obstaculos);
         Poner(p.maceta, 57.5f, 0f, obstaculos);
         Poner(p.hornoCaguama, 60.5f, YSuelo, obstaculos);
-        Minero(prefabMinero, 63.5f, enemigos);
-        Poner(p.escombros, 66.5f, YSuelo, obstaculos);
-        Poner(p.huacalMonedas, 69f, YSuelo, obstaculos);
-        Poner(p.huacalGuacamaya, 69f, YSuelo + altoHuacal, obstaculos);
-        Minero(prefabMinero, 71.5f, enemigos);
+        Poner(p.guacamaya, 62.5f, YSuelo + 0.7f, recogibles);   // Antes del jefe
 
-        // Meta: frente a la puerta de la parroquia
-        var meta = new GameObject("Meta_Parroquia");
-        meta.transform.position = new Vector3(Mathf.Min(74.5f, derecha - 5f), YSuelo + 2f, 0f);
-        var colMeta = meta.AddComponent<BoxCollider2D>();
-        colMeta.isTrigger = true;
-        colMeta.size = new Vector2(1.5f, 6f);
-        meta.AddComponent<MetaNivel>();
+        // Evento especial: emboscada de los bandidos del Charro en la plaza
+        CrearEmboscada(p, 45f);
+
+        // Jefe: la plaza de la parroquia queda libre como arena; el alebrije sale de entre las torres
+        float puerta = Mathf.Min(74.5f, derecha - 5f);
+        var alebrije = (GameObject)PrefabUtility.InstantiatePrefab(p.alebrije.gameObject, enemigos);
+        alebrije.transform.position = new Vector3(puerta + 2f, YSuelo, 0f);
 
         // Interfaz
         CrearEventSystem();
         var hud = CrearHud(jugador, out BannerMision banner);
+        BarraJefe barraJefe = CrearBarraJefe(hud.transform);
+
+        var encuentro = new GameObject("Encuentro_Alebrije");
+        encuentro.transform.position = new Vector3(derecha - 19f, YSuelo + 2f, 0f);
+        var colEnc = encuentro.AddComponent<BoxCollider2D>();
+        colEnc.isTrigger = true;
+        colEnc.size = new Vector2(1f, 8f);
+        var enc = encuentro.AddComponent<EncuentroAlebrije>();
+        var soE = new SerializedObject(enc);
+        soE.FindProperty("jefe").objectReferenceValue = alebrije.GetComponent<JefeAlebrije>();
+        soE.FindProperty("barraJefe").objectReferenceValue = barraJefe;
+        soE.FindProperty("puntoTorres").vector2Value = new Vector2(puerta, 2.5f);
+        soE.FindProperty("xAterrizaje").floatValue = puerta + 2f;
+        soE.FindProperty("ySuelo").floatValue = YSuelo;
+        soE.ApplyModifiedPropertiesWithoutUndo();
         MenuPausa pausa = CrearMenuPausa();
         PantallaFinal gameOver = CrearPantallaFinal("GameOver", new Color(0.95f, 0.2f, 0.15f), new Color(0.12f, 0f, 0f, 0.8f), "REINTENTAR", 40);
         PantallaFinal victoria = CrearPantallaFinal("Victoria", Dorado, new Color(0f, 0.04f, 0.14f, 0.8f), "JUGAR DE NUEVO", 41);
@@ -418,6 +684,31 @@ public static class ConstructorJuego
         Vector3 e = d.transform.localScale;
         d.transform.localScale = new Vector3(-e.x, e.y, e.z);   // Mira hacia Mateo
     }
+
+    // ------------------------------------------------------------------ Barra del jefe
+    static BarraJefe CrearBarraJefe(Transform canvas)
+    {
+        var abajo = new Vector2(0.5f, 0f);
+        var grupo = Hijo(canvas, "BarraJefe", abajo, abajo, new Vector2(0.5f, 0f), new Vector2(0f, 40f), new Vector2(900f, 130f));
+        Text nombre = Texto(grupo, "Nombre", "ALEBRIJE GIGANTE", 30, Dorado, TextAnchor.MiddleCenter, new Vector2(0f, 45f), new Vector2(900f, 50f));
+        Image marco = Imagen(grupo, "Marco", Spr("UI/hud_barra_marco.png"), new Vector2(0f, -15f), new Vector2(860f, 80f));
+        Image retardo = Imagen(marco.transform, "Retardo", Spr("UI/hud_barra_vida.png"), Vector2.zero, new Vector2(860f, 80f));
+        retardo.color = new Color(1f, 0.92f, 0.75f, 0.9f);
+        Rellenar(retardo);
+        Image barra = Imagen(marco.transform, "Vida", Spr("UI/hud_barra_vida.png"), Vector2.zero, new Vector2(860f, 80f));
+        barra.color = new Color(0.55f, 0.75f, 1f);                     // Azul cobalto, como el alebrije
+        Rellenar(barra);
+
+        var b = grupo.gameObject.AddComponent<BarraJefe>();
+        var so = new SerializedObject(b);
+        so.FindProperty("nombre").objectReferenceValue = nombre;
+        so.FindProperty("barra").objectReferenceValue = barra;
+        so.FindProperty("barraRetardo").objectReferenceValue = retardo;
+        so.ApplyModifiedPropertiesWithoutUndo();
+        grupo.gameObject.SetActive(false);
+        return b;
+    }
+
 
     // ------------------------------------------------------------------ HUD
     static HudJuego CrearHud(GameObject jugador, out BannerMision banner)
@@ -454,8 +745,8 @@ public static class ConstructorJuego
         Imagen(c, "IconoMoneda", Spr("UI/hud_moneda.png"), new Vector2(-235f, -220f), new Vector2(60f, 60f), arribaDer);
         Text monedas = Texto(c, "Monedas", "x00", 34, Crema, TextAnchor.MiddleLeft, new Vector2(-120f, -220f), new Vector2(170f, 60f), arribaDer);
 
-        Texto(c, "Ayuda", "ESC PAUSA   E CAGUAMA", 16, new Color(1f, 1f, 1f, 0.75f), TextAnchor.LowerRight,
-              new Vector2(-260f, 30f), new Vector2(480f, 40f), new Vector2(1f, 0f));
+        Texto(c, "Ayuda", "ESPACIO LANZAR   ARRIBA SALTAR   E CAGUAMA   ESC PAUSA", 16, new Color(1f, 1f, 1f, 0.75f), TextAnchor.LowerRight,
+              new Vector2(-500f, 30f), new Vector2(960f, 40f), new Vector2(1f, 0f));
 
         var hud = canvas.gameObject.AddComponent<HudJuego>();
         var so = new SerializedObject(hud);
@@ -618,10 +909,10 @@ public static class ConstructorJuego
         Texto(panelControles.transform, "Titulo", "CONTROLES", 44, Dorado, TextAnchor.MiddleCenter, new Vector2(0f, 235f), new Vector2(1000f, 70f));
         Texto(panelControles.transform, "Lista",
               "MOVER ............ A / D o FLECHAS\n" +
-              "SALTAR ........... ESPACIO o W\n" +
+              "SALTAR ........... FLECHA ARRIBA o W\n" +
               "EVADIR ........... SHIFT\n" +
-              "APUNTAR .......... MOUSE\n" +
-              "LANZAR CERAMICA .. CLIC IZQUIERDO\n" +
+              "APUNTAR .......... MOUSE o FLECHAS\n" +
+              "LANZAR CERAMICA .. ESPACIO o CLIC\n" +
               "BEBER CAGUAMA .... E o Q\n" +
               "PAUSA ............ ESC o P",
               24, Crema, TextAnchor.MiddleLeft, new Vector2(0f, 10f), new Vector2(1000f, 340f));
