@@ -42,8 +42,20 @@ public class GestorAudio : MonoBehaviour
                 DontDestroyOnLoad(go);
                 instancia = go.AddComponent<GestorAudio>();
             }
-            return instancia;
+            // Un objeto destruido no es null para C# ("?." lo dejaría pasar): se devuelve null de verdad
+            return instancia != null ? instancia : null;
         }
+    }
+
+    /// <summary>
+    /// El proyecto tiene Enter Play Mode Options sin recarga de dominio: los static sobreviven entre un Play y otro.
+    /// Sin esto, "cerrando" seguía en true desde el Play anterior y se usaba el gestor ya destruido.
+    /// </summary>
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    static void ReiniciarEstaticos()
+    {
+        instancia = null;
+        cerrando = false;
     }
 
     void Awake()
