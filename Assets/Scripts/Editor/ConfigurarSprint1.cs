@@ -126,7 +126,9 @@ public static class ConfigurarSprint1
         Sprite[] run = new Sprite[5];
         for (int i = 0; i < 5; i++) run[i] = Spr($"Player/mateo_run_{i:00}.png");
 
-        AnimationClip idle = CrearClip("Mateo_Idle", new[] { run[4] }, 1f, true);
+        // Reposo y muerte salen de la hoja de Flow (mateo_idle_XX / mateo_muerte_XX)
+        AnimationClip idle = CrearClip("Mateo_Idle", Cuadros("Player/mateo_idle", 4), 5f, true);
+        AnimationClip morir = CrearClip("Mateo_Muerte", Cuadros("Player/mateo_muerte", 4), 7f, false);
         AnimationClip correr = CrearClip("Mateo_Run", run, 12f, true);
         AnimationClip saltar = CrearClip("Mateo_Jump", new[] { run[2] }, 1f, true);
         AnimationClip evadir = CrearClip("Mateo_Evadir", new[] { run[0] }, 1f, true);
@@ -137,12 +139,14 @@ public static class ConfigurarSprint1
         ctrl.AddParameter("Velocidad", AnimatorControllerParameterType.Float);
         ctrl.AddParameter("EnSuelo", AnimatorControllerParameterType.Bool);
         ctrl.AddParameter("Evadiendo", AnimatorControllerParameterType.Bool);
+        ctrl.AddParameter("Muerto", AnimatorControllerParameterType.Bool);
 
         AnimatorStateMachine sm = ctrl.layers[0].stateMachine;
         AnimatorState sIdle = sm.AddState("Idle"); sIdle.motion = idle;
         AnimatorState sRun = sm.AddState("Run"); sRun.motion = correr;
         AnimatorState sJump = sm.AddState("Jump"); sJump.motion = saltar;
         AnimatorState sEvadir = sm.AddState("Evadir"); sEvadir.motion = evadir;
+        AnimatorState sMuerte = sm.AddState("Muerte"); sMuerte.motion = morir;
         sm.defaultState = sIdle;
 
         Transicion(sIdle, sRun).AddCondition(AnimatorConditionMode.Greater, 0.3f, "Velocidad");
@@ -156,25 +160,37 @@ public static class ConfigurarSprint1
         Transicion(sm, sEvadir).AddCondition(AnimatorConditionMode.If, 0, "Evadiendo");
         Transicion(sEvadir, sIdle).AddCondition(AnimatorConditionMode.IfNot, 0, "Evadiendo");
 
+        // Muerte gana sobre todo lo demás (y las transiciones de arriba no aplican mientras esté muerto)
+        Transicion(sm, sMuerte).AddCondition(AnimatorConditionMode.If, 0, "Muerto");
+        foreach (var t in sm.anyStateTransitions)
+            if (t.destinationState != sMuerte) t.AddCondition(AnimatorConditionMode.IfNot, 0, "Muerto");
+
         EditorUtility.SetDirty(ctrl);
         return ctrl;
     }
 
-    static AnimatorStateTransition Transicion(AnimatorState desde, AnimatorState hasta)
+    internal static Sprite[] Cuadros(string prefijo, int n)
+    {
+        var cuadros = new Sprite[n];
+        for (int i = 0; i < n; i++) cuadros[i] = Spr($"{prefijo}_{i:00}.png");
+        return cuadros;
+    }
+
+    internal static AnimatorStateTransition Transicion(AnimatorState desde, AnimatorState hasta)
     {
         AnimatorStateTransition t = desde.AddTransition(hasta);
         t.hasExitTime = false; t.duration = 0f;
         return t;
     }
 
-    static AnimatorStateTransition Transicion(AnimatorStateMachine sm, AnimatorState hasta)
+    internal static AnimatorStateTransition Transicion(AnimatorStateMachine sm, AnimatorState hasta)
     {
         AnimatorStateTransition t = sm.AddAnyStateTransition(hasta);
         t.hasExitTime = false; t.duration = 0f; t.canTransitionToSelf = false;
         return t;
     }
 
-    static AnimationClip CrearClip(string nombre, Sprite[] cuadros, float fps, bool loop)
+    internal static AnimationClip CrearClip(string nombre, Sprite[] cuadros, float fps, bool loop)
     {
         string ruta = $"Assets/Art/Animations/{nombre}.anim";
         AssetDatabase.DeleteAsset(ruta);

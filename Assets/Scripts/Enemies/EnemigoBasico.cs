@@ -1,8 +1,8 @@
 using UnityEngine;
 
 /// <summary>
-/// Enemigo sin IA todavía (Sprint 4): está parado, lastima al tocarlo (DanoPorContacto) y al morir suena,
-/// deja un efecto y avisa al GestorNivel para las estadísticas.
+/// Lo común a todo enemigo: lastima al tocarlo (DanoPorContacto) y al morir suena, deja un efecto y avisa al
+/// GestorNivel para las estadísticas. El movimiento va aparte (IAEsqueleto); sin él se queda quieto (dummy del Sandbox).
 /// </summary>
 [RequireComponent(typeof(Health))]
 public class EnemigoBasico : MonoBehaviour

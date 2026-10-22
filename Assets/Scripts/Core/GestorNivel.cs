@@ -5,11 +5,12 @@ using UnityEngine.InputSystem;
 
 /// <summary>
 /// Reglas de un nivel: arranque con el letrero de misión, pausa (Esc / P), game over cuando Mateo se queda sin vida
-/// y victoria al llegar a la meta. Las pantallas (pausa, game over, victoria) solo muestran; las decisiones están aquí.
+/// y victoria al vencer al jefe (o al llegar a la meta). Las pantallas (pausa, game over, victoria) solo muestran;
+/// las decisiones están aquí. También encierra a Mateo en zonas (emboscadas, jefe) y pausa el control en cinemáticas.
 /// </summary>
 public class GestorNivel : MonoBehaviour
 {
-    public enum Estado { Jugando, Pausa, GameOver, Victoria }
+    public enum Estado { Jugando, Pausa, GameOver, Victoria, Cinematica }
 
     [Header("Jugador")]
     [SerializeField] Health saludJugador;
@@ -38,6 +39,8 @@ public class GestorNivel : MonoBehaviour
     public event Action<Estado> OnEstadoCambiado;
 
     InputAction accionPausa;
+    Rigidbody2D rbJugador;
+    float? limiteMin, limiteMax;
 
     void Awake()
     {
@@ -46,6 +49,7 @@ public class GestorNivel : MonoBehaviour
         accionPausa = new InputAction("Pausa", InputActionType.Button, "<Keyboard>/escape");
         accionPausa.AddBinding("<Keyboard>/p");
         accionPausa.AddBinding("<Gamepad>/start");
+        if (controlJugador != null) rbJugador = controlJugador.GetComponent<Rigidbody2D>();
     }
 
     void OnEnable()
@@ -79,6 +83,39 @@ public class GestorNivel : MonoBehaviour
         }
     }
 
+    void FixedUpdate()
+    {
+        // Emboscadas y jefe: Mateo no puede salirse de la zona aunque la cámara esté fija
+        if (rbJugador == null || !limiteMin.HasValue) return;
+        Vector2 p = rbJugador.position;
+        float x = Mathf.Clamp(p.x, limiteMin.Value, limiteMax.Value);
+        if (x != p.x)
+        {
+            rbJugador.position = new Vector2(x, p.y);
+            rbJugador.linearVelocity = new Vector2(0f, rbJugador.linearVelocity.y);
+        }
+    }
+
+    // ------------------------------------------------------------------ Zonas, letreros y cinemáticas
+    public void LimitarJugador(float min, float max) { limiteMin = min; limiteMax = max; }
+    public void LiberarJugador() { limiteMin = limiteMax = null; }
+
+    public void MostrarLetrero(string a, string b, string c)
+    {
+        if (banner != null) banner.Mostrar(a, b, c);
+    }
+
+    /// <summary>Quita el control a Mateo (y congela a los enemigos) mientras corre una escena.</summary>
+    public void IniciarCinematica()
+    {
+        if (EstadoActual == Estado.Jugando) CambiarEstado(Estado.Cinematica);
+    }
+
+    public void TerminarCinematica()
+    {
+        if (EstadoActual == Estado.Cinematica) CambiarEstado(Estado.Jugando);
+    }
+
     // ------------------------------------------------------------------ Pausa
     public void Pausar()
     {
@@ -109,11 +146,7 @@ public class GestorNivel : MonoBehaviour
 
     IEnumerator SecuenciaGameOver()
     {
-        // Mateo cae al suelo (el sprite se acuesta) y se apaga la música
-        var visual = controlJugador.GetComponentInChildren<SpriteRenderer>();
-        var animador = controlJugador.GetComponentInChildren<Animator>();
-        if (animador != null) animador.enabled = false;
-        if (visual != null) visual.transform.localRotation = Quaternion.Euler(0f, 0f, 90f);
+        // La animación de muerte de Mateo la pone PlayerAnimator al quedarse sin vida; aquí solo se apaga la música
         GestorAudio.DetenerMusica(0.4f);
 
         yield return new WaitForSeconds(esperaGameOver);
@@ -122,10 +155,10 @@ public class GestorNivel : MonoBehaviour
             pantallaGameOver.Mostrar("GAME OVER", "Carmen sigue en manos del Charro Negro...", Resumen());
     }
 
-    /// <summary>Lo llama MetaNivel al llegar al final.</summary>
+    /// <summary>Lo llama el jefe del nivel al ser derrotado (o MetaNivel en niveles sin jefe).</summary>
     public void Completar()
     {
-        if (EstadoActual != Estado.Jugando) return;
+        if (EstadoActual != Estado.Jugando && EstadoActual != Estado.Cinematica) return;
         CambiarEstado(Estado.Victoria);
         saludJugador.HacerInvulnerable(999f);
         GestorAudio.DetenerMusica(0.3f);

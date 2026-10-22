@@ -50,6 +50,13 @@ public class ImportadorSprites : AssetPostprocessor
     static float PixelesPorUnidad(string carpeta, string nombre)
     {
         if (nombre.StartsWith("pixel_")) return 4f;           // Cuadro blanco 4x4 = 1 unidad (plataformas, etc.)
+
+        // Cuadros recortados de las hojas de Flow: cada hoja salió a otra escala, así que se ajusta por nombre
+        // para que Mateo mida igual que en la carrera (~2.5 u), los bandidos casi lo mismo y el alebrije ~4 u.
+        if (nombre.StartsWith("mateo_idle") || nombre.StartsWith("mateo_muerte")) return 148f;
+        if (nombre.StartsWith("bandido_")) return 100f;
+        if (nombre.StartsWith("alebrije_")) return 55f;
+
         switch (carpeta)
         {
             case "Environment": return 128f;                  // Fondo 2752x1536 -> 21.5 x 12 unidades

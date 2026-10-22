@@ -4,6 +4,7 @@ public enum TipoRecogible { Guacamaya, Caguama, Moneda }
 
 /// <summary>
 /// Objeto que el jugador recoge al tocarlo: La Guacamaya (cura), La Caguama (se guarda para beberla) y monedas.
+/// Si Mateo ya trae la vida llena o el máximo de caguamas, la guacamaya o la caguama se cambian por monedas.
 /// Flota arriba y abajo y puede animarse con una lista de cuadros.
 /// </summary>
 [RequireComponent(typeof(Collider2D))]
@@ -12,6 +13,8 @@ public class Recogible : MonoBehaviour
     [SerializeField] TipoRecogible tipo = TipoRecogible.Moneda;
     [Tooltip("Guacamaya: vida que cura. Moneda/Caguama: cuántas da.")]
     [SerializeField] int cantidad = 1;
+    [Tooltip("Monedas que da si no se puede usar (vida llena / caguamas al máximo). 0 = se queda en el suelo.")]
+    [SerializeField] int monedasSiLleno = -1;   // -1: valor por defecto según el tipo
 
     [Header("Visual")]
     [SerializeField] SpriteRenderer sprite;
@@ -21,6 +24,12 @@ public class Recogible : MonoBehaviour
     [SerializeField] SpriteAnimadoTemporal efectoRecoger;
 
     public TipoRecogible Tipo => tipo;
+    public int MonedasSiLleno => monedasSiLleno >= 0 ? monedasSiLleno : tipo switch
+    {
+        TipoRecogible.Guacamaya => 5,
+        TipoRecogible.Caguama => 10,
+        _ => 0,
+    };
 
     Vector3 origen;
     float fase;
@@ -53,9 +62,16 @@ public class Recogible : MonoBehaviour
             TipoRecogible.Caguama => inventario.AgregarCaguamas(cantidad),
             _ => inventario.AgregarMonedas(cantidad),
         };
-        if (!recogido) return;   // Ej. ya trae el máximo de caguamas: se queda en el suelo
+        bool cambiadoPorMonedas = false;
+        if (!recogido)
+        {
+            // Vida llena o caguamas al máximo: en lugar de dejarla tirada, se cambia por monedas
+            if (MonedasSiLleno <= 0) return;
+            inventario.AgregarMonedas(MonedasSiLleno);
+            cambiadoPorMonedas = true;
+        }
 
-        GestorAudio.Reproducir(tipo switch
+        GestorAudio.Reproducir(cambiadoPorMonedas ? Sfx.Moneda : tipo switch
         {
             TipoRecogible.Guacamaya => Sfx.RecogerGuacamaya,
             TipoRecogible.Caguama => Sfx.RecogerCaguama,

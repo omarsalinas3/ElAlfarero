@@ -4523,13 +4523,13 @@ MonoBehaviour:
     m_LineSpacing: 1.35
   m_Text: 'MOVER ............ A / D o FLECHAS
 
-    SALTAR ........... ESPACIO o W
+    SALTAR ........... FLECHA ARRIBA o W
 
     EVADIR ........... SHIFT
 
-    APUNTAR .......... MOUSE
+    APUNTAR .......... MOUSE o FLECHAS
 
-    LANZAR CERAMICA .. CLIC IZQUIERDO
+    LANZAR CERAMICA .. ESPACIO o CLIC
 
     BEBER CAGUAMA .... E o Q
 

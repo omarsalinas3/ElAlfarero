@@ -176,6 +176,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Alfarero.Runtime::Recogible
   tipo: 1
   cantidad: 1
+  monedasSiLleno: -1
   sprite: {fileID: 6116575221807508810}
   cuadros:
   - {fileID: 21300000, guid: 3691ea0bc4e60c144a19c66189d05990, type: 3}

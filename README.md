@@ -28,10 +28,10 @@ Público objetivo: jugadores de 12 años en adelante y adultos nostálgicos de l
 | Acción | Tecla |
 |---|---|
 | Mover | A / D o flechas |
-| Saltar | Espacio o W |
+| Saltar | Flecha arriba o W |
 | Evadir (invulnerable un instante) | Shift izquierdo |
-| Apuntar | Mouse |
-| Lanzar cerámica | Clic izquierdo (mantener) |
+| Apuntar / voltear | Mouse o flechas (gana el último que se usó; con flechas se lanza al frente) |
+| Lanzar cerámica | Espacio o clic izquierdo (mantener) |
 | Beber caguama (invencible 5 s) | E o Q |
 | Pausa | Esc o P |
 | Menús | Mouse o flechas + Enter |

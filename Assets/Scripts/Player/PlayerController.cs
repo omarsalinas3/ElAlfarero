@@ -4,7 +4,8 @@ using UnityEngine.InputSystem;
 /// <summary>
 /// Movimiento del Alfarero: correr con aceleración, salto preciso (coyote time, buffer, altura variable,
 /// caída más pesada) y evasión rápida con invulnerabilidad.
-/// Controles: A/D o flechas = mover, Espacio o W = saltar, Shift izquierdo = evadir. El mouse apunta (PlayerShooter).
+/// Controles: A/D o flechas = mover, flecha arriba o W = saltar, Shift izquierdo = evadir.
+/// Espacio o clic = lanzar y el mouse apunta (PlayerShooter). Mateo mira hacia el último control usado: flechas o mouse.
 /// </summary>
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerController : MonoBehaviour
@@ -84,7 +85,8 @@ public class PlayerController : MonoBehaviour
             .With("Negative", "<Keyboard>/leftArrow")
             .With("Positive", "<Keyboard>/rightArrow");
 
-        accionSaltar = new InputAction("Saltar", InputActionType.Button, "<Keyboard>/space");
+        // Espacio quedó para lanzar cerámica (PlayerShooter)
+        accionSaltar = new InputAction("Saltar", InputActionType.Button, "<Keyboard>/upArrow");
         accionSaltar.AddBinding("<Keyboard>/w");
 
         accionEvadir = new InputAction("Evadir", InputActionType.Button, "<Keyboard>/leftShift");
@@ -220,14 +222,16 @@ public class PlayerController : MonoBehaviour
     // ----------------------------------------------------------- Orientación
     void ActualizarOrientacion()
     {
-        // Prioridad: hacia donde apunta el mouse; si no hay tirador, hacia donde se mueve
-        if (tirador != null && Mathf.Abs(tirador.DireccionApuntado.x) > 0.01f)
-        {
-            DireccionMirada = tirador.DireccionApuntado.x > 0f ? 1 : -1;
-        }
-        else if (Mathf.Abs(entradaHorizontal) > 0.01f)
+        // Gana el último control usado: caminar con flechas/A-D voltea hacia donde camina (y el disparo va al frente);
+        // si después se mueve el mouse, mira hacia el mouse
+        if (Mathf.Abs(entradaHorizontal) > 0.01f)
         {
             DireccionMirada = entradaHorizontal > 0f ? 1 : -1;
+            if (tirador != null) tirador.UsarTeclado();
+        }
+        else if (tirador != null && tirador.UsandoMouse && Mathf.Abs(tirador.DireccionApuntado.x) > 0.01f)
+        {
+            DireccionMirada = tirador.DireccionApuntado.x > 0f ? 1 : -1;
         }
 
         // Volteamos con la escala X. Ojo: al tener sprite y collider en la misma raíz, todo se voltea junto.

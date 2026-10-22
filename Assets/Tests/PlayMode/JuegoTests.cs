@@ -8,7 +8,8 @@ using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
 /// <summary>
-/// Pruebas del juego completo: Nivel 1 (pausa, game over, caguama, guacamaya, huacales, meta) y menú principal.
+/// Pruebas del juego completo: Nivel 1 (pausa, game over, caguama, guacamaya, huacales) y menú principal.
+/// Bandidos, emboscada y jefe están en NivelUnoTests.
 /// </summary>
 public class JuegoTests
 {
@@ -117,17 +118,6 @@ public class JuegoTests
 
         Assert.IsTrue(huacal == null, "El huacal se destruye");
         Assert.Greater(Object.FindObjectsByType<Recogible>().Length, recogiblesAntes, "Suelta monedas u otro botín");
-    }
-
-    [UnityTest]
-    public IEnumerator Meta_CompletaElNivel()
-    {
-        yield return CargarNivel1();
-        var meta = Object.FindAnyObjectByType<MetaNivel>();
-        var jugador = Object.FindAnyObjectByType<PlayerController>();
-        jugador.GetComponent<Rigidbody2D>().position = new Vector2(meta.transform.position.x, -4.4f);
-        yield return new WaitForSeconds(0.3f);
-        Assert.AreEqual(GestorNivel.Estado.Victoria, GestorNivel.Actual.EstadoActual);
     }
 
     [UnityTest]
