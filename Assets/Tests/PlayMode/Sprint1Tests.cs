@@ -77,7 +77,7 @@ public class Sprint1Tests
         float y0 = jugador.transform.position.y;
         float yMax = y0;
 
-        Teclas(Key.Space);
+        Teclas(Key.UpArrow);   // Espacio ahora es para lanzar
         yield return null;
         float fin = Time.time + 0.7f;   // Por tiempo de juego, no por frames (en batchmode los frames son muy cortos)
         while (Time.time < fin)
@@ -123,5 +123,47 @@ public class Sprint1Tests
         InputSystem.QueueStateEvent(mouse, new MouseState { position = new Vector2(pantalla.x, pantalla.y) });
 
         Assert.Less(dummy.VidaActual, dummy.VidaMaxima, "El dummy debe recibir dano de la Talavera");
+    }
+
+    Health DummyDeEnfrente()
+    {
+        foreach (var h in Object.FindObjectsByType<Health>())
+            if (h.gameObject.layer == 8 && Mathf.Abs(h.transform.position.x - 4f) < 0.1f) return h;
+        return null;
+    }
+
+    [UnityTest]
+    public IEnumerator Disparo_ConEspacioLanzaAlFrente()
+    {
+        Health dummy = DummyDeEnfrente();
+        Assert.IsNotNull(dummy, "Falta el dummy de pruebas en x=4");
+
+        // Primero camina un poco a la derecha con la flecha: desde ahí se apunta al frente, sin mouse
+        Teclas(Key.RightArrow);
+        yield return new WaitForSeconds(0.1f);
+        Teclas(Key.Space);
+        yield return new WaitForSeconds(0.6f);
+        Teclas();
+
+        Assert.AreEqual(1, jugador.DireccionMirada);
+        Assert.Less(dummy.VidaActual, dummy.VidaMaxima, "Espacio debe lanzar la Talavera hacia el frente");
+    }
+
+    [UnityTest]
+    public IEnumerator Orientacion_GanaElUltimoControlUsado()
+    {
+        // Mover el mouse a la izquierda lo voltea hacia el mouse...
+        Vector3 izquierda = Camera.main.WorldToScreenPoint(jugador.transform.position + new Vector3(-5f, 1.4f, 0f));
+        InputSystem.QueueStateEvent(mouse, new MouseState { position = new Vector2(izquierda.x, izquierda.y) });
+        yield return new WaitForSeconds(0.1f);
+        Assert.AreEqual(-1, jugador.DireccionMirada, "Debe mirar hacia el mouse");
+
+        // ...pero caminar con la flecha derecha lo voltea a la derecha aunque el mouse siga a la izquierda
+        Teclas(Key.RightArrow);
+        yield return new WaitForSeconds(0.15f);
+        Teclas();
+        yield return new WaitForSeconds(0.1f);
+        Assert.AreEqual(1, jugador.DireccionMirada, "Las flechas también lo voltean");
+        Assert.Greater(jugador.GetComponent<PlayerShooter>().DireccionApuntado.x, 0.9f, "Y el disparo va al frente");
     }
 }

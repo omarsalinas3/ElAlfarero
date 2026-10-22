@@ -2,7 +2,9 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 /// <summary>
-/// Apuntado con el mouse y disparo continuo (mantener clic izquierdo, estilo Metal Slug).
+/// Apuntado y disparo continuo (mantener clic izquierdo o Espacio, estilo Metal Slug).
+/// Gana el último control que se usó: si se mueve el mouse se apunta hacia él; si se camina con las flechas
+/// (PlayerController llama a UsarTeclado) se apunta al frente, hacia donde mira Mateo.
 /// Es el único script que lee la posición del mouse; PlayerController usa DireccionApuntado para voltear al personaje.
 /// El arma actual es un CeramicaData: el cambio de cerámica del Sprint 3 solo llama a EquiparCeramica().
 /// </summary>
@@ -16,9 +18,17 @@ public class PlayerShooter : MonoBehaviour
     Camera camara;
     PlayerController controlador;
     float proximoDisparo;
+    Vector2 ultimaPosMouse;
+    bool posMouseLeida;
 
-    /// <summary>Dirección normalizada desde el punto de disparo hacia el mouse.</summary>
+    /// <summary>Dirección normalizada del disparo: hacia el mouse, o al frente si se está usando el teclado.</summary>
     public Vector2 DireccionApuntado { get; private set; } = Vector2.right;
+
+    /// <summary>True si el último control usado fue el mouse (moverlo o dar clic).</summary>
+    public bool UsandoMouse { get; private set; }
+
+    /// <summary>Lo llama PlayerController al caminar con las flechas o A/D: desde ahí se apunta al frente.</summary>
+    public void UsarTeclado() => UsandoMouse = false;
     public CeramicaData CeramicaActual => ceramicaActual;
 
     void Awake()
@@ -26,6 +36,7 @@ public class PlayerShooter : MonoBehaviour
         camara = Camera.main;
         controlador = GetComponent<PlayerController>();
         accionDisparar = new InputAction("Disparar", InputActionType.Button, "<Mouse>/leftButton");
+        accionDisparar.AddBinding("<Keyboard>/space");
 
         if (puntoDisparo == null)
         {
@@ -55,7 +66,13 @@ public class PlayerShooter : MonoBehaviour
 
     void ActualizarApuntado()
     {
-        if (Mouse.current == null || camara == null) return;
+        DetectarMouse();
+        if (!UsandoMouse || camara == null)
+        {
+            // Con teclado se lanza al frente, hacia donde mira Mateo
+            DireccionApuntado = new Vector2(controlador != null ? controlador.DireccionMirada : 1, 0f);
+            return;
+        }
 
         Vector2 pantalla = Mouse.current.position.ReadValue();
         Vector3 mundo = camara.ScreenToWorldPoint(new Vector3(pantalla.x, pantalla.y, -camara.transform.position.z));
@@ -67,6 +84,17 @@ public class PlayerShooter : MonoBehaviour
         {
             DireccionApuntado = direccion.normalized;
         }
+    }
+
+    void DetectarMouse()
+    {
+        if (Mouse.current == null) { UsandoMouse = false; return; }
+
+        Vector2 pos = Mouse.current.position.ReadValue();
+        if (posMouseLeida && (pos - ultimaPosMouse).sqrMagnitude > 9f) UsandoMouse = true;   // Se movió más de 3 px
+        if (Mouse.current.leftButton.isPressed) UsandoMouse = true;
+        ultimaPosMouse = pos;
+        posMouseLeida = true;
     }
 
     void Disparar()
