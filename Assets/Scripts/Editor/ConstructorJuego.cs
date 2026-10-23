@@ -331,6 +331,7 @@ public static class ConstructorJuego
         ArregloObjetos(so.FindProperty("estados"), estados);
         so.FindProperty("prefabRestos").objectReferenceValue = restos;
         so.FindProperty("sonidoRomper").enumValueIndex = (int)sonido;
+        so.FindProperty("puntos").intValue = sonido == Sfx.RomperHorno ? 100 : 50;
         ArregloObjetos(so.FindProperty("botin"), botin.Select(b => (Object)b.GetComponent<Recogible>()).ToArray());
         so.ApplyModifiedPropertiesWithoutUndo();
         return Guardar(go, CarpetaObstaculos + nombre + ".prefab");
@@ -462,6 +463,7 @@ public static class ConstructorJuego
         var basico = go.AddComponent<EnemigoBasico>();
         var soB = new SerializedObject(basico);
         soB.FindProperty("sonidoMuerte").enumValueIndex = (int)Sfx.Golpe;
+        soB.FindProperty("puntos").intValue = 150;
         soB.ApplyModifiedPropertiesWithoutUndo();
 
         var ia = go.AddComponent<IABandido>();
@@ -516,6 +518,7 @@ public static class ConstructorJuego
         var basico = go.AddComponent<EnemigoBasico>();
         var soB = new SerializedObject(basico);
         soB.FindProperty("sonidoMuerte").enumValueIndex = (int)Sfx.RugidoAlebrije;
+        soB.FindProperty("puntos").intValue = 2000;
         soB.ApplyModifiedPropertiesWithoutUndo();
 
         var dano = go.AddComponent<DanoPorContacto>();
@@ -666,7 +669,10 @@ public static class ConstructorJuego
         so.FindProperty("menuPausa").objectReferenceValue = pausa;
         so.FindProperty("pantallaGameOver").objectReferenceValue = gameOver;
         so.FindProperty("pantallaVictoria").objectReferenceValue = victoria;
+        so.FindProperty("xInicioRecorrido").floatValue = jugador.transform.position.x;
+        so.FindProperty("xFinRecorrido").floatValue = encuentro.transform.position.x;   // Donde arranca el jefe
         so.ApplyModifiedPropertiesWithoutUndo();
+        Asignar(hud, "gestor", gestor);
 
         EditorSceneManager.SaveScene(escena, RutaNivel1);
     }
@@ -745,6 +751,18 @@ public static class ConstructorJuego
         Imagen(c, "IconoMoneda", Spr("UI/hud_moneda.png"), new Vector2(-235f, -220f), new Vector2(60f, 60f), arribaDer);
         Text monedas = Texto(c, "Monedas", "x00", 34, Crema, TextAnchor.MiddleLeft, new Vector2(-120f, -220f), new Vector2(170f, 60f), arribaDer);
 
+        // Marcador al centro: puntaje, cronómetro y objetivo con barra de avance
+        var arriba = new Vector2(0.5f, 1f);
+        Text puntaje = Texto(c, "Puntaje", "PUNTOS 000000", 30, Crema, TextAnchor.MiddleCenter, new Vector2(0f, -48f), new Vector2(620f, 46f), arriba);
+        Text tiempo = Texto(c, "Tiempo", "00:00", 26, Dorado, TextAnchor.MiddleCenter, new Vector2(0f, -92f), new Vector2(300f, 40f), arriba);
+        Text objetivo = Texto(c, "Objetivo", "", 18, Crema, TextAnchor.MiddleCenter, new Vector2(0f, -132f), new Vector2(620f, 34f), arriba);
+        var grupoObjetivo = Hijo(c, "BarraObjetivo", arriba, arriba, new Vector2(0.5f, 0.5f), new Vector2(0f, -166f), new Vector2(360f, 30f));
+        Imagen(grupoObjetivo, "Marco", Spr("UI/hud_barra_marco.png"), Vector2.zero, new Vector2(360f, 30f)).preserveAspect = false;
+        Image barraObj = Imagen(grupoObjetivo, "Avance", Spr("UI/hud_barra_dorada.png"), Vector2.zero, new Vector2(360f, 30f));
+        barraObj.preserveAspect = false;
+        Rellenar(barraObj);
+        barraObj.fillAmount = 0f;
+
         Texto(c, "Ayuda", "ESPACIO LANZAR   ARRIBA SALTAR   E CAGUAMA   ESC PAUSA", 16, new Color(1f, 1f, 1f, 0.75f), TextAnchor.LowerRight,
               new Vector2(-500f, 30f), new Vector2(960f, 40f), new Vector2(1f, 0f));
 
@@ -764,6 +782,11 @@ public static class ConstructorJuego
         so.FindProperty("textoCaguama").objectReferenceValue = textoCag;
         so.FindProperty("textoMonedas").objectReferenceValue = monedas;
         so.FindProperty("textoMunicion").objectReferenceValue = municion;
+        so.FindProperty("textoPuntaje").objectReferenceValue = puntaje;
+        so.FindProperty("textoTiempo").objectReferenceValue = tiempo;
+        so.FindProperty("textoObjetivo").objectReferenceValue = objetivo;
+        so.FindProperty("grupoBarraObjetivo").objectReferenceValue = grupoObjetivo.gameObject;
+        so.FindProperty("barraObjetivo").objectReferenceValue = barraObj;
         so.ApplyModifiedPropertiesWithoutUndo();
 
         // Letrero de inicio de misión

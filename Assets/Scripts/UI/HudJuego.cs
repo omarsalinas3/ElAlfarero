@@ -3,7 +3,8 @@ using UnityEngine.UI;
 
 /// <summary>
 /// HUD rústico: jarrito de barro + barra de vida (arriba izquierda), caguamas y su temporizador dorado,
-/// munición de Talavera en marco de azulejo y monedas (arriba derecha).
+/// munición de Talavera en marco de azulejo y monedas (arriba derecha), y al centro puntaje, cronómetro
+/// y objetivo actual con su barra de avance (los lleva GestorNivel).
 /// </summary>
 public class HudJuego : MonoBehaviour
 {
@@ -23,6 +24,14 @@ public class HudJuego : MonoBehaviour
     [SerializeField] Image barraCaguama;
     [SerializeField] Text textoCaguama;
 
+    [Header("Puntaje, tiempo y objetivo")]
+    [SerializeField] GestorNivel gestor;
+    [SerializeField] Text textoPuntaje;
+    [SerializeField] Text textoTiempo;
+    [SerializeField] Text textoObjetivo;
+    [SerializeField] GameObject grupoBarraObjetivo;
+    [SerializeField] Image barraObjetivo;
+
     [Header("Otros")]
     [SerializeField] Text textoMonedas;
     [SerializeField] Text textoMunicion;
@@ -31,15 +40,19 @@ public class HudJuego : MonoBehaviour
 
     // Últimos valores mostrados: los textos solo se reescriben cuando cambian (evita basura de memoria cada frame)
     int monedasMostradas = -1, segundosMostrados = -1, caguamasMostradas = -1;
+    int puntajeMostrado = -1, tiempoMostrado = -1;
+    string objetivoMostrado;
     bool latiendo;
 
     void Start()
     {
         if (textoMunicion != null) textoMunicion.text = "∞";
+        if (gestor == null) gestor = GestorNivel.Actual;
     }
 
     void Update()
     {
+        ActualizarMarcador();
         if (salud == null) return;
 
         // Vida: la barra baja rápido y la franja de retardo la sigue despacio
@@ -89,5 +102,33 @@ public class HudJuego : MonoBehaviour
             monedasMostradas = inventario.Monedas;
             textoMonedas.text = "x" + monedasMostradas.ToString("00");
         }
+    }
+
+    void ActualizarMarcador()
+    {
+        if (gestor == null) return;
+
+        if (textoPuntaje != null && gestor.Puntaje != puntajeMostrado)
+        {
+            puntajeMostrado = gestor.Puntaje;
+            textoPuntaje.text = "PUNTOS " + puntajeMostrado.ToString("000000");
+        }
+
+        int segundos = (int)gestor.TiempoJugado;
+        if (textoTiempo != null && segundos != tiempoMostrado)
+        {
+            tiempoMostrado = segundos;
+            textoTiempo.text = (segundos / 60).ToString("00") + ":" + (segundos % 60).ToString("00");
+        }
+
+        if (textoObjetivo != null && !ReferenceEquals(gestor.Objetivo, objetivoMostrado))
+        {
+            objetivoMostrado = gestor.Objetivo;
+            textoObjetivo.text = objetivoMostrado;
+        }
+
+        bool conBarra = gestor.ProgresoObjetivo >= 0f;
+        if (grupoBarraObjetivo != null && grupoBarraObjetivo.activeSelf != conBarra) grupoBarraObjetivo.SetActive(conBarra);
+        if (conBarra && barraObjetivo != null) barraObjetivo.fillAmount = gestor.ProgresoObjetivo;
     }
 }
