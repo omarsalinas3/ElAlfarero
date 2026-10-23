@@ -270,6 +270,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Alfarero.Runtime::EnemigoBasico
   efectoMuerte: {fileID: 0}
   sonidoMuerte: 22
+  puntos: 2000
 --- !u!114 &3740504565149364764
 MonoBehaviour:
   m_ObjectHideFlags: 0

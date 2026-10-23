@@ -29,10 +29,24 @@ public class GestorNivel : MonoBehaviour
     [SerializeField] Musica musica = Musica.Nivel1;
     [SerializeField] float esperaGameOver = 1.6f;
 
+    [Header("Puntaje y objetivo")]
+    [SerializeField] int puntosPorMoneda = 10;
+    [SerializeField] string objetivoRecorrido = "LLEGA A LA PARROQUIA";
+    [Tooltip("Tramo del recorrido: de dónde arranca Mateo a dónde empieza el evento final (jefe o meta).")]
+    [SerializeField] float xInicioRecorrido = -6f;
+    [SerializeField] float xFinRecorrido = 63f;
+
     public static GestorNivel Actual { get; private set; }
     public Estado EstadoActual { get; private set; } = Estado.Jugando;
     public int EnemigosDerrotados { get; private set; }
     public float TiempoJugado { get; private set; }
+    public int Puntaje { get; private set; }
+
+    /// <summary>Lo que el jugador debe hacer ahora (lo muestra el HUD).</summary>
+    public string Objetivo { get; private set; }
+
+    /// <summary>Avance del objetivo de 0 a 1; negativo si el objetivo no tiene barra (ej. vencer al jefe).</summary>
+    public float ProgresoObjetivo { get; private set; }
     public InventarioJugador Inventario => inventario;
     public Health SaludJugador => saludJugador;
 
@@ -41,6 +55,8 @@ public class GestorNivel : MonoBehaviour
     InputAction accionPausa;
     Rigidbody2D rbJugador;
     float? limiteMin, limiteMax;
+    bool objetivoEsRecorrido = true;
+    int monedasContadas;
 
     void Awake()
     {
@@ -56,17 +72,21 @@ public class GestorNivel : MonoBehaviour
     {
         accionPausa.Enable();
         if (saludJugador != null) saludJugador.OnMuerte += AlMorirJugador;
+        if (inventario != null) inventario.OnCambio += AlCambiarInventario;
     }
 
     void OnDisable()
     {
         accionPausa.Disable();
         if (saludJugador != null) saludJugador.OnMuerte -= AlMorirJugador;
+        if (inventario != null) inventario.OnCambio -= AlCambiarInventario;
         if (Actual == this) Actual = null;
     }
 
     void Start()
     {
+        monedasContadas = inventario != null ? inventario.Monedas : 0;
+        VolverAlRecorrido();
         GestorAudio.CambiarMusica(musica);
         GestorAudio.Reproducir(Sfx.JingleMision, 0f);
         if (banner != null) banner.Mostrar(tituloMision, nombreNivel, "¡A LA CARGA!");
@@ -75,6 +95,10 @@ public class GestorNivel : MonoBehaviour
     void Update()
     {
         if (EstadoActual == Estado.Jugando) TiempoJugado += Time.deltaTime;
+
+        // Objetivo de recorrido: la barra avanza con lo más lejos que ha llegado Mateo (no retrocede)
+        if (objetivoEsRecorrido && rbJugador != null)
+            ProgresoObjetivo = Mathf.Max(ProgresoObjetivo, Mathf.InverseLerp(xInicioRecorrido, xFinRecorrido, rbJugador.position.x));
 
         if (accionPausa.WasPressedThisFrame() && !CambioEscena.Cargando)
         {
@@ -160,6 +184,7 @@ public class GestorNivel : MonoBehaviour
     {
         if (EstadoActual != Estado.Jugando && EstadoActual != Estado.Cinematica) return;
         CambiarEstado(Estado.Victoria);
+        FijarObjetivo("¡MISION CUMPLIDA!", 1f);
         saludJugador.HacerInvulnerable(999f);
         GestorAudio.DetenerMusica(0.3f);
         GestorAudio.Reproducir(Sfx.JingleVictoria, 0f);
@@ -169,11 +194,42 @@ public class GestorNivel : MonoBehaviour
 
     public void RegistrarEnemigoDerrotado() => EnemigosDerrotados++;
 
+    // ------------------------------------------------------------------ Puntaje y objetivo
+    /// <summary>Suma al puntaje (enemigos, objetos rotos, monedas). Después de perder ya no cuenta.</summary>
+    public void SumarPuntos(int puntos)
+    {
+        if (puntos <= 0 || EstadoActual == Estado.GameOver) return;
+        Puntaje += puntos;
+    }
+
+    void AlCambiarInventario()
+    {
+        int nuevas = inventario.Monedas - monedasContadas;
+        monedasContadas = inventario.Monedas;
+        if (nuevas > 0) SumarPuntos(nuevas * puntosPorMoneda);
+    }
+
+    /// <summary>Objetivo de un evento (emboscada, jefe). Sin progreso (&lt; 0) el HUD oculta la barra.</summary>
+    public void FijarObjetivo(string texto, float progreso = -1f)
+    {
+        objetivoEsRecorrido = false;
+        Objetivo = texto;
+        ProgresoObjetivo = progreso;
+    }
+
+    /// <summary>Regresa al objetivo normal del nivel: avanzar hasta el final del recorrido.</summary>
+    public void VolverAlRecorrido()
+    {
+        objetivoEsRecorrido = true;
+        Objetivo = objetivoRecorrido;
+        ProgresoObjetivo = rbJugador != null ? Mathf.InverseLerp(xInicioRecorrido, xFinRecorrido, rbJugador.position.x) : 0f;
+    }
+
     string Resumen()
     {
         int min = (int)(TiempoJugado / 60f), seg = (int)(TiempoJugado % 60f);
         int monedas = inventario != null ? inventario.Monedas : 0;
-        return $"ENEMIGOS  {EnemigosDerrotados}\nMONEDAS   {monedas}\nTIEMPO    {min:00}:{seg:00}";
+        return $"PUNTOS    {Puntaje}\nENEMIGOS  {EnemigosDerrotados}\nMONEDAS   {monedas}\nTIEMPO    {min:00}:{seg:00}";
     }
 
     void CambiarEstado(Estado nuevo)

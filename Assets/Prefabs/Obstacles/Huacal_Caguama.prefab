@@ -189,6 +189,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: de5b3b2a00d97624db762f4774eddcfe, type: 3}
   prefabRestos: {fileID: 2465334497006766357, guid: b96e04c5cf3009d458d476f3c767121f, type: 3}
   sonidoRomper: 7
+  puntos: 50
   botin:
   - {fileID: 115130740100480844, guid: c886f446e3c11124e8fffa0e6db15d02, type: 3}
   probabilidadBotin: 1

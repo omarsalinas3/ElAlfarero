@@ -13,6 +13,7 @@ public class Destructible : MonoBehaviour
     [SerializeField] Sprite[] estados;
     [SerializeField] SpriteAnimadoTemporal prefabRestos;
     [SerializeField] Sfx sonidoRomper = Sfx.RomperHuacal;
+    [SerializeField] int puntos = 50;                // Lo que suma al puntaje del nivel al romperlo
 
     [Header("Botín")]
     [SerializeField] Recogible[] botin;
@@ -41,6 +42,7 @@ public class Destructible : MonoBehaviour
     void AlRomperse()
     {
         GestorAudio.Reproducir(sonidoRomper);
+        if (GestorNivel.Actual != null) GestorNivel.Actual.SumarPuntos(puntos);
         Vector3 pos = transform.position;
 
         if (prefabRestos != null)

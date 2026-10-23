@@ -44,6 +44,7 @@ public class EncuentroAlebrije : MonoBehaviour
         float min = centro - mitad + 0.6f, max = centro + mitad - 0.6f;
         gestor?.LimitarJugador(min, max);
         gestor?.IniciarCinematica();
+        gestor?.FijarObjetivo("DERROTA AL " + nombreJefe);
         GestorAudio.DetenerMusica(1f);
 
         yield return new WaitForSeconds(0.8f);
