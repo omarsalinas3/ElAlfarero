@@ -9,6 +9,7 @@ public class EnemigoBasico : MonoBehaviour
 {
     [SerializeField] SpriteAnimadoTemporal efectoMuerte;
     [SerializeField] Sfx sonidoMuerte = Sfx.MuerteEsqueleto;
+    [SerializeField] int puntos = 100;               // Lo que suma al puntaje del nivel al derrotarlo
 
     Health salud;
 
@@ -29,6 +30,11 @@ public class EnemigoBasico : MonoBehaviour
             var fx = Instantiate(efectoMuerte, transform.position + Vector3.up * 1f, Quaternion.identity);
             fx.transform.localScale = Vector3.one * 1.6f;
         }
-        GestorNivel.Actual?.RegistrarEnemigoDerrotado();
+        var gestor = GestorNivel.Actual;
+        if (gestor != null)
+        {
+            gestor.RegistrarEnemigoDerrotado();
+            gestor.SumarPuntos(puntos);
+        }
     }
 }

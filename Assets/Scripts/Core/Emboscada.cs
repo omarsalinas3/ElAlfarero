@@ -53,6 +53,7 @@ public class Emboscada : MonoBehaviour
 
         for (OleadaActual = 0; OleadaActual < oleadas.Length; OleadaActual++)
         {
+            gestor?.FijarObjetivo($"SOBREVIVE A LA EMBOSCADA  {OleadaActual + 1}/{oleadas.Length}");
             foreach (var e in oleadas[OleadaActual].bandidos)
             {
                 if (e.retraso > 0f) yield return new WaitForSeconds(e.retraso);
@@ -64,6 +65,7 @@ public class Emboscada : MonoBehaviour
         }
 
         gestor?.LiberarJugador();
+        gestor?.VolverAlRecorrido();
         camara?.Desbloquear();
         gestor?.MostrarLetrero("", "¡ADELANTE!", "");
         Activa = false;
