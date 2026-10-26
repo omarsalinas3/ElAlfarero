@@ -4,7 +4,8 @@ using UnityEngine.InputSystem;
 /// <summary>
 /// Apuntado y disparo continuo (mantener clic izquierdo o Espacio, estilo Metal Slug).
 /// Gana el último control que se usó: si se mueve el mouse se apunta hacia él; si se camina con las flechas
-/// (PlayerController llama a UsarTeclado) se apunta al frente, hacia donde mira Mateo.
+/// (PlayerController llama a UsarTeclado) o se lanza con Espacio, se apunta al frente, hacia donde mira Mateo.
+/// Con teclado, mantener flecha arriba apunta hacia arriba (mientras se lanza, esa flecha no salta: ver PlayerController).
 /// Es el único script que lee la posición del mouse; PlayerController usa DireccionApuntado para voltear al personaje.
 /// El arma actual es un CeramicaData: el cambio de cerámica del Sprint 3 solo llama a EquiparCeramica().
 /// </summary>
@@ -14,12 +15,19 @@ public class PlayerShooter : MonoBehaviour
     [SerializeField] CeramicaData ceramicaActual;
     [SerializeField] Transform puntoDisparo;      // Hijo del jugador, colocado en la mano / boca del arma
 
+    [Header("Mouse contra teclado")]
+    [Tooltip("Píxeles que hay que mover el mouse (seguidos) para que vuelva a mandar sobre el teclado.")]
+    [SerializeField] float umbralMouse = 40f;
+    [Tooltip("Píxeles por segundo que se olvidan: el temblor de la mano no se acumula hasta pasar el umbral.")]
+    [SerializeField] float olvidoMouse = 120f;
+
     InputAction accionDisparar;
     Camera camara;
     PlayerController controlador;
     float proximoDisparo;
     Vector2 ultimaPosMouse;
     bool posMouseLeida;
+    float movimientoMouse;       // Movimiento reciente acumulado del mouse, en píxeles
 
     /// <summary>Dirección normalizada del disparo: hacia el mouse, o al frente si se está usando el teclado.</summary>
     public Vector2 DireccionApuntado { get; private set; } = Vector2.right;
@@ -28,7 +36,14 @@ public class PlayerShooter : MonoBehaviour
     public bool UsandoMouse { get; private set; }
 
     /// <summary>Lo llama PlayerController al caminar con las flechas o A/D: desde ahí se apunta al frente.</summary>
-    public void UsarTeclado() => UsandoMouse = false;
+    public void UsarTeclado()
+    {
+        UsandoMouse = false;
+        movimientoMouse = 0f;
+    }
+
+    /// <summary>Se está manteniendo Espacio: PlayerController no salta con la flecha arriba, que en ese momento apunta.</summary>
+    public bool LanzandoConTeclado => Keyboard.current != null && Keyboard.current.spaceKey.isPressed;
     public CeramicaData CeramicaActual => ceramicaActual;
 
     void Awake()
@@ -67,10 +82,13 @@ public class PlayerShooter : MonoBehaviour
     void ActualizarApuntado()
     {
         DetectarMouse();
+        if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame) UsarTeclado();
+
         if (!UsandoMouse || camara == null)
         {
-            // Con teclado se lanza al frente, hacia donde mira Mateo
-            DireccionApuntado = new Vector2(controlador != null ? controlador.DireccionMirada : 1, 0f);
+            // Con teclado se lanza al frente, hacia donde mira Mateo, o hacia arriba con la flecha (estilo Metal Slug)
+            bool arriba = Keyboard.current != null && Keyboard.current.upArrowKey.isPressed;
+            DireccionApuntado = arriba ? Vector2.up : new Vector2(controlador != null ? controlador.DireccionMirada : 1, 0f);
             return;
         }
 
@@ -90,8 +108,11 @@ public class PlayerShooter : MonoBehaviour
     {
         if (Mouse.current == null) { UsandoMouse = false; return; }
 
+        // Un roce del mouse no le quita el control al teclado: hay que moverlo de verdad (umbralMouse píxeles seguidos)
         Vector2 pos = Mouse.current.position.ReadValue();
-        if (posMouseLeida && (pos - ultimaPosMouse).sqrMagnitude > 9f) UsandoMouse = true;   // Se movió más de 3 px
+        movimientoMouse = Mathf.Max(0f, movimientoMouse - olvidoMouse * Time.unscaledDeltaTime);
+        if (posMouseLeida) movimientoMouse += (pos - ultimaPosMouse).magnitude;
+        if (movimientoMouse > umbralMouse) UsandoMouse = true;
         if (Mouse.current.leftButton.isPressed) UsandoMouse = true;
         ultimaPosMouse = pos;
         posMouseLeida = true;
