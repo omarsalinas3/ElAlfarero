@@ -24,6 +24,8 @@ public class GestorNivel : MonoBehaviour
     [SerializeField] PantallaFinal pantallaVictoria;
 
     [Header("Nivel")]
+    [Tooltip("Número del nivel para el guardado: al ganarlo se desbloquea el siguiente.")]
+    [SerializeField] int numeroNivel = 1;
     [SerializeField] string tituloMision = "MISION 1";
     [SerializeField] string nombreNivel = "DOLORES HIDALGO";
     [SerializeField] Musica musica = Musica.Nivel1;
@@ -188,8 +190,12 @@ public class GestorNivel : MonoBehaviour
         saludJugador.HacerInvulnerable(999f);
         GestorAudio.DetenerMusica(0.3f);
         GestorAudio.Reproducir(Sfx.JingleVictoria, 0f);
+
+        int monedas = inventario != null ? inventario.Monedas : 0;
+        ResultadoVictoria r = GestorGuardado.RegistrarVictoria(numeroNivel, Puntaje, TiempoJugado, monedas);
         if (pantallaVictoria != null)
-            pantallaVictoria.Mostrar("¡MISION CUMPLIDA!", nombreNivel + " está a salvo... por ahora.", Resumen());
+            pantallaVictoria.Mostrar("¡MISION CUMPLIDA!", nombreNivel + " está a salvo... por ahora.",
+                                     Resumen() + $"\nRECORD    {r.puntajeMaximo}\nMEJOR     {FormatoTiempo(r.mejorTiempo)}", r.NuevoRecord);
     }
 
     public void RegistrarEnemigoDerrotado() => EnemigosDerrotados++;
@@ -227,10 +233,11 @@ public class GestorNivel : MonoBehaviour
 
     string Resumen()
     {
-        int min = (int)(TiempoJugado / 60f), seg = (int)(TiempoJugado % 60f);
         int monedas = inventario != null ? inventario.Monedas : 0;
-        return $"PUNTOS    {Puntaje}\nENEMIGOS  {EnemigosDerrotados}\nMONEDAS   {monedas}\nTIEMPO    {min:00}:{seg:00}";
+        return $"PUNTOS    {Puntaje}\nENEMIGOS  {EnemigosDerrotados}\nMONEDAS   {monedas}\nTIEMPO    {FormatoTiempo(TiempoJugado)}";
     }
+
+    static string FormatoTiempo(float segundos) => $"{(int)(segundos / 60f):00}:{(int)(segundos % 60f):00}";
 
     void CambiarEstado(Estado nuevo)
     {

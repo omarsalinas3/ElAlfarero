@@ -11,6 +11,7 @@ public class PantallaFinal : MonoBehaviour
     [SerializeField] Text resumen;
     [SerializeField] Button botonReintentar;
     [SerializeField] Button botonMenu;
+    [SerializeField] GameObject avisoNuevoRecord;      // "¡NUEVO RECORD!" parpadeando (solo en la pantalla de victoria)
 
     void Awake()
     {
@@ -19,12 +20,13 @@ public class PantallaFinal : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    public void Mostrar(string textoTitulo, string textoSubtitulo, string textoResumen)
+    public void Mostrar(string textoTitulo, string textoSubtitulo, string textoResumen, bool nuevoRecord = false)
     {
         gameObject.SetActive(true);
         titulo.text = textoTitulo;
         subtitulo.text = textoSubtitulo;
         resumen.text = textoResumen;
+        if (avisoNuevoRecord != null) avisoNuevoRecord.SetActive(nuevoRecord);
         panel.Abrir();
         StartCoroutine(CaerTitulo());
     }
