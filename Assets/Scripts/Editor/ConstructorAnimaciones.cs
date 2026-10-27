@@ -13,6 +13,7 @@ using static ConfigurarSprint1;
 /// Alebrije: Reposo / Caminar por "Velocidad", "Muerto" como bool; Salto, Aterrizaje, Zarpazo y Rugido se
 /// reproducen desde la IA del jefe con Animator.Play (son poses de la pelea y de la entrada desde las torres).
 /// Minero esqueleto: Reposo / Caminar por "Velocidad", "Atacar" (golpe con el pico) como trigger, "Muerto" como bool.
+/// Bruja de Fuego: Volar siempre; "Lanzar" y "Golpe" como triggers, "Picada" y "Muerto" como bool.
 /// </summary>
 public static class ConstructorAnimaciones
 {
@@ -25,14 +26,50 @@ public static class ConstructorAnimaciones
         Directory.CreateDirectory(Carpeta + "Bandidos");
         Directory.CreateDirectory(Carpeta + "Alebrije");
         Directory.CreateDirectory(Carpeta + "Esqueleto");
+        Directory.CreateDirectory(Carpeta + "Bruja");
         AssetDatabase.Refresh();
 
         foreach (string arma in Armas) CrearBandido(arma);
         CrearAlebrije();
         CrearEsqueleto();
+        CrearBruja();
 
         AssetDatabase.SaveAssets();
-        Debug.Log("Animaciones de bandidos, alebrije y esqueleto construidas.");
+        Debug.Log("Animaciones de bandidos, alebrije, esqueleto y bruja construidas.");
+    }
+
+    static void CrearBruja()
+    {
+        const string pre = "Enemies/bruja";
+        AnimationClip volar = CrearClip("Bruja/Bruja_Volar", Cuadros(pre + "_volar", 4), 8f, true);
+        AnimationClip lanzar = CrearClip("Bruja/Bruja_Lanzar", Cuadros(pre + "_lanzar", 4), 8f, false);   // 0.5 s: la bola sale a la mitad
+        AnimationClip picada = CrearClip("Bruja/Bruja_Picada", Cuadros(pre + "_picada", 2), 10f, true);
+        Sprite golpeCuadro = Cuadros(pre + "_golpe", 1)[0];
+        AnimationClip golpe = CrearClip("Bruja/Bruja_Golpe", new[] { golpeCuadro, golpeCuadro }, 8f, false);   // 0.25 s
+        AnimationClip morir = CrearClip("Bruja/Bruja_Muerte", Cuadros(pre + "_muerte", 4), 6f, false);
+
+        AnimatorController ctrl = NuevoControlador("Bruja/Bruja.controller");
+        ctrl.AddParameter("Lanzar", AnimatorControllerParameterType.Trigger);
+        ctrl.AddParameter("Golpe", AnimatorControllerParameterType.Trigger);
+        ctrl.AddParameter("Picada", AnimatorControllerParameterType.Bool);
+        ctrl.AddParameter("Muerto", AnimatorControllerParameterType.Bool);
+
+        AnimatorStateMachine sm = ctrl.layers[0].stateMachine;
+        AnimatorState sVolar = sm.AddState("Volar"); sVolar.motion = volar;
+        AnimatorState sLanzar = sm.AddState("Lanzar"); sLanzar.motion = lanzar;
+        AnimatorState sPicada = sm.AddState("Picada"); sPicada.motion = picada;
+        AnimatorState sGolpe = sm.AddState("Golpe"); sGolpe.motion = golpe;
+        AnimatorState sMuerte = sm.AddState("Muerte"); sMuerte.motion = morir;
+        sm.defaultState = sVolar;
+
+        TransicionGlobal(sm, sLanzar).AddCondition(AnimatorConditionMode.If, 0, "Lanzar");
+        TransicionGlobal(sm, sGolpe).AddCondition(AnimatorConditionMode.If, 0, "Golpe");
+        Transicion(sVolar, sPicada).AddCondition(AnimatorConditionMode.If, 0, "Picada");
+        Transicion(sPicada, sVolar).AddCondition(AnimatorConditionMode.IfNot, 0, "Picada");
+        AlTerminar(sLanzar, sVolar);
+        AlTerminar(sGolpe, sVolar);
+        MuerteGana(sm, sMuerte);
+        EditorUtility.SetDirty(ctrl);
     }
 
     static void CrearEsqueleto()

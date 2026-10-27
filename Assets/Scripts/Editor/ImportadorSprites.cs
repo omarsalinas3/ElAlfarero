@@ -35,8 +35,8 @@ public class ImportadorSprites : AssetPostprocessor
 
         var ajustes = new TextureImporterSettings();
         importador.ReadTextureSettings(ajustes);
-        bool pivoteEnPies = carpeta == "Player" || carpeta == "Enemies" || carpeta == "Allies" || carpeta == "Bosses"
-                            || (carpeta == "Obstacles" && !nombre.StartsWith("maceta"));
+        bool pivoteEnPies = carpeta == "Player" || (carpeta == "Enemies" && !nombre.StartsWith("bruja_")) || carpeta == "Allies"
+                            || carpeta == "Bosses" || (carpeta == "Obstacles" && !nombre.StartsWith("maceta"));   // La bruja vuela: pivote al centro
         ajustes.spriteAlignment = (int)(pivoteEnPies ? SpriteAlignment.BottomCenter : SpriteAlignment.Center);
         ajustes.spriteMeshType = SpriteMeshType.FullRect;
         importador.SetTextureSettings(ajustes);
@@ -57,6 +57,8 @@ public class ImportadorSprites : AssetPostprocessor
         if (nombre.StartsWith("bandido_")) return 100f;
         if (nombre.StartsWith("alebrije_")) return 55f;
         if (nombre.StartsWith("esqueleto_")) return 46f;      // Minero animado: mide igual que el sprite fijo (prefab a escala 0.55)
+        if (nombre.StartsWith("bruja_bola")) return 160f;     // Bola de fuego: ~1.2 u de largo con todo y estela
+        if (nombre.StartsWith("bruja_")) return 110f;         // Bruja de Fuego: ~2.9 u de ancho, como un bandido acostado
 
         switch (carpeta)
         {

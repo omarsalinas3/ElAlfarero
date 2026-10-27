@@ -10,7 +10,8 @@ using static ConfigurarSprint1;
 ///
 /// Recorrido (5 tramos de Flow): hornos de Santa Brígida → calle del pueblo → bocamina con emboscada →
 /// cañada (reservada para la estampida de nahuales, #53) → capilla en ruinas (arena del Jinete sin Cabeza, #56).
-/// Más difícil que Dolores: más esqueletos y bandidos, emboscada de 3 oleadas y menos curación.
+/// Más difícil que Dolores: más esqueletos y bandidos, Brujas de Fuego que atacan desde el aire, emboscada de 3 oleadas
+/// y menos curación.
 /// Mientras no exista el Jinete, llegar a la puerta de la capilla completa el nivel (MetaNivel).
 /// </summary>
 public static partial class ConstructorJuego
@@ -44,6 +45,8 @@ public static partial class ConstructorJuego
         p.escopeta = Cargar<IABandido>("Assets/Prefabs/Enemies/Bandido_Escopeta.prefab");
         p.machete = Cargar<IABandido>("Assets/Prefabs/Enemies/Bandido_Machete.prefab");
 
+        IABruja bruja = CrearPrefabBruja();
+
         var obstaculos = new GameObject("Obstaculos").transform;
         var enemigos = new GameObject("Enemigos").transform;
         var recogibles = new GameObject("Recogibles").transform;
@@ -63,6 +66,7 @@ public static partial class ConstructorJuego
         PonerBandido(p.rifle, 17.5f, -1, enemigos);              // Se cubre detrás del huacal
         Poner(p.maceta, 19.5f, 0f, obstaculos);
         PonerBandido(p.machete, 21f, -1, enemigos);
+        Poner(bruja.gameObject, 18f, YSuelo + 3.5f, enemigos);   // La Bruja de Fuego ataca desde el aire sobre la calle
         Poner(p.hornoMonedas, 23f, YSuelo, obstaculos);
         PonerBandido(p.escopeta, 25f, -1, enemigos);
         Minero(prefabMinero, 27f, enemigos);
@@ -78,6 +82,7 @@ public static partial class ConstructorJuego
             new[] { (p.escopeta, true, 0f), (p.rifle, false, 0.7f), (p.revolver, true, 0.7f), (p.machete, false, 0.8f) },
         });
         Minero(prefabMinero, 40f, enemigos);
+        Poner(bruja.gameObject, 44f, YSuelo + 3.5f, enemigos);   // Otra bruja cuida la salida de la mina
         Poner(p.hornoCaguama, 42.5f, YSuelo, obstaculos);       // Caguama antes de la cañada
 
         // Tramo 4: la cañada queda plana y sin obstáculos para la estampida de nahuales (#53)
