@@ -20,6 +20,7 @@ public static class ConstructorJuego
     const string RutaNivel1 = "Assets/Scenes/Nivel1_Dolores.unity";
     const string RutaMenu = "Assets/Scenes/MenuPrincipal.unity";
     const string RutaIntro = "Assets/Scenes/Intro.unity";
+    const string RutaSplash = "Assets/Scenes/Splash.unity";
     const string RutaFuente = "Assets/Art/Fonts/PressStart2P-Regular.ttf";
     const string CarpetaObstaculos = "Assets/Prefabs/Obstacles/";
     const string CarpetaRecogibles = "Assets/Prefabs/Pickups/";
@@ -68,9 +69,11 @@ public static class ConstructorJuego
         CrearEscenaNivel1(p);
         CrearEscenaMenu();
         CrearEscenaIntro();
+        CrearEscenaSplash();
 
         EditorBuildSettings.scenes = new[]
         {
+            new EditorBuildSettingsScene(RutaSplash, true),   // Primera: es la que abre el juego
             new EditorBuildSettingsScene(RutaMenu, true),
             new EditorBuildSettingsScene(RutaIntro, true),
             new EditorBuildSettingsScene(RutaNivel1, true),
@@ -80,7 +83,37 @@ public static class ConstructorJuego
 
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
-        Debug.Log("Juego construido: menú, intro y Nivel 1.");
+        Debug.Log("Juego construido: splash, menú, intro y Nivel 1.");
+    }
+
+    // ================================================================== Splash
+    /// <summary>Logo del equipo y título del juego con fundidos; luego el menú (ver Splash).</summary>
+    static void CrearEscenaSplash()
+    {
+        Scene escena = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+        CrearCamara();
+        CrearEventSystem();
+        Canvas canvas = CrearCanvas("Splash", 0);
+        Transform c = canvas.transform;
+
+        var logo = Estirar(c, "Logo");
+        var grupoLogo = logo.gameObject.AddComponent<CanvasGroup>();
+        Imagen(logo, "Emblema", Spr("UI/logo_equipo.png"), new Vector2(0f, 90f), new Vector2(420f, 420f));
+        Texto(logo, "Equipo", "OMAR & NOE", 56, Crema, TextAnchor.MiddleCenter, new Vector2(0f, -200f), new Vector2(1400f, 80f), null, CafeOscuro);
+        Texto(logo, "Presentan", "PRESENTAN", 24, Dorado, TextAnchor.MiddleCenter, new Vector2(0f, -275f), new Vector2(1400f, 40f));
+
+        var titulo = Estirar(c, "Titulo");
+        var grupoTitulo = titulo.gameObject.AddComponent<CanvasGroup>();
+        Texto(titulo, "Linea1", "EL ALFARERO", 104, Crema, TextAnchor.MiddleCenter, new Vector2(0f, 70f), new Vector2(1800f, 140f), null, CafeOscuro);
+        Texto(titulo, "Linea2", "DE DOLORES", 72, AzulTalavera, TextAnchor.MiddleCenter, new Vector2(0f, -55f), new Vector2(1800f, 100f), null, Color.white);
+        Imagen(titulo, "JarraIzq", Spr("Projectiles/talavera_piece_00.png"), new Vector2(-700f, 30f), new Vector2(120f, 120f));
+        Imagen(titulo, "JarraDer", Spr("Projectiles/talavera_piece_09.png"), new Vector2(700f, 30f), new Vector2(120f, 120f));
+
+        var splash = canvas.gameObject.AddComponent<Splash>();
+        Asignar(splash, "grupoLogo", grupoLogo);
+        Asignar(splash, "grupoTitulo", grupoTitulo);
+
+        EditorSceneManager.SaveScene(escena, RutaSplash);
     }
 
     // ================================================================== Recursos
