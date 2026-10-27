@@ -1,8 +1,9 @@
 using UnityEngine;
 
 /// <summary>
-/// Efecto de un solo uso (impacto, explosión, restos): reproduce una lista de sprites a cierto fps y se destruye.
+/// Efecto de un solo uso (impacto, explosión, restos): reproduce una lista de sprites a cierto fps y se va.
 /// Con "mantener último" se queda el último cuadro unos segundos y se desvanece (ej. tablas del huacal en el suelo).
+/// Sale de Reciclaje: al terminar vuelve ahí y al reutilizarse empieza de nuevo (OnEnable).
 /// </summary>
 [RequireComponent(typeof(SpriteRenderer))]
 public class SpriteAnimadoTemporal : MonoBehaviour
@@ -15,9 +16,12 @@ public class SpriteAnimadoTemporal : MonoBehaviour
     SpriteRenderer sr;
     float tiempo;
 
-    void Awake()
+    void Awake() { sr = GetComponent<SpriteRenderer>(); }
+
+    void OnEnable()
     {
-        sr = GetComponent<SpriteRenderer>();
+        tiempo = 0f;
+        sr.color = Color.white;
         if (cuadros != null && cuadros.Length > 0) sr.sprite = cuadros[0];
     }
 
@@ -34,12 +38,12 @@ public class SpriteAnimadoTemporal : MonoBehaviour
         }
         if (!mantenerUltimo || total == 0)
         {
-            Destroy(gameObject);
+            Reciclaje.Guardar(gameObject);
             return;
         }
 
         float extra = tiempo - total / cuadrosPorSegundo;
-        if (extra >= segundosUltimo) { Destroy(gameObject); return; }
+        if (extra >= segundosUltimo) { Reciclaje.Guardar(gameObject); return; }
         float alfa = Mathf.Clamp01((segundosUltimo - extra) / 0.6f);   // Se desvanece el último medio segundo
         sr.color = new Color(1f, 1f, 1f, alfa);
     }

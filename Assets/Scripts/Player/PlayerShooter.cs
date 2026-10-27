@@ -109,7 +109,7 @@ public class PlayerShooter : MonoBehaviour
 
             float angulo = Mathf.Atan2(direccion.y, direccion.x) * Mathf.Rad2Deg;
 
-            Projectile proyectil = Instantiate(
+            Projectile proyectil = Reciclaje.Sacar(
                 ceramicaActual.prefabProyectil,
                 puntoDisparo.position,
                 Quaternion.Euler(0f, 0f, angulo));

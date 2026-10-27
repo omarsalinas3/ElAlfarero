@@ -27,7 +27,7 @@ public class EnemigoBasico : MonoBehaviour
         GestorAudio.Reproducir(sonidoMuerte);
         if (efectoMuerte != null)
         {
-            var fx = Instantiate(efectoMuerte, transform.position + Vector3.up * 1f, Quaternion.identity);
+            var fx = Reciclaje.Sacar(efectoMuerte, transform.position + Vector3.up * 1f, Quaternion.identity);
             fx.transform.localScale = Vector3.one * 1.6f;
         }
         var gestor = GestorNivel.Actual;

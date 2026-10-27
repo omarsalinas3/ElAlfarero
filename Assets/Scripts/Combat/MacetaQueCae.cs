@@ -54,7 +54,7 @@ public class MacetaQueCae : MonoBehaviour
         }
 
         GestorAudio.Reproducir(Sfx.ImpactoCeramica);
-        if (prefabRota != null) Instantiate(prefabRota, maceta.position, Quaternion.identity);
+        if (prefabRota != null) Reciclaje.Sacar(prefabRota, maceta.position, Quaternion.identity);
         Destroy(gameObject);
     }
 }

@@ -6,6 +6,7 @@ public enum TipoRecogible { Guacamaya, Caguama, Moneda }
 /// Objeto que el jugador recoge al tocarlo: La Guacamaya (cura), La Caguama (se guarda para beberla) y monedas.
 /// Si Mateo ya trae la vida llena o el máximo de caguamas, la guacamaya o la caguama se cambian por monedas.
 /// Flota arriba y abajo y puede animarse con una lista de cuadros.
+/// El botín de huacales y hornos sale de Reciclaje y vuelve ahí al recogerse; los puestos en la escena se destruyen.
 /// </summary>
 [RequireComponent(typeof(Collider2D))]
 public class Recogible : MonoBehaviour
@@ -77,7 +78,7 @@ public class Recogible : MonoBehaviour
             TipoRecogible.Caguama => Sfx.RecogerCaguama,
             _ => Sfx.Moneda,
         });
-        if (efectoRecoger != null) Instantiate(efectoRecoger, sprite.transform.position, Quaternion.identity);
-        Destroy(gameObject);
+        if (efectoRecoger != null) Reciclaje.Sacar(efectoRecoger, sprite.transform.position, Quaternion.identity);
+        Reciclaje.Guardar(gameObject);
     }
 }
