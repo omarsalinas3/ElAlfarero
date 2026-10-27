@@ -15,7 +15,7 @@ using static ConfigurarSprint1;
 /// game over, victoria), el menú principal y la intro. Se puede repetir: sobrescribe lo generado.
 /// En consola: Unity -batchmode -quit -executeMethod ConstructorJuego.Construir
 /// </summary>
-public static class ConstructorJuego
+public static partial class ConstructorJuego
 {
     const string RutaNivel1 = "Assets/Scenes/Nivel1_Dolores.unity";
     const string RutaMenu = "Assets/Scenes/MenuPrincipal.unity";
@@ -67,6 +67,7 @@ public static class ConstructorJuego
         Prefabs p = CrearPrefabs();
 
         CrearEscenaNivel1(p);
+        CrearEscenaNivel2(p);
         CrearEscenaMenu();
         CrearEscenaIntro();
         CrearEscenaSplash();
@@ -77,13 +78,14 @@ public static class ConstructorJuego
             new EditorBuildSettingsScene(RutaMenu, true),
             new EditorBuildSettingsScene(RutaIntro, true),
             new EditorBuildSettingsScene(RutaNivel1, true),
+            new EditorBuildSettingsScene(RutaNivel2, true),
             new EditorBuildSettingsScene(RutaEscena, true),   // Sandbox de pruebas
         };
         PlayerSettings.productName = "El Alfarero de Dolores";
 
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
-        Debug.Log("Juego construido: splash, menú, intro y Nivel 1.");
+        Debug.Log("Juego construido: splash, menú, intro, Nivel 1 y Nivel 2.");
     }
 
     // ================================================================== Splash
@@ -180,7 +182,7 @@ public static class ConstructorJuego
         }).ToArray();
 
         // Música: se toma lo que haya en Assets/Audio/Music (menu, intro, nivel1 en .ogg/.mp3/.wav)
-        (Musica id, string nombre, float vol)[] pistas = { (Musica.Menu, "menu", 0.55f), (Musica.Intro, "intro", 0.55f), (Musica.Nivel1, "nivel1", 0.5f) };
+        (Musica id, string nombre, float vol)[] pistas = { (Musica.Menu, "menu", 0.55f), (Musica.Intro, "intro", 0.55f), (Musica.Nivel1, "nivel1", 0.5f), (Musica.Nivel2, "nivel2", 0.5f) };
         b.musicas = pistas.Select(m => new BibliotecaAudio.EntradaMusica { id = m.id, volumen = m.vol, clip = BuscarMusica(m.nombre) })
                           .Where(m => m.clip != null).ToArray();
 
@@ -591,6 +593,16 @@ public static class ConstructorJuego
 
     static Emboscada CrearEmboscada(Prefabs p, float x)
     {
+        // Oleada 1: machetes por la derecha y un pistolero por la izquierda. Oleada 2: entran los de rifle y escopeta
+        return CrearEmboscada(x, new[]
+        {
+            new[] { (p.machete, true, 0f), (p.revolver, false, 0.8f), (p.machete, true, 1.2f) },
+            new[] { (p.escopeta, true, 0f), (p.rifle, false, 1f), (p.revolver, true, 1f), (p.machete, false, 0.8f) },
+        });
+    }
+
+    static Emboscada CrearEmboscada(float x, (IABandido prefab, bool derecha, float retraso)[][] oleadas)
+    {
         var go = new GameObject("Emboscada");
         go.transform.position = new Vector3(x, YSuelo + 2f, 0f);
         var col = go.AddComponent<BoxCollider2D>();
@@ -598,12 +610,6 @@ public static class ConstructorJuego
         col.size = new Vector2(1f, 8f);
         var e = go.AddComponent<Emboscada>();
 
-        // Oleada 1: machetes por la derecha y un pistolero por la izquierda. Oleada 2: entran los de rifle y escopeta
-        (IABandido prefab, bool derecha, float retraso)[][] oleadas =
-        {
-            new[] { (p.machete, true, 0f), (p.revolver, false, 0.8f), (p.machete, true, 1.2f) },
-            new[] { (p.escopeta, true, 0f), (p.rifle, false, 1f), (p.revolver, true, 1f), (p.machete, false, 0.8f) },
-        };
         var so = new SerializedObject(e);
         var lista = so.FindProperty("oleadas");
         lista.arraySize = oleadas.Length;
