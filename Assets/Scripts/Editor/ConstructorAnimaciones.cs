@@ -12,6 +12,7 @@ using static ConfigurarSprint1;
 /// Bandidos: Apuntar (reposo) / Correr por "Velocidad", "Atacar" y "Golpe" como triggers, "Muerto" como bool.
 /// Alebrije: Reposo / Caminar por "Velocidad", "Muerto" como bool; Salto, Aterrizaje, Zarpazo y Rugido se
 /// reproducen desde la IA del jefe con Animator.Play (son poses de la pelea y de la entrada desde las torres).
+/// Minero esqueleto: Reposo / Caminar por "Velocidad", "Atacar" (golpe con el pico) como trigger, "Muerto" como bool.
 /// </summary>
 public static class ConstructorAnimaciones
 {
@@ -23,13 +24,46 @@ public static class ConstructorAnimaciones
     {
         Directory.CreateDirectory(Carpeta + "Bandidos");
         Directory.CreateDirectory(Carpeta + "Alebrije");
+        Directory.CreateDirectory(Carpeta + "Esqueleto");
         AssetDatabase.Refresh();
 
         foreach (string arma in Armas) CrearBandido(arma);
         CrearAlebrije();
+        CrearEsqueleto();
 
         AssetDatabase.SaveAssets();
-        Debug.Log("Animaciones de bandidos y alebrije construidas.");
+        Debug.Log("Animaciones de bandidos, alebrije y esqueleto construidas.");
+    }
+
+    static void CrearEsqueleto()
+    {
+        const string pre = "Enemies/esqueleto";
+        Sprite[] caminar = Cuadros(pre + "_caminar", 4);
+
+        AnimationClip reposo = CrearClip("Esqueleto/Esqueleto_Reposo", new[] { caminar[0] }, 1f, true);
+        AnimationClip andar = CrearClip("Esqueleto/Esqueleto_Caminar", caminar, 7f, true);
+        // 4 cuadros en ~0.55 s: levanta el pico mientras se prepara (aviso) y lo baja durante la embestida
+        AnimationClip golpe = CrearClip("Esqueleto/Esqueleto_Golpe", Cuadros(pre + "_golpe", 4), 7.5f, false);
+        AnimationClip morir = CrearClip("Esqueleto/Esqueleto_Muerte", Cuadros(pre + "_muerte", 4), 7f, false);
+
+        AnimatorController ctrl = NuevoControlador("Esqueleto/Esqueleto.controller");
+        ctrl.AddParameter("Velocidad", AnimatorControllerParameterType.Float);
+        ctrl.AddParameter("Atacar", AnimatorControllerParameterType.Trigger);
+        ctrl.AddParameter("Muerto", AnimatorControllerParameterType.Bool);
+
+        AnimatorStateMachine sm = ctrl.layers[0].stateMachine;
+        AnimatorState sReposo = sm.AddState("Reposo"); sReposo.motion = reposo;
+        AnimatorState sCaminar = sm.AddState("Caminar"); sCaminar.motion = andar;
+        AnimatorState sGolpe = sm.AddState("Golpe"); sGolpe.motion = golpe;
+        AnimatorState sMuerte = sm.AddState("Muerte"); sMuerte.motion = morir;
+        sm.defaultState = sReposo;
+
+        Transicion(sReposo, sCaminar).AddCondition(AnimatorConditionMode.Greater, 0.1f, "Velocidad");
+        Transicion(sCaminar, sReposo).AddCondition(AnimatorConditionMode.Less, 0.1f, "Velocidad");
+        TransicionGlobal(sm, sGolpe).AddCondition(AnimatorConditionMode.If, 0, "Atacar");
+        AlTerminar(sGolpe, sReposo);
+        MuerteGana(sm, sMuerte);
+        EditorUtility.SetDirty(ctrl);
     }
 
     static void CrearBandido(string arma)
