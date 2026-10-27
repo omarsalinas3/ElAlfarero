@@ -9,6 +9,12 @@ public static class Escenas
     public const string Menu = "MenuPrincipal";
     public const string Intro = "Intro";
     public const string Nivel1 = "Nivel1_Dolores";
+
+    // En orden: el número de nivel del guardado es su posición + 1
+    static readonly string[] Niveles = { Nivel1 };
+
+    /// <summary>Escena del nivel n (1 = Dolores). Si ese nivel aún no existe, el último que sí.</summary>
+    public static string Nivel(int n) => Niveles[Mathf.Clamp(n, 1, Niveles.Length) - 1];
 }
 
 /// <summary>

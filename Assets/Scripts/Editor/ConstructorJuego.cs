@@ -848,24 +848,28 @@ public static class ConstructorJuego
         return mp;
     }
 
-    /// <summary>Volumen de música y efectos. Desde el menú principal (conBorrarPartida) también deja borrar la partida guardada.</summary>
-    static Panel CrearPanelOpciones(Transform padre, out Button volver, bool conBorrarPartida = false)
+    /// <summary>
+    /// Volumen de música y efectos. Desde el menú principal (delMenu) también tiene CONTROLES y BORRAR PARTIDA;
+    /// el botón de controles se llama "Controles" para que el menú lo conecte.
+    /// </summary>
+    static Panel CrearPanelOpciones(Transform padre, out Button volver, bool delMenu = false)
     {
-        // Con el botón de borrar, el panel crece hacia abajo y lo demás se recorre hacia arriba
-        float sube = conBorrarPartida ? 45f : 0f;
-        Panel panel = CrearPanel(padre, "PanelOpciones", Vector2.zero, new Vector2(800f, conBorrarPartida ? 620f : 560f));
-        Texto(panel.transform, "Titulo", "OPCIONES", 48, Dorado, TextAnchor.MiddleCenter, new Vector2(0f, 200f + sube), new Vector2(700f, 70f));
-        Text tMusica = Texto(panel.transform, "TextoMusica", "MUSICA", 26, Crema, TextAnchor.MiddleCenter, new Vector2(0f, 100f + sube), new Vector2(700f, 50f));
-        Slider sMusica = CrearSlider(panel.transform, "SliderMusica", new Vector2(0f, 45f + sube));
-        Text tEfectos = Texto(panel.transform, "TextoEfectos", "EFECTOS", 26, Crema, TextAnchor.MiddleCenter, new Vector2(0f, -40f + sube), new Vector2(700f, 50f));
-        Slider sEfectos = CrearSlider(panel.transform, "SliderEfectos", new Vector2(0f, -95f + sube));
-        if (conBorrarPartida)
+        // Del menú el panel es más alto y los renglones van más juntos para que quepan los dos botones extra
+        Panel panel = CrearPanel(padre, "PanelOpciones", Vector2.zero, new Vector2(800f, delMenu ? 640f : 560f));
+        float[] y = delMenu ? new[] { 260f, 185f, 140f, 85f, 40f } : new[] { 200f, 100f, 45f, -40f, -95f };
+        Texto(panel.transform, "Titulo", "OPCIONES", 48, Dorado, TextAnchor.MiddleCenter, new Vector2(0f, y[0]), new Vector2(700f, 70f));
+        Text tMusica = Texto(panel.transform, "TextoMusica", "MUSICA", 26, Crema, TextAnchor.MiddleCenter, new Vector2(0f, y[1]), new Vector2(700f, 50f));
+        Slider sMusica = CrearSlider(panel.transform, "SliderMusica", new Vector2(0f, y[2]));
+        Text tEfectos = Texto(panel.transform, "TextoEfectos", "EFECTOS", 26, Crema, TextAnchor.MiddleCenter, new Vector2(0f, y[3]), new Vector2(700f, 50f));
+        Slider sEfectos = CrearSlider(panel.transform, "SliderEfectos", new Vector2(0f, y[4]));
+        if (delMenu)
         {
-            Button borrar = Boton(panel.transform, "BorrarPartida", "BORRAR PARTIDA", new Vector2(0f, -150f), new Vector2(620f, 76f));
+            Boton(panel.transform, "Controles", "CONTROLES", new Vector2(0f, -50f), new Vector2(620f, 76f));
+            Button borrar = Boton(panel.transform, "BorrarPartida", "BORRAR PARTIDA", new Vector2(0f, -140f), new Vector2(620f, 76f));
             var bp = borrar.gameObject.AddComponent<BotonBorrarPartida>();
             Asignar(bp, "texto", borrar.GetComponentInChildren<Text>());
         }
-        volver = Boton(panel.transform, "Volver", "VOLVER", new Vector2(0f, conBorrarPartida ? -245f : -195f), new Vector2(400f, 76f));
+        volver = Boton(panel.transform, "Volver", "VOLVER", new Vector2(0f, delMenu ? -235f : -195f), new Vector2(400f, 76f));
         Asignar(panel, "primerSeleccionado", sMusica.gameObject);
 
         var op = panel.gameObject.AddComponent<OpcionesAudio>();
@@ -946,15 +950,39 @@ public static class ConstructorJuego
         Texto(c, "Creditos", "OMAR SALINAS  ·  NOE CHAVERO  ·  2026", 16, new Color(1f, 1f, 1f, 0.6f), TextAnchor.MiddleCenter,
               new Vector2(0f, 30f), new Vector2(1400f, 40f), new Vector2(0.5f, 0f));
 
-        // Menú
-        Panel panelMenu = CrearPanel(c, "PanelMenu", new Vector2(0f, -150f), new Vector2(560f, 440f));
-        Button jugar = Boton(panelMenu.transform, "Jugar", "JUGAR", new Vector2(0f, 140f), new Vector2(440f, 78f));
-        Button controles = Boton(panelMenu.transform, "Controles", "CONTROLES", new Vector2(0f, 48f), new Vector2(440f, 78f));
-        Button opciones = Boton(panelMenu.transform, "Opciones", "OPCIONES", new Vector2(0f, -44f), new Vector2(440f, 78f));
-        Button salir = Boton(panelMenu.transform, "Salir", "SALIR", new Vector2(0f, -136f), new Vector2(440f, 78f));
+        // Menú (orden que pide el curso; Controles va dentro de Opciones)
+        Panel panelMenu = CrearPanel(c, "PanelMenu", new Vector2(0f, -170f), new Vector2(560f, 560f));
+        Button jugar = Boton(panelMenu.transform, "Jugar", "JUGAR", new Vector2(0f, 200f), new Vector2(440f, 78f));
+        Button continuar = Boton(panelMenu.transform, "Continuar", "CONTINUAR", new Vector2(0f, 108f), new Vector2(440f, 78f));
+        Button opciones = Boton(panelMenu.transform, "Opciones", "OPCIONES", new Vector2(0f, 16f), new Vector2(440f, 78f));
+        Button creditos = Boton(panelMenu.transform, "Creditos", "CREDITOS", new Vector2(0f, -76f), new Vector2(440f, 78f));
+        Button salir = Boton(panelMenu.transform, "Salir", "SALIR", new Vector2(0f, -168f), new Vector2(440f, 78f));
         Asignar(panelMenu, "primerSeleccionado", jugar.gameObject);
 
-        // Controles
+        // Créditos (los completos, con licencias de música y arte, son la #24)
+        Panel panelCreditos = CrearPanel(c, "PanelCreditos", new Vector2(0f, -170f), new Vector2(1180f, 600f));
+        Texto(panelCreditos.transform, "Titulo", "CREDITOS", 44, Dorado, TextAnchor.MiddleCenter, new Vector2(0f, 235f), new Vector2(1000f, 70f));
+        Texto(panelCreditos.transform, "Lista",
+              "PROGRAMACION, ARTE Y MUSICA\n" +
+              "OMAR SALINAS  ·  NOE CHAVERO\n\n" +
+              "CREACION DE VIDEOJUEGOS  ·  UTNG  ·  GIDS6102\n" +
+              "PROFESOR GABRIEL BARRON\n\n" +
+              "ARTE Y MUSICA HECHOS CON GOOGLE FLOW\n" +
+              "FUENTE PRESS START 2P (CODEMAN38, OFL)\n" +
+              "HECHO CON UNITY 6",
+              22, Crema, TextAnchor.MiddleCenter, new Vector2(0f, 10f), new Vector2(1100f, 360f));
+        Button volverCreditos = Boton(panelCreditos.transform, "Volver", "VOLVER", new Vector2(0f, -225f), new Vector2(400f, 76f));
+        Asignar(panelCreditos, "primerSeleccionado", volverCreditos.gameObject);
+
+        // Confirmación al jugar con partida guardada (empezar de nuevo la borra)
+        Panel panelConfirmar = CrearPanel(c, "PanelConfirmar", new Vector2(0f, -170f), new Vector2(900f, 400f));
+        Texto(panelConfirmar.transform, "Titulo", "¿EMPEZAR DE NUEVO?", 40, Dorado, TextAnchor.MiddleCenter, new Vector2(0f, 120f), new Vector2(820f, 70f));
+        Texto(panelConfirmar.transform, "Aviso", "SE BORRARA TU PARTIDA GUARDADA", 22, Crema, TextAnchor.MiddleCenter, new Vector2(0f, 40f), new Vector2(820f, 50f));
+        Button si = Boton(panelConfirmar.transform, "Si", "SI, EMPEZAR", new Vector2(-200f, -90f), new Vector2(360f, 78f));
+        Button no = Boton(panelConfirmar.transform, "No", "NO", new Vector2(200f, -90f), new Vector2(360f, 78f));
+        Asignar(panelConfirmar, "primerSeleccionado", no.gameObject);   // Por si se presiona sin querer
+
+        // Controles (se abre desde Opciones)
         Panel panelControles = CrearPanel(c, "PanelControles", new Vector2(0f, -140f), new Vector2(1180f, 600f));
         Texto(panelControles.transform, "Titulo", "CONTROLES", 44, Dorado, TextAnchor.MiddleCenter, new Vector2(0f, 235f), new Vector2(1000f, 70f));
         Texto(panelControles.transform, "Lista",
@@ -962,6 +990,7 @@ public static class ConstructorJuego
               "SALTAR ........... FLECHA ARRIBA o W\n" +
               "EVADIR ........... SHIFT\n" +
               "APUNTAR .......... MOUSE o FLECHAS\n" +
+              "APUNTAR ARRIBA ... ESPACIO + ARRIBA\n" +
               "LANZAR CERAMICA .. ESPACIO o CLIC\n" +
               "BEBER CAGUAMA .... E o Q\n" +
               "PAUSA ............ ESC o P",
@@ -979,13 +1008,20 @@ public static class ConstructorJuego
         so.FindProperty("panelMenu").objectReferenceValue = panelMenu;
         so.FindProperty("panelControles").objectReferenceValue = panelControles;
         so.FindProperty("panelOpciones").objectReferenceValue = panelOpciones;
+        so.FindProperty("panelCreditos").objectReferenceValue = panelCreditos;
+        so.FindProperty("panelConfirmar").objectReferenceValue = panelConfirmar;
         so.FindProperty("fondo").objectReferenceValue = fondo.rectTransform;
         so.FindProperty("botonJugar").objectReferenceValue = jugar;
-        so.FindProperty("botonControles").objectReferenceValue = controles;
+        so.FindProperty("botonContinuar").objectReferenceValue = continuar;
         so.FindProperty("botonOpciones").objectReferenceValue = opciones;
+        so.FindProperty("botonCreditos").objectReferenceValue = creditos;
         so.FindProperty("botonSalir").objectReferenceValue = salir;
+        so.FindProperty("botonControles").objectReferenceValue = panelOpciones.transform.Find("Controles").GetComponent<Button>();
         so.FindProperty("botonVolverControles").objectReferenceValue = volverControles;
         so.FindProperty("botonVolverOpciones").objectReferenceValue = volverOpciones;
+        so.FindProperty("botonVolverCreditos").objectReferenceValue = volverCreditos;
+        so.FindProperty("botonConfirmarSi").objectReferenceValue = si;
+        so.FindProperty("botonConfirmarNo").objectReferenceValue = no;
         so.ApplyModifiedPropertiesWithoutUndo();
 
         EditorSceneManager.SaveScene(escena, RutaMenu);
