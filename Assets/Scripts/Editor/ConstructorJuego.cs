@@ -658,7 +658,7 @@ public static class ConstructorJuego
         soE.ApplyModifiedPropertiesWithoutUndo();
         MenuPausa pausa = CrearMenuPausa();
         PantallaFinal gameOver = CrearPantallaFinal("GameOver", new Color(0.95f, 0.2f, 0.15f), new Color(0.12f, 0f, 0f, 0.8f), "REINTENTAR", 40);
-        PantallaFinal victoria = CrearPantallaFinal("Victoria", Dorado, new Color(0f, 0.04f, 0.14f, 0.8f), "JUGAR DE NUEVO", 41);
+        PantallaFinal victoria = CrearPantallaFinal("Victoria", Dorado, new Color(0f, 0.04f, 0.14f, 0.8f), "JUGAR DE NUEVO", 41, true);
 
         var gestor = new GameObject("GestorNivel").AddComponent<GestorNivel>();
         var so = new SerializedObject(gestor);
@@ -841,15 +841,24 @@ public static class ConstructorJuego
         return mp;
     }
 
-    static Panel CrearPanelOpciones(Transform padre, out Button volver)
+    /// <summary>Volumen de música y efectos. Desde el menú principal (conBorrarPartida) también deja borrar la partida guardada.</summary>
+    static Panel CrearPanelOpciones(Transform padre, out Button volver, bool conBorrarPartida = false)
     {
-        Panel panel = CrearPanel(padre, "PanelOpciones", Vector2.zero, new Vector2(800f, 560f));
-        Texto(panel.transform, "Titulo", "OPCIONES", 48, Dorado, TextAnchor.MiddleCenter, new Vector2(0f, 200f), new Vector2(700f, 70f));
-        Text tMusica = Texto(panel.transform, "TextoMusica", "MUSICA", 26, Crema, TextAnchor.MiddleCenter, new Vector2(0f, 100f), new Vector2(700f, 50f));
-        Slider sMusica = CrearSlider(panel.transform, "SliderMusica", new Vector2(0f, 45f));
-        Text tEfectos = Texto(panel.transform, "TextoEfectos", "EFECTOS", 26, Crema, TextAnchor.MiddleCenter, new Vector2(0f, -40f), new Vector2(700f, 50f));
-        Slider sEfectos = CrearSlider(panel.transform, "SliderEfectos", new Vector2(0f, -95f));
-        volver = Boton(panel.transform, "Volver", "VOLVER", new Vector2(0f, -195f), new Vector2(400f, 76f));
+        // Con el botón de borrar, el panel crece hacia abajo y lo demás se recorre hacia arriba
+        float sube = conBorrarPartida ? 45f : 0f;
+        Panel panel = CrearPanel(padre, "PanelOpciones", Vector2.zero, new Vector2(800f, conBorrarPartida ? 620f : 560f));
+        Texto(panel.transform, "Titulo", "OPCIONES", 48, Dorado, TextAnchor.MiddleCenter, new Vector2(0f, 200f + sube), new Vector2(700f, 70f));
+        Text tMusica = Texto(panel.transform, "TextoMusica", "MUSICA", 26, Crema, TextAnchor.MiddleCenter, new Vector2(0f, 100f + sube), new Vector2(700f, 50f));
+        Slider sMusica = CrearSlider(panel.transform, "SliderMusica", new Vector2(0f, 45f + sube));
+        Text tEfectos = Texto(panel.transform, "TextoEfectos", "EFECTOS", 26, Crema, TextAnchor.MiddleCenter, new Vector2(0f, -40f + sube), new Vector2(700f, 50f));
+        Slider sEfectos = CrearSlider(panel.transform, "SliderEfectos", new Vector2(0f, -95f + sube));
+        if (conBorrarPartida)
+        {
+            Button borrar = Boton(panel.transform, "BorrarPartida", "BORRAR PARTIDA", new Vector2(0f, -150f), new Vector2(620f, 76f));
+            var bp = borrar.gameObject.AddComponent<BotonBorrarPartida>();
+            Asignar(bp, "texto", borrar.GetComponentInChildren<Text>());
+        }
+        volver = Boton(panel.transform, "Volver", "VOLVER", new Vector2(0f, conBorrarPartida ? -245f : -195f), new Vector2(400f, 76f));
         Asignar(panel, "primerSeleccionado", sMusica.gameObject);
 
         var op = panel.gameObject.AddComponent<OpcionesAudio>();
@@ -863,7 +872,7 @@ public static class ConstructorJuego
     }
 
     // ------------------------------------------------------------------ Game over / Victoria
-    static PantallaFinal CrearPantallaFinal(string nombre, Color colorTitulo, Color tinte, string textoReintentar, int orden)
+    static PantallaFinal CrearPantallaFinal(string nombre, Color colorTitulo, Color tinte, string textoReintentar, int orden, bool conRecord = false)
     {
         Canvas canvas = CrearCanvas(nombre, orden);
         var raiz = Estirar(canvas.transform, "Raiz");
@@ -875,10 +884,20 @@ public static class ConstructorJuego
         titulo.resizeTextMinSize = 36;
         titulo.resizeTextMaxSize = 80;
         Text sub = Texto(panel.transform, "Subtitulo", "", 22, Crema, TextAnchor.MiddleCenter, new Vector2(0f, 115f), new Vector2(880f, 70f));
-        Text resumen = Texto(panel.transform, "Resumen", "", 26, Crema, TextAnchor.MiddleLeft, new Vector2(0f, -20f), new Vector2(520f, 170f));
+        // Alto para 6 renglones: en la victoria se agregan RECORD y MEJOR (tiempo)
+        Text resumen = Texto(panel.transform, "Resumen", "", 26, Crema, TextAnchor.MiddleLeft, new Vector2(-40f, -38f), new Vector2(520f, 230f));
         Button reintentar = Boton(panel.transform, "Reintentar", textoReintentar, new Vector2(-235f, -235f), new Vector2(430f, 84f));
         Button menu = Boton(panel.transform, "Menu", "MENU PRINCIPAL", new Vector2(235f, -235f), new Vector2(430f, 84f));
         Asignar(panel, "primerSeleccionado", reintentar.gameObject);
+
+        GameObject avisoRecord = null;
+        if (conRecord)
+        {
+            Text aviso = Texto(panel.transform, "NuevoRecord", "¡NUEVO\nRECORD!", 30, Dorado, TextAnchor.MiddleCenter, new Vector2(340f, -10f), new Vector2(260f, 110f));
+            aviso.gameObject.AddComponent<TextoParpadeante>();
+            aviso.gameObject.SetActive(false);
+            avisoRecord = aviso.gameObject;
+        }
 
         var pf = raiz.gameObject.AddComponent<PantallaFinal>();
         var so = new SerializedObject(pf);
@@ -888,6 +907,7 @@ public static class ConstructorJuego
         so.FindProperty("resumen").objectReferenceValue = resumen;
         so.FindProperty("botonReintentar").objectReferenceValue = reintentar;
         so.FindProperty("botonMenu").objectReferenceValue = menu;
+        so.FindProperty("avisoNuevoRecord").objectReferenceValue = avisoRecord;
         so.ApplyModifiedPropertiesWithoutUndo();
         return pf;
     }
@@ -942,8 +962,8 @@ public static class ConstructorJuego
         Button volverControles = Boton(panelControles.transform, "Volver", "VOLVER", new Vector2(0f, -225f), new Vector2(400f, 76f));
         Asignar(panelControles, "primerSeleccionado", volverControles.gameObject);
 
-        Panel panelOpciones = CrearPanelOpciones(c, out Button volverOpciones);
-        ((RectTransform)panelOpciones.transform).anchoredPosition = new Vector2(0f, -140f);
+        Panel panelOpciones = CrearPanelOpciones(c, out Button volverOpciones, true);
+        ((RectTransform)panelOpciones.transform).anchoredPosition = new Vector2(0f, -170f);   // Más alto por BORRAR PARTIDA: sin tapar el título ni los créditos
 
         var mp = canvas.gameObject.AddComponent<MenuPrincipal>();
         var so = new SerializedObject(mp);
