@@ -6,6 +6,7 @@ using UnityEngine.UI;
 /// <summary>Nombres de las escenas del juego (deben estar en Build Settings).</summary>
 public static class Escenas
 {
+    public const string Splash = "Splash";
     public const string Menu = "MenuPrincipal";
     public const string Intro = "Intro";
     public const string Nivel1 = "Nivel1_Dolores";
