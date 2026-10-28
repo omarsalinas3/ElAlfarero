@@ -8,6 +8,7 @@ using UnityEngine.InputSystem;
 /// Montado (F): corre más rápido, salta más alto y en lugar de lanzar cerámica ataca con zarpazos (Espacio o clic).
 /// Tiene su propia vida: mientras Mateo va montado, los golpes se los lleva el alebrije; si se le acaba, Mateo cae
 /// y sigue a pie. Al llegar montado al final de la plaza se completa el nivel (rumbo a Mineral de Pozos).
+/// Montado, Mateo se oculta y el alebrije cambia a los cuadros de Flow donde los dos van juntos (Animator "montado").
 /// El arte mira a la IZQUIERDA, por eso la escala X es negativa cuando mira a la derecha.
 /// </summary>
 [RequireComponent(typeof(Health))]
@@ -20,7 +21,6 @@ public class MonturaAlebrije : MonoBehaviour
     [Header("Montado")]
     [SerializeField] float multiplicadorVelocidad = 1.4f;
     [SerializeField] float multiplicadorSalto = 1.2f;
-    [SerializeField] Vector2 asiento = new Vector2(0.2f, 1.9f);      // Dónde va sentado Mateo, desde los pies del alebrije
     [SerializeField] float distanciaMontar = 3f;
 
     [Header("Zarpazo")]
@@ -31,6 +31,7 @@ public class MonturaAlebrije : MonoBehaviour
 
     [Header("Referencias")]
     [SerializeField] Animator animator;
+    [SerializeField] RuntimeAnimatorController animadorMontado;      // Mateo y el alebrije en los mismos cuadros
     [SerializeField] float xMeta = float.PositiveInfinity;           // Montado aquí se completa el nivel
 
     public Estado EstadoActual { get; private set; } = Estado.Oculto;
@@ -47,7 +48,8 @@ public class MonturaAlebrije : MonoBehaviour
     PlayerAnimator animJinete;
     Rigidbody2D rbJinete;
     Health saludJinete;
-    Vector3 posVisualJinete;
+    SpriteRenderer[] spritesJinete;
+    RuntimeAnimatorController animadorLibre;
     float siguienteZarpazo;
     bool completado;
     readonly Collider2D[] golpeados = new Collider2D[12];
@@ -57,6 +59,7 @@ public class MonturaAlebrije : MonoBehaviour
         salud = GetComponent<Health>();
         sprites = GetComponentsInChildren<SpriteRenderer>(true);
         if (animator == null) animator = GetComponentInChildren<Animator>();
+        if (animator != null) animadorLibre = animator.runtimeAnimatorController;
 
         accionMontar = new InputAction("Montar", InputActionType.Button, "<Keyboard>/f");
         accionMontar.AddBinding("<Gamepad>/leftShoulder");
@@ -90,6 +93,7 @@ public class MonturaAlebrije : MonoBehaviour
         if (jinete == null) return;
         tirador = jinete.GetComponent<PlayerShooter>();
         animJinete = jinete.GetComponentInChildren<PlayerAnimator>();
+        spritesJinete = jinete.GetComponentsInChildren<SpriteRenderer>(true);
         rbJinete = jinete.GetComponent<Rigidbody2D>();
         saludJinete = jinete.GetComponent<Health>();
     }
@@ -138,7 +142,7 @@ public class MonturaAlebrije : MonoBehaviour
         animator.SetFloat(AnimVelocidad, Mathf.Abs(rbJinete.linearVelocity.x));
         if (Time.time < siguienteZarpazo - cadenciaZarpazo * 0.4f) return;   // Deja ver el zarpazo
         if (!jinete.EstaEnSuelo) { if (!EnPose("Salto")) Pose("Salto", 0f); }
-        else if (EnPose("Salto") || EnPose("Zarpazo")) Pose("Reposo", 0f);   // De ahí pasa solo a Caminar con la velocidad
+        else if (EnPose("Salto") || EnPose("Zarpazo") || EnPose("Golpe")) Pose("Reposo", 0f);   // De ahí pasa solo a Caminar con la velocidad
     }
 
     public void Montar()
@@ -150,12 +154,9 @@ public class MonturaAlebrije : MonoBehaviour
         jinete.MultiplicadorSalto = multiplicadorSalto;
         if (tirador != null) tirador.enabled = false;             // Montado ataca con el zarpazo, no lanza
         if (saludJinete != null) saludJinete.Protector = salud;   // Los golpes se los lleva el alebrije
-        if (animJinete != null)
-        {
-            animJinete.Montado = true;
-            posVisualJinete = animJinete.transform.localPosition;
-            animJinete.transform.localPosition = posVisualJinete + (Vector3)asiento;
-        }
+        if (animJinete != null) animJinete.Montado = true;
+        MostrarJinete(false);                                      // Ya va dibujado en los cuadros del alebrije
+        CambiarAnimador(animadorMontado);
         siguienteZarpazo = Time.time + 0.2f;                       // La misma tecla no lanza un zarpazo al montar
         GestorAudio.Reproducir(Sfx.RugidoAlebrije, 0f);
         if (!float.IsInfinity(xMeta) && !completado)
@@ -174,11 +175,9 @@ public class MonturaAlebrije : MonoBehaviour
         jinete.MultiplicadorSalto = 1f;
         if (tirador != null) tirador.enabled = true;
         if (saludJinete != null) saludJinete.Protector = null;
-        if (animJinete != null)
-        {
-            animJinete.Montado = false;
-            animJinete.transform.localPosition = posVisualJinete;
-        }
+        if (animJinete != null) animJinete.Montado = false;
+        MostrarJinete(true);
+        CambiarAnimador(animadorLibre);
         if (animator != null) animator.SetFloat(AnimVelocidad, 0f);
         Pose("Reposo", 0f);
     }
@@ -209,6 +208,7 @@ public class MonturaAlebrije : MonoBehaviour
         if (salud.EstaMuerto) return;
         salud.HacerInvulnerable(0.8f);
         GestorAudio.Reproducir(Sfx.DanoJugador);
+        if (Montado) { Pose("Golpe", 0f); siguienteZarpazo = Mathf.Max(siguienteZarpazo, Time.time + 0.3f); }
     }
 
     void AlAgotarse()
@@ -247,6 +247,19 @@ public class MonturaAlebrije : MonoBehaviour
     void Pose(string estado, float tiempo)
     {
         if (animator != null) animator.Play(estado, 0, tiempo);
+    }
+
+    void MostrarJinete(bool visible)
+    {
+        if (spritesJinete == null) return;
+        foreach (var s in spritesJinete) if (s != null) s.enabled = visible;
+    }
+
+    void CambiarAnimador(RuntimeAnimatorController ctrl)
+    {
+        if (animator == null || ctrl == null || animator.runtimeAnimatorController == ctrl) return;
+        animator.runtimeAnimatorController = ctrl;
+        animator.Rebind();
     }
 
     bool EnPose(string estado) => animator != null && animator.GetCurrentAnimatorStateInfo(0).IsName(estado);

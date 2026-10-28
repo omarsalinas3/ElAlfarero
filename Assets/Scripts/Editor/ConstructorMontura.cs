@@ -1,10 +1,12 @@
 using UnityEditor;
+using UnityEditor.Animations;
 using UnityEngine;
 using static ConfigurarSprint1;
 
 /// <summary>
-/// El Alebrije liberado como montura de Mateo (#50). Usa los mismos cuadros y Animator del jefe, más chico para que
-/// Mateo quepa encima. Sin collider propio: va pegado a Mateo y los golpes que recibe Mateo se los lleva él (Health.Protector).
+/// El Alebrije liberado como montura de Mateo (#50). Suelto usa los cuadros y el Animator del jefe, más chico; montado
+/// cambia al Animator "Montado", con los cuadros de Flow donde Mateo va sentado en él (Docs/Arte/Flow/montado_flow.jpg).
+/// Sin collider propio: va pegado a Mateo y los golpes que recibe Mateo se los lleva él (Health.Protector).
 /// </summary>
 public static partial class ConstructorJuego
 {
@@ -36,11 +38,40 @@ public static partial class ConstructorJuego
         var so = new SerializedObject(montura);
         so.FindProperty("animator").objectReferenceValue = anim;
         so.FindProperty("capasEnemigo").FindPropertyRelative("m_Bits").intValue = 1 << CapaEnemy;
-        // Mateo se sienta a media altura del lomo
-        so.FindProperty("asiento").vector2Value = new Vector2(0.15f, sr.sprite.bounds.size.y * EscalaMontura * 0.42f);
+        so.FindProperty("animadorMontado").objectReferenceValue = CrearAnimadorMontado();
         so.ApplyModifiedPropertiesWithoutUndo();
 
         return Guardar(go, RutaPrefabMontura).GetComponent<MonturaAlebrije>();
+    }
+
+    /// <summary>Mismos estados que el Animator del alebrije (así MonturaAlebrije los pide igual) más el golpe.</summary>
+    static RuntimeAnimatorController CrearAnimadorMontado()
+    {
+        System.IO.Directory.CreateDirectory("Assets/Art/Animations/Montado");
+        AssetDatabase.Refresh();
+        const string pre = "Allies/montado";
+        AnimationClip reposo = CrearClip("Montado/Montado_Reposo", Cuadros(pre + "_reposo", 1), 1f, true);
+        AnimationClip galope = CrearClip("Montado/Montado_Galope", Cuadros(pre + "_galope", 4), 9f, true);
+        AnimationClip salto = CrearClip("Montado/Montado_Salto", Cuadros(pre + "_salto", 1), 1f, true);
+        AnimationClip zarpazo = CrearClip("Montado/Montado_Zarpazo", Cuadros(pre + "_zarpazo", 4), 14f, false);
+        AnimationClip golpe = CrearClip("Montado/Montado_Golpe", Cuadros(pre + "_golpe", 1), 1f, true);
+
+        const string ruta = "Assets/Art/Animations/Montado/Montado.controller";
+        AssetDatabase.DeleteAsset(ruta);
+        var ctrl = AnimatorController.CreateAnimatorControllerAtPath(ruta);
+        ctrl.AddParameter("Velocidad", AnimatorControllerParameterType.Float);
+
+        AnimatorStateMachine sm = ctrl.layers[0].stateMachine;
+        AnimatorState sReposo = sm.AddState("Reposo"); sReposo.motion = reposo;
+        AnimatorState sCaminar = sm.AddState("Caminar"); sCaminar.motion = galope;
+        sm.AddState("Salto").motion = salto;
+        sm.AddState("Zarpazo").motion = zarpazo;
+        sm.AddState("Golpe").motion = golpe;
+        sm.defaultState = sReposo;
+        Transicion(sReposo, sCaminar).AddCondition(AnimatorConditionMode.Greater, 0.1f, "Velocidad");
+        Transicion(sCaminar, sReposo).AddCondition(AnimatorConditionMode.Less, 0.1f, "Velocidad");
+        EditorUtility.SetDirty(ctrl);
+        return ctrl;
     }
 
     /// <summary>Pone la montura (apagada) en la escena y se la da al jefe; llegar montado a xMeta completa el nivel.</summary>

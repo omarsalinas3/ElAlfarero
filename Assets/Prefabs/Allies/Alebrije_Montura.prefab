@@ -193,7 +193,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Alfarero.Runtime::MonturaAlebrije
   multiplicadorVelocidad: 1.4
   multiplicadorSalto: 1.2
-  asiento: {x: 0.15, y: 1.5394908}
   distanciaMontar: 3
   danoZarpazo: 30
   cadenciaZarpazo: 0.45
@@ -202,4 +201,5 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   animator: {fileID: 7685829091886633802}
+  animadorMontado: {fileID: 9100000, guid: 652dec7f3824b2f4aae7e09829cede9a, type: 2}
   xMeta: Infinity
