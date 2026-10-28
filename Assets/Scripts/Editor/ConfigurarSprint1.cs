@@ -381,23 +381,28 @@ public static class ConfigurarSprint1
     }
 
     /// <summary>
-    /// Lo común a todo nivel del Nivel 1: fondo por segmentos, suelo, muros, Mateo, cámara que lo sigue y luz.
-    /// Devuelve la instancia del jugador y los límites izquierdo/derecho del mundo.
+    /// Lo común a todo nivel: fondo por segmentos, suelo, muros, Mateo, cámara que lo sigue y luz.
+    /// Devuelve la instancia del jugador y los límites izquierdo/derecho del mundo. Sin segmentos usa los de Dolores.
     /// </summary>
-    internal static GameObject CrearBaseNivel(GameObject prefabAlfarero, out float izquierda, out float derecha)
+    internal static GameObject CrearBaseNivel(GameObject prefabAlfarero, out float izquierda, out float derecha) =>
+        CrearBaseNivel(prefabAlfarero, Segmentos, out izquierda, out derecha);
+
+    /// <summary>Igual, con los fondos de otro nivel (imágenes de 2752 px de ancho en Environment/).</summary>
+    internal static GameObject CrearBaseNivel(GameObject prefabAlfarero, (string archivo, int solapePx)[] segmentos,
+                                              out float izquierda, out float derecha)
     {
         // Fondo: segmentos distintos en orden. Cada uno (salvo el 1.º) trae el borde izquierdo con degradado
         // de transparencia y se superpone Solape unidades sobre el anterior, así la unión no se nota.
         var fondos = new GameObject("Fondo");
         float xCentro = 0f;
-        for (int i = 0; i < Segmentos.Length; i++)
+        for (int i = 0; i < segmentos.Length; i++)
         {
-            if (i > 0) xCentro += AnchoFondo - Segmentos[i].solapePx / PixelesPorUnidadFondo;
+            if (i > 0) xCentro += AnchoFondo - segmentos[i].solapePx / PixelesPorUnidadFondo;
             var f = new GameObject($"Fondo_{i + 1}");
             f.transform.SetParent(fondos.transform, false);
             f.transform.position = new Vector3(xCentro, 0f, 0f);
             var sr = f.AddComponent<SpriteRenderer>();
-            sr.sprite = Spr("Environment/" + Segmentos[i].archivo);
+            sr.sprite = Spr("Environment/" + segmentos[i].archivo);
             sr.sortingOrder = -100 + i;
         }
 

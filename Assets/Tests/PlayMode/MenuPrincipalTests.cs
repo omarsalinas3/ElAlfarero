@@ -78,8 +78,7 @@ public class MenuPrincipalTests
         Assert.IsTrue(continuar.interactable);
         continuar.onClick.Invoke();
         yield return new WaitForSeconds(1.5f);
-        Assert.AreEqual("Nivel1_Dolores", SceneManager.GetActiveScene().name,
-                        "Con el Nivel 2 aún sin escena, Continuar lleva al último nivel que existe");
+        Assert.AreEqual("Nivel2_Pozos", SceneManager.GetActiveScene().name, "Ganar Dolores desbloquea Mineral de Pozos");
     }
 
     [UnityTest]

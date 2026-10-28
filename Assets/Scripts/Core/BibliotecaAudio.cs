@@ -10,7 +10,7 @@ public enum Sfx
     Disparo, Escopetazo, Machetazo, RugidoAlebrije
 }
 
-public enum Musica { Ninguna, Menu, Intro, Nivel1 }
+public enum Musica { Ninguna, Menu, Intro, Nivel1, Nivel2 }
 
 /// <summary>
 /// Tabla de sonidos del juego (un solo asset en Resources/BibliotecaAudio). El código pide sonidos por nombre (Sfx / Musica)
