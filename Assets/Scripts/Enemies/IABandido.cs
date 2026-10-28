@@ -186,7 +186,7 @@ public class IABandido : MonoBehaviour
             float abanico = balasPorDisparo > 1 ? Mathf.Lerp(-dispersionGrados, dispersionGrados, i / (balasPorDisparo - 1f)) : 0f;
             float a = (angulo + abanico) * Mathf.Deg2Rad;
             var d = new Vector2(Mathf.Cos(a) * Direccion, Mathf.Sin(a));
-            var bala = Instantiate(prefabBala, origen, Quaternion.identity);
+            var bala = Reciclaje.Sacar(prefabBala, origen, Quaternion.identity);
             bala.Disparar(d, velocidadBala, dano);
         }
     }

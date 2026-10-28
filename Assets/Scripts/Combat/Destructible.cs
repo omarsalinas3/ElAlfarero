@@ -47,10 +47,10 @@ public class Destructible : MonoBehaviour
 
         if (prefabRestos != null)
         {
-            var restos = Instantiate(prefabRestos, pos, Quaternion.identity);
+            var restos = Reciclaje.Sacar(prefabRestos, pos, Quaternion.identity);
             restos.transform.localScale = transform.localScale;
         }
-        if (dejarAlRomper != null) Instantiate(dejarAlRomper, pos, Quaternion.identity);
+        if (dejarAlRomper != null) Instantiate(dejarAlRomper, pos, Quaternion.identity);   // Uno por horno: no vale la pena reciclarlo
 
         if (botin != null && botin.Length > 0 && Random.value <= probabilidadBotin)
         {
@@ -58,7 +58,7 @@ public class Destructible : MonoBehaviour
             {
                 if (botin[i] == null) continue;
                 float desplazamiento = (i - (botin.Length - 1) * 0.5f) * 0.7f;
-                Instantiate(botin[i], pos + new Vector3(desplazamiento, 0.6f, 0f), Quaternion.identity);
+                Reciclaje.Sacar(botin[i], pos + new Vector3(desplazamiento, 0.6f, 0f), Quaternion.identity);
             }
         }
     }
