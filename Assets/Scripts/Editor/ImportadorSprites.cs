@@ -56,6 +56,7 @@ public class ImportadorSprites : AssetPostprocessor
         if (nombre.StartsWith("mateo_idle") || nombre.StartsWith("mateo_muerte")) return 148f;
         if (nombre.StartsWith("bandido_")) return 100f;
         if (nombre.StartsWith("alebrije_")) return 55f;
+        if (nombre.StartsWith("esqueleto_")) return 46f;      // Minero animado: mide igual que el sprite fijo (prefab a escala 0.55)
 
         switch (carpeta)
         {

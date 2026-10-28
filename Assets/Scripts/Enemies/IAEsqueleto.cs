@@ -1,9 +1,11 @@
+using System.Collections;
 using UnityEngine;
 
 /// <summary>
 /// IA básica del minero esqueleto: patrulla alrededor de donde aparece, persigue a Mateo cuando lo ve,
 /// se le lanza encima a corta distancia (el daño lo hace DanoPorContacto) y regresa a su zona si lo pierde.
 /// No cae de las orillas ni atraviesa paredes, huacales u hornos (todo lo que esté en capaSuelo).
+/// Si el visual tiene Animator: Velocidad, "Atacar" (golpe con el pico) y "Muerto" (se desarma y luego se desvanece).
 /// </summary>
 [RequireComponent(typeof(Rigidbody2D), typeof(Health))]
 public class IAEsqueleto : MonoBehaviour
@@ -41,17 +43,23 @@ public class IAEsqueleto : MonoBehaviour
 
     [Header("Referencias")]
     [SerializeField] LayerMask capaSuelo;
-    [SerializeField] Transform visual;                // Hijo con el sprite: se balancea al caminar sin mover el collider
+    [SerializeField] Transform visual;                // Hijo con el sprite (y su Animator); sin Animator se balancea al caminar
+    [SerializeField] float tiempoCadaver = 1.2f;      // Con Animator: la pila de huesos se queda esto antes de desvanecerse
     [SerializeField] Transform objetivo;              // Si está vacío, busca a Mateo al iniciar
 
     public Estado EstadoActual { get; private set; } = Estado.Patrullar;
     public int Direccion { get; private set; } = 1;   // 1 = derecha, -1 = izquierda
     public Vector2 Origen { get; private set; }
 
+    static readonly int AnimVelocidad = Animator.StringToHash("Velocidad");
+    static readonly int AnimAtacar = Animator.StringToHash("Atacar");
+    static readonly int AnimMuerto = Animator.StringToHash("Muerto");
+
     Rigidbody2D rb;
     Collider2D col;
     Health salud;
     Health saludObjetivo;
+    Animator animator;
 
     float temporizadorEstado;
     float ultimaVezVisto = -999f;
@@ -65,6 +73,7 @@ public class IAEsqueleto : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         col = GetComponent<Collider2D>();
         salud = GetComponent<Health>();
+        animator = visual != null ? visual.GetComponent<Animator>() : null;
         rb.freezeRotation = true;
         Direccion = transform.localScale.x < 0f ? -1 : 1;
     }
@@ -80,8 +89,8 @@ public class IAEsqueleto : MonoBehaviour
         if (objetivo != null) saludObjetivo = objetivo.GetComponent<Health>();
     }
 
-    void OnEnable() { salud.OnDano += AlRecibirDano; }
-    void OnDisable() { salud.OnDano -= AlRecibirDano; }
+    void OnEnable() { salud.OnDano += AlRecibirDano; salud.OnMuerte += AlMorir; }
+    void OnDisable() { salud.OnDano -= AlRecibirDano; salud.OnMuerte -= AlMorir; }
 
     void FixedUpdate()
     {
@@ -139,6 +148,7 @@ public class IAEsqueleto : MonoBehaviour
             CambiarEstado(Estado.Atacar);
             temporizadorEstado = preparacionAtaque;
             embistiendo = false;
+            if (animator != null) animator.SetTrigger(AnimAtacar);   // Levantar el pico es el aviso para esquivar
             return;
         }
 
@@ -236,6 +246,30 @@ public class IAEsqueleto : MonoBehaviour
         temporizadorEstado = duracionAturdido;
     }
 
+    void AlMorir()
+    {
+        if (animator == null) return;                       // Sin animación (Health lo destruye de una vez)
+        animator.SetBool(AnimMuerto, true);
+        rb.linearVelocity = Vector2.zero;
+        rb.bodyType = RigidbodyType2D.Kinematic;            // Que los huesos no estorben ni los empujen
+        col.enabled = false;
+        var dano = GetComponent<DanoPorContacto>();
+        if (dano != null) dano.enabled = false;
+        StartCoroutine(Desvanecer());
+    }
+
+    IEnumerator Desvanecer()
+    {
+        yield return new WaitForSeconds(tiempoCadaver);
+        var sprites = GetComponentsInChildren<SpriteRenderer>();
+        for (float t = 0f; t < 0.6f; t += Time.deltaTime)
+        {
+            foreach (var s in sprites) { var c = s.color; c.a = 1f - t / 0.6f; s.color = c; }
+            yield return null;
+        }
+        Destroy(gameObject);
+    }
+
     void CambiarEstado(Estado nuevo)
     {
         EstadoActual = nuevo;
@@ -308,8 +342,13 @@ public class IAEsqueleto : MonoBehaviour
     void Update()
     {
         if (visual == null) return;
+        if (animator != null)
+        {
+            animator.SetFloat(AnimVelocidad, salud.EstaMuerto ? 0f : Mathf.Abs(rb.linearVelocity.x));
+            return;
+        }
 
-        // Balanceo al caminar (el sprite del minero es un solo cuadro) e inclinación hacia atrás al preparar el ataque
+        // Sin Animator (un solo cuadro): balanceo al caminar e inclinación hacia atrás al preparar el ataque
         float rapidez = Mathf.Abs(rb.linearVelocity.x);
         float altura = 0f, angulo = 0f;
         if (EstadoActual == Estado.Atacar && !embistiendo)

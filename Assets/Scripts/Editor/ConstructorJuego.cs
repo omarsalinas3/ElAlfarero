@@ -229,15 +229,22 @@ public static class ConstructorJuego
         var go = PrefabUtility.LoadPrefabContents(RutaPrefabMinero);
         go.name = "Minero_Esqueleto";
 
-        // El sprite pasa a un hijo para que la IA lo balancee al caminar sin mover el collider
+        // El sprite pasa a un hijo animado (caminar, golpe con el pico, muerte); el collider se queda en la raíz
         var srRaiz = go.GetComponent<SpriteRenderer>();
         var visual = new GameObject("Visual") { layer = go.layer };
         visual.transform.SetParent(go.transform, false);
         var sr = visual.AddComponent<SpriteRenderer>();
-        sr.sprite = srRaiz.sprite;
+        sr.sprite = Spr("Enemies/esqueleto_caminar_00.png");
         sr.sortingOrder = srRaiz.sortingOrder;
         Object.DestroyImmediate(srRaiz);
         Asignar(go.GetComponent<ParpadeoDano>(), "sprite", sr);
+        var anim = visual.AddComponent<Animator>();
+        anim.runtimeAnimatorController = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>("Assets/Art/Animations/Esqueleto/Esqueleto.controller");
+
+        // Primero se ve cómo se desarma; la IA lo desvanece y lo destruye después
+        var soSalud = new SerializedObject(go.GetComponent<Health>());
+        soSalud.FindProperty("destruirAlMorir").boolValue = false;
+        soSalud.ApplyModifiedPropertiesWithoutUndo();
 
         var rb = go.AddComponent<Rigidbody2D>();
         rb.gravityScale = 3f;
