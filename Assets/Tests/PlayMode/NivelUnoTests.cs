@@ -7,7 +7,7 @@ using UnityEngine.TestTools;
 
 /// <summary>
 /// Pruebas de lo agregado al Nivel 1: monedas por recogibles sobrantes, muerte animada de Mateo, bandidos,
-/// emboscada en oleadas y el jefe (cinemática de las torres y victoria al vencer al alebrije).
+/// emboscada en oleadas y el jefe (cinemática de las torres, liberación como montura y victoria).
 /// </summary>
 public class NivelUnoTests
 {
@@ -138,7 +138,17 @@ public class NivelUnoTests
         var jefe = Object.FindFirstObjectByType<JefeAlebrije>();
         Assert.AreNotEqual(JefeAlebrije.Estado.Dormido, jefe.EstadoActual);
         jefe.Salud.RecibirDano(10000);
-        yield return new WaitForSeconds(4.6f);
-        Assert.AreEqual(GestorNivel.Estado.Victoria, GestorNivel.Actual.EstadoActual, "Vencer al alebrije completa el nivel");
+        yield return new WaitForSeconds(2.2f);
+
+        // Se rompe el hechizo: el alebrije se vuelve montura y llegar montado al final de la plaza completa el nivel
+        var montura = Object.FindFirstObjectByType<MonturaAlebrije>();
+        Assert.IsNotNull(montura, "Al vencerlo queda el alebrije liberado");
+        Assert.AreEqual(MonturaAlebrije.Estado.Libre, montura.EstadoActual);
+        Assert.AreNotEqual(GestorNivel.Estado.Victoria, GestorNivel.Actual.EstadoActual, "Todavía falta montarlo");
+        MoverJugador(montura.transform.position.x);
+        montura.Montar();
+        MoverJugador(montura.XMeta + 0.2f);
+        yield return new WaitForSeconds(0.3f);
+        Assert.AreEqual(GestorNivel.Estado.Victoria, GestorNivel.Actual.EstadoActual, "Montado rumbo a Pozos se completa el nivel");
     }
 }

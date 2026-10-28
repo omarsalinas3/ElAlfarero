@@ -40,6 +40,10 @@ public class PlayerController : MonoBehaviour
     /// <summary>False durante pausa, muerte, victoria o cinemáticas: ignora la entrada del jugador.</summary>
     public bool ControlActivo { get; set; } = true;
 
+    /// <summary>Montado en el alebrije corre y salta más (1 = a pie).</summary>
+    public float MultiplicadorVelocidad { get; set; } = 1f;
+    public float MultiplicadorSalto { get; set; } = 1f;
+
     // --- Componentes ---
     Rigidbody2D rb;
     PlayerShooter tirador;
@@ -137,7 +141,7 @@ public class PlayerController : MonoBehaviour
         else if (temporizadorEmpuje <= 0f)
         {
             // Aceleración / frenado hacia la velocidad objetivo
-            float objetivo = entradaHorizontal * velocidadMaxima;
+            float objetivo = entradaHorizontal * velocidadMaxima * MultiplicadorVelocidad;
             float tasa = Mathf.Abs(objetivo) > 0.01f ? aceleracion : desaceleracion;
             velocidad.x = Mathf.MoveTowards(velocidad.x, objetivo, tasa * Time.fixedDeltaTime);
         }
@@ -163,7 +167,7 @@ public class PlayerController : MonoBehaviour
 
         if (!EstaEvadiendo && temporizadorBuffer > 0f && temporizadorCoyote > 0f)
         {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, fuerzaSalto);
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, fuerzaSalto * MultiplicadorSalto);
             temporizadorBuffer = 0f;   // Consumidos: evitan doble salto accidental
             temporizadorCoyote = 0f;
             GestorAudio.Reproducir(Sfx.Salto);

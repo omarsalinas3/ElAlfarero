@@ -319,3 +319,4 @@ MonoBehaviour:
     m_Bits: 64
   objetivo: {fileID: 0}
   esperaVictoria: 4
+  montura: {fileID: 0}

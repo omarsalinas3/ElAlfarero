@@ -685,6 +685,7 @@ public static partial class ConstructorJuego
         float puerta = Mathf.Min(74.5f, derecha - 5f);
         var alebrije = (GameObject)PrefabUtility.InstantiatePrefab(p.alebrije.gameObject, enemigos);
         alebrije.transform.position = new Vector3(puerta + 2f, YSuelo, 0f);
+        PonerMontura(alebrije.GetComponent<JefeAlebrije>(), derecha - 2f, null);   // Al vencerlo se vuelve montura (#50)
 
         // Interfaz
         CrearEventSystem();
