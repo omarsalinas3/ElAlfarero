@@ -158,8 +158,8 @@ public class PlayerController : MonoBehaviour
         else             temporizadorCoyote -= Time.deltaTime;
 
         // Buffer: recordamos que se pulsó saltar unos milisegundos
-        if (accionSaltar.WasPressedThisFrame()) temporizadorBuffer = tiempoBufferSalto;
-        else                                    temporizadorBuffer -= Time.deltaTime;
+        if (PulsoSaltar()) temporizadorBuffer = tiempoBufferSalto;
+        else               temporizadorBuffer -= Time.deltaTime;
 
         if (!EstaEvadiendo && temporizadorBuffer > 0f && temporizadorCoyote > 0f)
         {
@@ -174,6 +174,15 @@ public class PlayerController : MonoBehaviour
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y * multiplicadorCorteSalto);
         }
+    }
+
+    // Mientras se lanza con Espacio, la flecha arriba apunta hacia arriba (PlayerShooter) en lugar de saltar; W siempre salta
+    bool PulsoSaltar()
+    {
+        if (!accionSaltar.WasPressedThisFrame()) return false;
+        var kb = Keyboard.current;
+        bool soloFlecha = kb != null && kb.upArrowKey.wasPressedThisFrame && !kb.wKey.wasPressedThisFrame;
+        return !(soloFlecha && tirador != null && tirador.LanzandoConTeclado);
     }
 
     // --------------------------------------------------------------- Evasión
