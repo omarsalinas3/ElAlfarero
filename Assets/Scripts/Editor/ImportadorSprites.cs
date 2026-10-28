@@ -56,6 +56,7 @@ public class ImportadorSprites : AssetPostprocessor
         if (nombre.StartsWith("mateo_idle") || nombre.StartsWith("mateo_muerte")) return 148f;
         if (nombre.StartsWith("bandido_")) return 100f;
         if (nombre.StartsWith("alebrije_")) return 55f;
+        if (nombre.StartsWith("montado_")) return 48f;        // Mateo montado en el alebrije: mismo tamaño que los dos por separado
         if (nombre.StartsWith("esqueleto_")) return 46f;      // Minero animado: mide igual que el sprite fijo (prefab a escala 0.55)
         if (nombre.StartsWith("bruja_bola")) return 160f;     // Bola de fuego: ~1.2 u de largo con todo y estela
         if (nombre.StartsWith("bruja_")) return 110f;         // Bruja de Fuego: ~2.9 u de ancho, como un bandido acostado

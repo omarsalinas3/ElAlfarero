@@ -5,7 +5,8 @@ using UnityEngine;
 /// Jefe del Nivel 1: el Alebrije Gigante que el Charro Negro despierta en la parroquia de Dolores.
 /// Ataques físicos (GDD): acecha, lanza zarpazos con embestida y salta para caer encima de Mateo con una onda de choque.
 /// Transformación a la mitad de la vida: ruge (invulnerable un momento), se vuelve más rápido y encadena saltos.
-/// Empieza dormido (Activar lo despierta al terminar la cinemática) y al morir avisa a GestorNivel.
+/// Empieza dormido (Activar lo despierta al terminar la cinemática). Al vencerlo se rompe el hechizo del Charro: se calma
+/// y se vuelve la montura de Mateo (#50). Sin montura asignada se deshace y avisa a GestorNivel (victoria directa).
 /// El arte mira a la IZQUIERDA, por eso la escala X es negativa cuando mira a la derecha.
 /// </summary>
 [RequireComponent(typeof(Rigidbody2D), typeof(Health))]
@@ -40,6 +41,7 @@ public class JefeAlebrije : MonoBehaviour
     [SerializeField] LayerMask capaSuelo;
     [SerializeField] Transform objetivo;
     [SerializeField] float esperaVictoria = 4f;          // La animación de deshacerse dura 2.4 s y luego se desvanece
+    [SerializeField] MonturaAlebrije montura;              // En lo que se convierte al romperse el hechizo
 
     public Estado EstadoActual { get; private set; } = Estado.Dormido;
     public bool Furioso { get; private set; }
@@ -50,6 +52,7 @@ public class JefeAlebrije : MonoBehaviour
     Health salud;
     SpriteRenderer[] sprites;
     float minX = float.NegativeInfinity, maxX = float.PositiveInfinity;
+    float ySuelo;
     Coroutine rutina;
 
     void Awake()
@@ -94,6 +97,7 @@ public class JefeAlebrije : MonoBehaviour
     public void Activar(float min, float max)
     {
         minX = min; maxX = max;
+        ySuelo = rb.position.y;
         rb.bodyType = RigidbodyType2D.Dynamic;
         salud.Invulnerable = false;
         if (danoContacto != null) danoContacto.enabled = true;
@@ -241,10 +245,33 @@ public class JefeAlebrije : MonoBehaviour
         rb.linearVelocity = Vector2.zero;
         if (danoContacto != null) danoContacto.enabled = false;
         foreach (var s in sprites) s.color = Color.white;
-        if (animator != null) animator.SetBool(AnimMuerto, true);
         GestorAudio.Reproducir(Sfx.RugidoAlebrije, 0f);
         Camera.main?.GetComponent<CameraFollow>()?.Sacudir(0.8f, 0.3f);
+        if (montura != null) { StartCoroutine(Liberarse()); return; }
+        if (animator != null) animator.SetBool(AnimMuerto, true);
         StartCoroutine(Victoria());
+    }
+
+    /// <summary>La Talavera consagrada rompe el hechizo: ruge, destella en dorado, se calma y queda como montura.</summary>
+    IEnumerator Liberarse()
+    {
+        var gestor = GestorNivel.Actual;
+        gestor?.IniciarCinematica();
+        rb.position = new Vector2(rb.position.x, ySuelo);       // Por si lo vencieron en pleno salto
+        Pose("Rugido");
+        for (float t = 0f; t < 1.6f; t += Time.deltaTime)
+        {
+            // El hechizo se le escapa en destellos dorados
+            Color c = Color.Lerp(Color.white, new Color(1f, 0.85f, 0.3f), Mathf.PingPong(t * 5f, 1f));
+            foreach (var s in sprites) s.color = c;
+            yield return null;
+        }
+        foreach (var s in sprites) s.color = Color.white;
+        gestor?.MostrarLetrero("", "¡HECHIZO ROTO!", "EL ALEBRIJE ES LIBRE");
+        gestor?.TerminarCinematica();
+        gestor?.FijarObjetivo("MONTA AL ALEBRIJE: F");
+        montura.Liberar(new Vector3(rb.position.x, ySuelo, 0f), Direccion);
+        gameObject.SetActive(false);                          // Lo último: apagarlo detiene esta corrutina
     }
 
     IEnumerator Victoria()

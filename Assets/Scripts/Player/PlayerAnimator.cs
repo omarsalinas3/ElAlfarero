@@ -17,6 +17,9 @@ public class PlayerAnimator : MonoBehaviour
     Rigidbody2D rb;
     Health salud;
 
+    /// <summary>Montado en el alebrije: Mateo va sentado (pose de reposo) aunque se mueva o brinque.</summary>
+    public bool Montado { get; set; }
+
     void Awake()
     {
         animator = GetComponent<Animator>();
@@ -29,8 +32,8 @@ public class PlayerAnimator : MonoBehaviour
     {
         if (jugador == null) return;
 
-        animator.SetFloat(Velocidad, Mathf.Abs(rb.linearVelocity.x));
-        animator.SetBool(EnSuelo, jugador.EstaEnSuelo);
+        animator.SetFloat(Velocidad, Montado ? 0f : Mathf.Abs(rb.linearVelocity.x));
+        animator.SetBool(EnSuelo, Montado || jugador.EstaEnSuelo);
         animator.SetBool(Evadiendo, jugador.EstaEvadiendo);
         animator.SetBool(Muerto, salud != null && salud.EstaMuerto);
     }
