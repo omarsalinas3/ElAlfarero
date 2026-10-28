@@ -76,7 +76,18 @@ Registro por fecha de qué se hizo, quién lo hizo, qué problemas salieron y qu
 ### 28 de octubre — Trabajo de Noé del Nivel 2 y documentación
 | Quién | Qué se hizo |
 |---|---|
-| Noé | README con la historia de 4 niveles y las modificaciones al GDD (#60); esta bitácora (#31); tutorial del Nivel 1 (#28); estampida de nahuales (#53); Alebrije de jefe a montura (#50); Jinete sin Cabeza: sprites, IA y cinemática (#55, #56) |
+| Noé | README con la historia de 4 niveles y las modificaciones al GDD (#60); esta bitácora (#31); tutorial con carteles al inicio del Nivel 1 (#28); estampida de nahuales en la cañada de Pozos (#53); el Alebrije vencido se vuelve montura: F monta, corre y salta más, zarpazo y vida propia (#50); Jinete sin Cabeza: IA (carga, sablazo, calavera en llamas, segunda fase) y cinemática de entrada con arte provisional (#56) |
+
+**Problemas:**
+- En modo batch, las pruebas con teclado virtual no reciben entrada si no se pide `BackgroundBehavior.IgnoreFocus` (como en `JuegoTests`).
+- Google Flow rechazó la generación automática desde el navegador ("actividad inusual"); la hoja del Jinete (#55) se pide a mano con el prompt de `Docs/Arte/PROMPT_JINETE.md` y se recorta con `Docs/Arte/recortar_jinete.py`.
+- Si Unity compila mientras se escriben scripts nuevos, el batch falla con tipos que "no existen": no tocar `Assets` mientras corre el constructor o las pruebas.
+
+**Decisiones:**
+- Montura: tecla F; montado +40 % velocidad y +20 % salto; Espacio o clic hace zarpazo en lugar de lanzar; 60 de vida propia; al agotarse Mateo cae y sigue a pie. Llegar montado al final de la plaza completa el Nivel 1 (el viaje a Pozos es la #57 de Omar).
+- Los nahuales no se pueden matar (las cerámicas los atraviesan): son un obstáculo del evento, se esquivan saltando o evadiendo.
+- El Jinete es cinemático con collider trigger de 2.4 u de alto, para que su carga se pueda esquivar saltando o evadiendo.
+- Tutorial: el primer minero pasa de x 7 a 9 y los dos primeros bandidos se recorren 3.5 y 1 u, para que la zona de carteles sea segura.
 
 ---
 
