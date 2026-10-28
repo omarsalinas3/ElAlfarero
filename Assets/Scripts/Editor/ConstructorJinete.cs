@@ -5,39 +5,25 @@ using UnityEngine;
 using static ConfigurarSprint1;
 
 /// <summary>
-/// Jefe del Nivel 2 (#55, #56): el Jinete sin Cabeza, su Animator y el encuentro en el patio de la capilla.
-/// Cuadros de la hoja de Flow (Docs/Arte/Flow/jinete_flow.jpg → Art/Sprites/Bosses/jinete_*). Mientras no existan,
-/// usa provisionalmente al bandido del machete oscurecido, para poder probar la pelea.
+/// Jefe del Nivel 2 (#55, #56): el Jinete sin Cabeza, su Animator, la calavera en llamas que lanza y el encuentro en el
+/// patio de la capilla. Cuadros de la hoja de Flow (Docs/Arte/Flow/jinete_flow.jpg, hecha a partir de
+/// jinete_referencia_flow.jpg) recortados con Docs/Arte/recortar_hoja.py; el arte mira a la derecha.
 /// Animator: Reposo / Galope por "Velocidad", "Muerto" como bool; Sablazo, Lanzar y Golpe se reproducen desde la IA.
 /// </summary>
 public static partial class ConstructorJuego
 {
     const string RutaPrefabJinete = "Assets/Prefabs/Bosses/Jinete.prefab";
 
-    static bool HayArteJinete => File.Exists("Assets/Art/Sprites/Bosses/jinete_galope_00.png");
-
     static RuntimeAnimatorController CrearAnimacionesJinete()
     {
         Directory.CreateDirectory("Assets/Art/Animations/Jinete");
         AssetDatabase.Refresh();
-        Sprite[] galope, sablazo, lanzar, golpe, muerte;
-        if (HayArteJinete)
-        {
-            const string pre = "Bosses/jinete";
-            galope = Cuadros(pre + "_galope", 4);
-            sablazo = Cuadros(pre + "_sablazo", 4);
-            lanzar = Cuadros(pre + "_lanzar", 4);
-            golpe = Cuadros(pre + "_golpe", 1);
-            muerte = Cuadros(pre + "_muerte", 3);
-        }
-        else
-        {
-            const string pre = "Enemies/bandido_machete";
-            galope = Cuadros(pre + "_correr", 4);
-            sablazo = lanzar = Cuadros(pre + "_ataque", 3);
-            golpe = Cuadros(pre + "_golpe", 1);
-            muerte = Cuadros(pre + "_muerte", 4);
-        }
+        const string pre = "Bosses/jinete";
+        Sprite[] galope = Cuadros(pre + "_galope", 4);
+        Sprite[] sablazo = Cuadros(pre + "_sablazo", 4);
+        Sprite[] lanzar = Cuadros(pre + "_lanzar", 4);
+        Sprite[] golpe = Cuadros(pre + "_golpe", 1);
+        Sprite[] muerte = Cuadros(pre + "_muerte", 3);
 
         AnimationClip reposo = CrearClip("Jinete/Jinete_Reposo", new[] { galope[0] }, 1f, true);
         AnimationClip cGalope = CrearClip("Jinete/Jinete_Galope", galope, 10f, true);
@@ -73,14 +59,12 @@ public static partial class ConstructorJuego
         RuntimeAnimatorController ctrl = CrearAnimacionesJinete();
         Directory.CreateDirectory("Assets/Prefabs/Bosses");
         var go = new GameObject("Jinete") { layer = CapaEnemy };
-        if (!HayArteJinete) go.transform.localScale = new Vector3(1.3f, 1.3f, 1f);
 
         var visual = new GameObject("Visual") { layer = CapaEnemy };
         visual.transform.SetParent(go.transform, false);
         var sr = visual.AddComponent<SpriteRenderer>();
-        sr.sprite = HayArteJinete ? Spr("Bosses/jinete_galope_00.png") : Spr("Enemies/bandido_machete_correr_00.png");
+        sr.sprite = Spr("Bosses/jinete_galope_00.png");
         sr.sortingOrder = 6;
-        if (!HayArteJinete) sr.color = new Color(0.55f, 0.45f, 0.7f);   // Provisional: un bandido "fantasma"
         visual.AddComponent<Animator>().runtimeAnimatorController = ctrl;
 
         var rb = go.AddComponent<Rigidbody2D>();
@@ -90,10 +74,9 @@ public static partial class ConstructorJuego
         var col = go.AddComponent<BoxCollider2D>();
         col.isTrigger = true;
         // Caballo y torso del jinete: a esta altura el salto de Mateo alcanza a librarlo en las cargas
-        float escala = go.transform.localScale.y;
         Vector2 tam = sr.sprite.bounds.size;
-        col.size = new Vector2(tam.x * 0.7f, 2.4f / escala);
-        col.offset = new Vector2(0f, 1.2f / escala);
+        col.size = new Vector2(tam.x * 0.6f, 2.4f);
+        col.offset = new Vector2(tam.x * 0.05f, 1.2f);
 
         var salud = go.AddComponent<Health>();
         var soS = new SerializedObject(salud);
@@ -125,11 +108,33 @@ public static partial class ConstructorJuego
         return Guardar(go, RutaPrefabJinete).GetComponent<JefeJinete>();
     }
 
+    /// <summary>La calavera en llamas de la linterna: una BalaEnemiga más (se recicla y solo choca con Mateo y el suelo).</summary>
+    static BalaEnemiga CrearCalavera()
+    {
+        var go = new GameObject("Calavera_Fuego") { layer = CapaProyectilEnemigo };
+        var visual = new GameObject("Visual") { layer = CapaProyectilEnemigo };
+        visual.transform.SetParent(go.transform, false);
+        var sr = visual.AddComponent<SpriteRenderer>();
+        sr.sprite = Spr("Projectiles/jinete_calavera_00.png");   // La calavera va a la derecha, hacia "transform.right"
+        sr.sortingOrder = 20;
+        var rb = go.AddComponent<Rigidbody2D>();
+        rb.bodyType = RigidbodyType2D.Kinematic;
+        rb.gravityScale = 0f;
+        var col = go.AddComponent<CircleCollider2D>();
+        col.isTrigger = true;
+        col.radius = 0.25f;
+        col.offset = new Vector2(sr.sprite.bounds.extents.x * 0.6f, 0f);   // En la calavera, no en la estela
+        var bala = go.AddComponent<BalaEnemiga>();
+        var so = new SerializedObject(bala);
+        so.FindProperty("tiempoVida").floatValue = 3f;
+        so.ApplyModifiedPropertiesWithoutUndo();
+        return Guardar(go, "Assets/Prefabs/Projectiles/Calavera_Fuego.prefab").GetComponent<BalaEnemiga>();
+    }
+
     /// <summary>Jinete dormido fuera de la pantalla y el disparador de su cinemática al entrar al patio.</summary>
     static EncuentroJinete CrearEncuentroJinete(float inicioArena, float derecha, BarraJefe barra, Transform enemigos)
     {
-        BalaEnemiga calavera = Cargar<BalaEnemiga>("Assets/Prefabs/Projectiles/Bola_Fuego.prefab");
-        JefeJinete prefab = CrearPrefabJinete(calavera);
+        JefeJinete prefab = CrearPrefabJinete(CrearCalavera());
         var jinete = (GameObject)PrefabUtility.InstantiatePrefab(prefab.gameObject, enemigos);
         jinete.transform.position = new Vector3(derecha + 3f, YSuelo, 0f);
 
