@@ -7,7 +7,7 @@ using UnityEngine.TestTools;
 
 /// <summary>
 /// Pruebas de la issue #32: el Nivel 2 (Mineral de Pozos) es más difícil que Dolores, deja libres la cañada
-/// para la estampida y el patio de la capilla para el Jinete, y llegar a la capilla lo completa y lo guarda.
+/// para la estampida y el patio de la capilla para el Jinete, y vencer al Jinete lo completa y lo guarda.
 /// </summary>
 public class NivelDosTests
 {
@@ -67,7 +67,7 @@ public class NivelDosTests
     }
 
     [UnityTest]
-    public IEnumerator Nivel2_LlegarALaCapillaLoCompletaYLoGuarda()
+    public IEnumerator Nivel2_VencerAlJineteLoCompletaYLoGuarda()
     {
         yield return SceneManager.LoadSceneAsync("Nivel2_Pozos", LoadSceneMode.Single);
         yield return new WaitForSeconds(0.5f);
@@ -77,13 +77,18 @@ public class NivelDosTests
         Assert.AreEqual("CRUZA EL PUEBLO FANTASMA", gestor.Objetivo);
 
         var rb = jugador.GetComponent<Rigidbody2D>();
-        Vector2 pos = new Vector2(GameObject.Find("Meta_Capilla").transform.position.x - 1f, jugador.transform.position.y + 0.1f);
+        var encuentro = Object.FindFirstObjectByType<EncuentroJinete>();
+        Vector2 pos = new Vector2(encuentro.transform.position.x, jugador.transform.position.y + 0.1f);
         rb.position = pos;
         jugador.transform.position = pos;
-        rb.linearVelocity = new Vector2(4f, 0f);
-        yield return new WaitForSeconds(1f);
+        float limite = Time.time + 10f;
+        while (!encuentro.PeleaEmpezada && Time.time < limite) yield return null;
+        Assert.IsTrue(encuentro.PeleaEmpezada, "Entrar al patio despierta al Jinete");
+        Assert.AreNotEqual(GestorNivel.Estado.Victoria, gestor.EstadoActual, "Llegar a la capilla ya no basta");
 
-        Assert.AreEqual(GestorNivel.Estado.Victoria, gestor.EstadoActual, "Llegar a la capilla completa el nivel");
+        Object.FindFirstObjectByType<JefeJinete>().Salud.RecibirDano(10000);
+        yield return new WaitForSeconds(3.5f);
+        Assert.AreEqual(GestorNivel.Estado.Victoria, gestor.EstadoActual, "Vencer al Jinete completa el nivel");
         Assert.IsNotNull(GestorGuardado.Datos.Record(2), "Se guarda el récord del Nivel 2");
         Assert.AreEqual(3, GestorGuardado.Datos.nivelDesbloqueado);
     }
