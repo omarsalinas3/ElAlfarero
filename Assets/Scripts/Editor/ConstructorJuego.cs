@@ -173,6 +173,8 @@ public static partial class ConstructorJuego
             (Sfx.Escopetazo, new[] { "escopetazo" }, 0.6f),
             (Sfx.Machetazo, new[] { "machetazo" }, 0.55f),
             (Sfx.RugidoAlebrije, new[] { "rugido_alebrije" }, 0.95f),
+            (Sfx.AullidoNahual, new[] { "aullido_nahual" }, 0.8f),
+            (Sfx.Estampida, new[] { "estampida" }, 0.9f),
         };
         b.efectos = efectos.Select(e => new BibliotecaAudio.EntradaSfx
         {

@@ -7,7 +7,8 @@ public enum Sfx
     Salto, Evadir, Lanzar, ImpactoCeramica, Golpe, DanoJugador, MuerteEsqueleto,
     RomperHuacal, RomperHorno, RecogerGuacamaya, Moneda, RecogerCaguama, BeberCaguama,
     MenuMover, MenuAceptar, Pausa, JingleGameOver, JingleVictoria, JingleMision,
-    Disparo, Escopetazo, Machetazo, RugidoAlebrije
+    Disparo, Escopetazo, Machetazo, RugidoAlebrije,
+    AullidoNahual, Estampida
 }
 
 public enum Musica { Ninguna, Menu, Intro, Nivel1, Nivel2 }

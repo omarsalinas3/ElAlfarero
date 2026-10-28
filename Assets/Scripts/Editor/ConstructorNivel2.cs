@@ -86,8 +86,7 @@ public static partial class ConstructorJuego
         Poner(p.hornoCaguama, 42.5f, YSuelo, obstaculos);       // Caguama antes de la cañada
 
         // Tramo 4: la cañada queda plana y sin obstáculos para la estampida de nahuales (#53)
-        var estampida = new GameObject("Zona_Estampida");
-        estampida.transform.position = new Vector3((InicioEstampida + FinEstampida) / 2f, YSuelo + 2f, 0f);
+        CrearEstampida((InicioEstampida + FinEstampida) / 2f);
         Poner(p.guacamaya, FinEstampida - 1.5f, YSuelo + 0.7f, recogibles);
 
         // Tramo 5: patio de la capilla, libre como arena del Jinete sin Cabeza (#56)

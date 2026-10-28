@@ -59,6 +59,7 @@ public class ImportadorSprites : AssetPostprocessor
         if (nombre.StartsWith("esqueleto_")) return 46f;      // Minero animado: mide igual que el sprite fijo (prefab a escala 0.55)
         if (nombre.StartsWith("bruja_bola")) return 160f;     // Bola de fuego: ~1.2 u de largo con todo y estela
         if (nombre.StartsWith("bruja_")) return 110f;         // Bruja de Fuego: ~2.9 u de ancho, como un bandido acostado
+        if (nombre.StartsWith("nahual_")) return 155f;        // Nahual de la estampida: ~2.8 u de largo y ~1.8 de alto, más bajo que el salto de Mateo
 
         switch (carpeta)
         {
