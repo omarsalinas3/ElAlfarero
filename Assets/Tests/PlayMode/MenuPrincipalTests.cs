@@ -77,7 +77,9 @@ public class MenuPrincipalTests
         var continuar = Boton("PanelMenu", "Continuar");
         Assert.IsTrue(continuar.interactable);
         continuar.onClick.Invoke();
-        yield return new WaitForSeconds(1.5f);
+        // Fundido más la carga del nivel (la primera vez tarda más): se espera a que cambie la escena, con límite
+        float limite = Time.realtimeSinceStartup + 6f;
+        while (SceneManager.GetActiveScene().name == "MenuPrincipal" && Time.realtimeSinceStartup < limite) yield return null;
         Assert.AreEqual("Nivel2_Pozos", SceneManager.GetActiveScene().name, "Ganar Dolores desbloquea Mineral de Pozos");
     }
 
