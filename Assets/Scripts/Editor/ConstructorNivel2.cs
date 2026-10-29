@@ -8,6 +8,7 @@ using static ConfigurarSprint1;
 /// Nivel 2: Mineral de Pozos (pueblo fantasma y ruinas mineras de noche con tormenta). Lo arma
 /// "Alfarero > Construir juego completo" junto con el resto; reutiliza los helpers de ConstructorJuego.
 ///
+/// Empieza con Mateo llegando montado en el alebrije; la Bruja de Fuego lo tumba y sigue a pie (LlegadaMontado).
 /// Recorrido (5 tramos de Flow): hornos de Santa Brígida → calle del pueblo → bocamina con emboscada →
 /// cañada (reservada para la estampida de nahuales, #53) → capilla en ruinas (arena del Jinete sin Cabeza, #56).
 /// Más difícil que Dolores: más esqueletos y bandidos, Brujas de Fuego que atacan desde el aire, emboscada de 3 oleadas
@@ -37,7 +38,7 @@ public static partial class ConstructorJuego
         Scene escena = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         var prefabAlfarero = AssetDatabase.LoadAssetAtPath<GameObject>(RutaPrefabAlfarero);
         var prefabMinero = AssetDatabase.LoadAssetAtPath<GameObject>(RutaPrefabEsqueleto);
-        GameObject jugador = CrearBaseNivel(prefabAlfarero, SegmentosNivel2, out _, out float derecha);
+        GameObject jugador = CrearBaseNivel(prefabAlfarero, SegmentosNivel2, out float izquierda, out float derecha);
 
         // Al guardar prefabs Unity puede invalidar las referencias en memoria: se recargan de disco
         p.revolver = Cargar<IABandido>("Assets/Prefabs/Enemies/Bandido_Revolver.prefab");
@@ -46,6 +47,9 @@ public static partial class ConstructorJuego
         p.machete = Cargar<IABandido>("Assets/Prefabs/Enemies/Bandido_Machete.prefab");
 
         IABruja bruja = CrearPrefabBruja();
+
+        // Mateo llega montado en el alebrije y una bola de fuego de la Bruja lo tumba (#50)
+        PonerLlegadaMontado(jugador, Cargar<BalaEnemiga>("Assets/Prefabs/Projectiles/Bola_Fuego.prefab"), izquierda);
 
         var obstaculos = new GameObject("Obstaculos").transform;
         var enemigos = new GameObject("Enemigos").transform;

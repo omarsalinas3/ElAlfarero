@@ -64,6 +64,7 @@ public class RendimientoTests
     {
         yield return SceneManager.LoadSceneAsync(escena, LoadSceneMode.Single);
         yield return new WaitForSeconds(1f);                 // Que pase la carga inicial
+        yield return EsperaLlegada.Terminar();               // Nivel 2: que termine la llegada montada
         var jugador = Object.FindFirstObjectByType<PlayerController>();
         var rb = jugador.GetComponent<Rigidbody2D>();
         jugador.GetComponent<Health>().HacerInvulnerable(999f);
