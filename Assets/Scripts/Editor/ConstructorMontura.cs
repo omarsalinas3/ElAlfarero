@@ -87,4 +87,24 @@ public static partial class ConstructorJuego
         go.SetActive(false);                                     // Aparece cuando se rompe el hechizo
         Asignar(jefe, "montura", montura);
     }
+
+    /// <summary>
+    /// Inicio del Nivel 2: Mateo llega montado y la Bruja lo tumba (LlegadaMontado). Usa el prefab de la montura que ya
+    /// armó el Nivel 1, sin meta (aquí no completa nada).
+    /// </summary>
+    static void PonerLlegadaMontado(GameObject jugador, BalaEnemiga bolaBruja, float xIzquierda)
+    {
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(RutaPrefabMontura);
+        var go = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
+        go.transform.position = jugador.transform.position;
+        go.SetActive(false);
+
+        var llegada = new GameObject("Llegada_Montado").AddComponent<LlegadaMontado>();
+        var so = new SerializedObject(llegada);
+        so.FindProperty("montura").objectReferenceValue = go.GetComponent<MonturaAlebrije>();
+        so.FindProperty("prefabBola").objectReferenceValue = bolaBruja;
+        so.FindProperty("xInicio").floatValue = xIzquierda + 1.2f;                // Desde la orilla del nivel
+        so.FindProperty("xLlegada").floatValue = jugador.transform.position.x;
+        so.ApplyModifiedPropertiesWithoutUndo();
+    }
 }
