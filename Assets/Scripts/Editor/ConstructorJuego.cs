@@ -173,6 +173,8 @@ public static partial class ConstructorJuego
             (Sfx.Escopetazo, new[] { "escopetazo" }, 0.6f),
             (Sfx.Machetazo, new[] { "machetazo" }, 0.55f),
             (Sfx.RugidoAlebrije, new[] { "rugido_alebrije" }, 0.95f),
+            (Sfx.AullidoNahual, new[] { "aullido_nahual" }, 0.8f),
+            (Sfx.Estampida, new[] { "estampida" }, 0.9f),
         };
         b.efectos = efectos.Select(e => new BibliotecaAudio.EntradaSfx
         {
@@ -651,14 +653,16 @@ public static partial class ConstructorJuego
         var recogibles = new GameObject("Recogibles").transform;
         float altoHuacal = Spr("Obstacles/huacal_00.png").bounds.size.y * 0.9f;   // para apilar
 
+        CrearTutorial();
+
         // Recorrido: Dolores -> calle del horno -> plaza -> callejón -> parroquia
         Poner(p.caguama, -1f, YSuelo + 0.7f, recogibles);
         Poner(p.huacalMonedas, 3f, YSuelo, obstaculos);
-        Minero(prefabMinero, 7f, enemigos);
+        Minero(prefabMinero, 9f, enemigos);                       // Después de los carteles del tutorial (zona segura)
         Poner(p.maceta, 10.5f, 0f, obstaculos);
-        PonerBandido(p.machete, 12f, -1, enemigos);
+        PonerBandido(p.machete, 15.5f, -1, enemigos);             // Su visión (11 u) no alcanza los carteles
         Poner(p.hornoCaguama, 14f, YSuelo, obstaculos);
-        PonerBandido(p.revolver, 16.5f, -1, enemigos);
+        PonerBandido(p.revolver, 17.5f, -1, enemigos);
         Poner(p.escombros, 18.5f, YSuelo, obstaculos);
         Poner(p.huacalMonedas, 23f, YSuelo, obstaculos);
         Poner(p.huacalGuacamaya, 23f, YSuelo + altoHuacal, obstaculos);
@@ -683,6 +687,7 @@ public static partial class ConstructorJuego
         float puerta = Mathf.Min(74.5f, derecha - 5f);
         var alebrije = (GameObject)PrefabUtility.InstantiatePrefab(p.alebrije.gameObject, enemigos);
         alebrije.transform.position = new Vector3(puerta + 2f, YSuelo, 0f);
+        PonerMontura(alebrije.GetComponent<JefeAlebrije>(), derecha - 2f, null);   // Al vencerlo se vuelve montura (#50)
 
         // Interfaz
         CrearEventSystem();

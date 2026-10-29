@@ -12,7 +12,7 @@ using static ConfigurarSprint1;
 /// cañada (reservada para la estampida de nahuales, #53) → capilla en ruinas (arena del Jinete sin Cabeza, #56).
 /// Más difícil que Dolores: más esqueletos y bandidos, Brujas de Fuego que atacan desde el aire, emboscada de 3 oleadas
 /// y menos curación.
-/// Mientras no exista el Jinete, llegar a la puerta de la capilla completa el nivel (MetaNivel).
+/// Vencer al Jinete sin Cabeza en el patio de la capilla completa el nivel.
 /// </summary>
 public static partial class ConstructorJuego
 {
@@ -86,8 +86,7 @@ public static partial class ConstructorJuego
         Poner(p.hornoCaguama, 42.5f, YSuelo, obstaculos);       // Caguama antes de la cañada
 
         // Tramo 4: la cañada queda plana y sin obstáculos para la estampida de nahuales (#53)
-        var estampida = new GameObject("Zona_Estampida");
-        estampida.transform.position = new Vector3((InicioEstampida + FinEstampida) / 2f, YSuelo + 2f, 0f);
+        CrearEstampida((InicioEstampida + FinEstampida) / 2f);
         Poner(p.guacamaya, FinEstampida - 1.5f, YSuelo + 0.7f, recogibles);
 
         // Tramo 5: patio de la capilla, libre como arena del Jinete sin Cabeza (#56)
@@ -95,15 +94,12 @@ public static partial class ConstructorJuego
         var arena = new GameObject("Arena_Jinete");
         arena.transform.position = new Vector3(inicioArena + ArenaLargo / 2f, YSuelo + 2f, 0f);
 
-        // Provisional hasta que exista el Jinete: llegar a la puerta de la capilla completa el nivel
-        var meta = new GameObject("Meta_Capilla");
-        meta.transform.position = new Vector3(derecha - 6f, YSuelo + 2f, 0f);
-        meta.AddComponent<BoxCollider2D>().size = new Vector2(1f, 8f);
-        meta.AddComponent<MetaNivel>();
-
         // Interfaz
         CrearEventSystem();
         var hud = CrearHud(jugador, out BannerMision banner);
+
+        // Jefe: el Jinete sin Cabeza sale de entre las ruinas al entrar al patio; vencerlo completa el nivel (#56)
+        EncuentroJinete encuentro = CrearEncuentroJinete(inicioArena, derecha, CrearBarraJefe(hud.transform), enemigos);
         MenuPausa pausa = CrearMenuPausa();
         PantallaFinal gameOver = CrearPantallaFinal("GameOver", new Color(0.95f, 0.2f, 0.15f), new Color(0.12f, 0f, 0f, 0.8f), "REINTENTAR", 40);
         PantallaFinal victoria = CrearPantallaFinal("Victoria", Dorado, new Color(0f, 0.04f, 0.14f, 0.8f), "JUGAR DE NUEVO", 41, true);
@@ -123,7 +119,7 @@ public static partial class ConstructorJuego
         so.FindProperty("musica").enumValueIndex = (int)Musica.Nivel2;
         so.FindProperty("objetivoRecorrido").stringValue = "CRUZA EL PUEBLO FANTASMA";
         so.FindProperty("xInicioRecorrido").floatValue = jugador.transform.position.x;
-        so.FindProperty("xFinRecorrido").floatValue = meta.transform.position.x;
+        so.FindProperty("xFinRecorrido").floatValue = encuentro.transform.position.x;   // Donde arranca el jefe
         so.ApplyModifiedPropertiesWithoutUndo();
         Asignar(hud, "gestor", gestor);
 

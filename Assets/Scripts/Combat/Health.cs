@@ -19,6 +19,9 @@ public class Health : MonoBehaviour
     /// <summary>Invulnerabilidad manual mientras esté en true (ej. durante la evasión del jugador).</summary>
     public bool Invulnerable { get; set; }
 
+    /// <summary>Si hay protector vivo, el daño se lo lleva él (ej. la montura mientras Mateo va montado).</summary>
+    public Health Protector { get; set; }
+
     /// <summary>True si ahora mismo ignora el daño, ya sea por Invulnerable o por un tiempo (golpe recibido, caguama).</summary>
     public bool EsInvulnerable => Invulnerable || Time.time < invulnerableHasta;
     public float InvulnerableRestante => Mathf.Max(0f, invulnerableHasta - Time.time);
@@ -35,6 +38,11 @@ public class Health : MonoBehaviour
     public void RecibirDano(int cantidad)
     {
         if (EstaMuerto || EsInvulnerable || cantidad <= 0) return;
+        if (Protector != null && !Protector.EstaMuerto)
+        {
+            Protector.RecibirDano(cantidad);
+            return;
+        }
 
         VidaActual = Mathf.Max(0, VidaActual - cantidad);
         OnDano?.Invoke(cantidad);
