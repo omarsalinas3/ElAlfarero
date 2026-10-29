@@ -2,7 +2,10 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 /// <summary>
-/// Apuntado con el mouse y disparo continuo (mantener clic izquierdo, estilo Metal Slug).
+/// Apuntado y disparo continuo (mantener clic izquierdo o Espacio, estilo Metal Slug).
+/// Gana el último control que se usó: si se mueve el mouse se apunta hacia él; si se camina con las flechas
+/// (PlayerController llama a UsarTeclado) o se lanza con Espacio, se apunta al frente, hacia donde mira Mateo.
+/// Con teclado, mantener flecha arriba apunta hacia arriba (mientras se lanza, esa flecha no salta: ver PlayerController).
 /// Es el único script que lee la posición del mouse; PlayerController usa DireccionApuntado para voltear al personaje.
 /// El arma actual es un CeramicaData: el cambio de cerámica del Sprint 3 solo llama a EquiparCeramica().
 /// </summary>
@@ -12,18 +15,43 @@ public class PlayerShooter : MonoBehaviour
     [SerializeField] CeramicaData ceramicaActual;
     [SerializeField] Transform puntoDisparo;      // Hijo del jugador, colocado en la mano / boca del arma
 
+    [Header("Mouse contra teclado")]
+    [Tooltip("Píxeles que hay que mover el mouse (seguidos) para que vuelva a mandar sobre el teclado.")]
+    [SerializeField] float umbralMouse = 40f;
+    [Tooltip("Píxeles por segundo que se olvidan: el temblor de la mano no se acumula hasta pasar el umbral.")]
+    [SerializeField] float olvidoMouse = 120f;
+
     InputAction accionDisparar;
     Camera camara;
+    PlayerController controlador;
     float proximoDisparo;
+    Vector2 ultimaPosMouse;
+    bool posMouseLeida;
+    float movimientoMouse;       // Movimiento reciente acumulado del mouse, en píxeles
 
-    /// <summary>Dirección normalizada desde el punto de disparo hacia el mouse.</summary>
+    /// <summary>Dirección normalizada del disparo: hacia el mouse, o al frente si se está usando el teclado.</summary>
     public Vector2 DireccionApuntado { get; private set; } = Vector2.right;
+
+    /// <summary>True si el último control usado fue el mouse (moverlo o dar clic).</summary>
+    public bool UsandoMouse { get; private set; }
+
+    /// <summary>Lo llama PlayerController al caminar con las flechas o A/D: desde ahí se apunta al frente.</summary>
+    public void UsarTeclado()
+    {
+        UsandoMouse = false;
+        movimientoMouse = 0f;
+    }
+
+    /// <summary>Se está manteniendo Espacio: PlayerController no salta con la flecha arriba, que en ese momento apunta.</summary>
+    public bool LanzandoConTeclado => Keyboard.current != null && Keyboard.current.spaceKey.isPressed;
     public CeramicaData CeramicaActual => ceramicaActual;
 
     void Awake()
     {
         camara = Camera.main;
+        controlador = GetComponent<PlayerController>();
         accionDisparar = new InputAction("Disparar", InputActionType.Button, "<Mouse>/leftButton");
+        accionDisparar.AddBinding("<Keyboard>/space");
 
         if (puntoDisparo == null)
         {
@@ -37,6 +65,9 @@ public class PlayerShooter : MonoBehaviour
 
     void Update()
     {
+        // En pausa, muerto o en una cinemática no se apunta ni se dispara (el clic es para los menús)
+        if (Time.timeScale == 0f || (controlador != null && !controlador.ControlActivo)) return;
+
         ActualizarApuntado();
 
         if (ceramicaActual == null || ceramicaActual.prefabProyectil == null) return;
@@ -50,7 +81,16 @@ public class PlayerShooter : MonoBehaviour
 
     void ActualizarApuntado()
     {
-        if (Mouse.current == null || camara == null) return;
+        DetectarMouse();
+        if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame) UsarTeclado();
+
+        if (!UsandoMouse || camara == null)
+        {
+            // Con teclado se lanza al frente, hacia donde mira Mateo, o hacia arriba con la flecha (estilo Metal Slug)
+            bool arriba = Keyboard.current != null && Keyboard.current.upArrowKey.isPressed;
+            DireccionApuntado = arriba ? Vector2.up : new Vector2(controlador != null ? controlador.DireccionMirada : 1, 0f);
+            return;
+        }
 
         Vector2 pantalla = Mouse.current.position.ReadValue();
         Vector3 mundo = camara.ScreenToWorldPoint(new Vector3(pantalla.x, pantalla.y, -camara.transform.position.z));
@@ -62,6 +102,20 @@ public class PlayerShooter : MonoBehaviour
         {
             DireccionApuntado = direccion.normalized;
         }
+    }
+
+    void DetectarMouse()
+    {
+        if (Mouse.current == null) { UsandoMouse = false; return; }
+
+        // Un roce del mouse no le quita el control al teclado: hay que moverlo de verdad (umbralMouse píxeles seguidos)
+        Vector2 pos = Mouse.current.position.ReadValue();
+        movimientoMouse = Mathf.Max(0f, movimientoMouse - olvidoMouse * Time.unscaledDeltaTime);
+        if (posMouseLeida) movimientoMouse += (pos - ultimaPosMouse).magnitude;
+        if (movimientoMouse > umbralMouse) UsandoMouse = true;
+        if (Mouse.current.leftButton.isPressed) UsandoMouse = true;
+        ultimaPosMouse = pos;
+        posMouseLeida = true;
     }
 
     void Disparar()
@@ -76,7 +130,7 @@ public class PlayerShooter : MonoBehaviour
 
             float angulo = Mathf.Atan2(direccion.y, direccion.x) * Mathf.Rad2Deg;
 
-            Projectile proyectil = Instantiate(
+            Projectile proyectil = Reciclaje.Sacar(
                 ceramicaActual.prefabProyectil,
                 puntoDisparo.position,
                 Quaternion.Euler(0f, 0f, angulo));
@@ -84,7 +138,8 @@ public class PlayerShooter : MonoBehaviour
             proyectil.Inicializar(ceramicaActual, direccion);
         }
 
-        // TODO (Sprint 2/6): animación de disparo y SFX
+        GestorAudio.Reproducir(Sfx.Lanzar, 0.1f);
+        // TODO (Sprint 2/6): animación de disparo
     }
 
     /// <summary>Se usará en el Sprint 3 al recoger cerámicas / cambiar de arma.</summary>

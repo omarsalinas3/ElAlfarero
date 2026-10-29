@@ -16,7 +16,7 @@ using UnityEngine.SceneManagement;
 public static class ConfigurarSprint1
 {
     // Capas (índices fijos para que coincidan entre máquinas)
-    const int CapaGround = 6, CapaPlayer = 7, CapaEnemy = 8, CapaProjectile = 9;
+    internal const int CapaGround = 6, CapaPlayer = 7, CapaEnemy = 8, CapaProjectile = 9;
 
     // Mundo: el fondo mide 21.5 x 12 unidades; el suelo (adoquín) queda en y = -4.5
     const float PixelesPorUnidadFondo = 128f;
@@ -31,10 +31,12 @@ public static class ConfigurarSprint1
         ("lvl1_seg04.png", 384),
         ("lvl1_seg05.png", 828),
     };
-    const float YSuelo = -4.5f;
+    internal const float YSuelo = -4.5f;
 
-    const string Sprites = "Assets/Art/Sprites/";
-    const string RutaEscena = "Assets/Scenes/Sandbox.unity";
+    internal const string Sprites = "Assets/Art/Sprites/";
+    internal const string RutaEscena = "Assets/Scenes/Sandbox.unity";
+    internal const string RutaPrefabAlfarero = "Assets/Prefabs/Player/Alfarero.prefab";
+    internal const string RutaPrefabMinero = "Assets/Prefabs/Enemies/Minero_Dummy.prefab";
 
     [MenuItem("Alfarero/Sprint 1/Construir Sandbox")]
     public static void Construir()
@@ -124,7 +126,9 @@ public static class ConfigurarSprint1
         Sprite[] run = new Sprite[5];
         for (int i = 0; i < 5; i++) run[i] = Spr($"Player/mateo_run_{i:00}.png");
 
-        AnimationClip idle = CrearClip("Mateo_Idle", new[] { run[4] }, 1f, true);
+        // Reposo y muerte salen de la hoja de Flow (mateo_idle_XX / mateo_muerte_XX)
+        AnimationClip idle = CrearClip("Mateo_Idle", Cuadros("Player/mateo_idle", 4), 5f, true);
+        AnimationClip morir = CrearClip("Mateo_Muerte", Cuadros("Player/mateo_muerte", 4), 7f, false);
         AnimationClip correr = CrearClip("Mateo_Run", run, 12f, true);
         AnimationClip saltar = CrearClip("Mateo_Jump", new[] { run[2] }, 1f, true);
         AnimationClip evadir = CrearClip("Mateo_Evadir", new[] { run[0] }, 1f, true);
@@ -135,12 +139,14 @@ public static class ConfigurarSprint1
         ctrl.AddParameter("Velocidad", AnimatorControllerParameterType.Float);
         ctrl.AddParameter("EnSuelo", AnimatorControllerParameterType.Bool);
         ctrl.AddParameter("Evadiendo", AnimatorControllerParameterType.Bool);
+        ctrl.AddParameter("Muerto", AnimatorControllerParameterType.Bool);
 
         AnimatorStateMachine sm = ctrl.layers[0].stateMachine;
         AnimatorState sIdle = sm.AddState("Idle"); sIdle.motion = idle;
         AnimatorState sRun = sm.AddState("Run"); sRun.motion = correr;
         AnimatorState sJump = sm.AddState("Jump"); sJump.motion = saltar;
         AnimatorState sEvadir = sm.AddState("Evadir"); sEvadir.motion = evadir;
+        AnimatorState sMuerte = sm.AddState("Muerte"); sMuerte.motion = morir;
         sm.defaultState = sIdle;
 
         Transicion(sIdle, sRun).AddCondition(AnimatorConditionMode.Greater, 0.3f, "Velocidad");
@@ -154,25 +160,37 @@ public static class ConfigurarSprint1
         Transicion(sm, sEvadir).AddCondition(AnimatorConditionMode.If, 0, "Evadiendo");
         Transicion(sEvadir, sIdle).AddCondition(AnimatorConditionMode.IfNot, 0, "Evadiendo");
 
+        // Muerte gana sobre todo lo demás (y las transiciones de arriba no aplican mientras esté muerto)
+        Transicion(sm, sMuerte).AddCondition(AnimatorConditionMode.If, 0, "Muerto");
+        foreach (var t in sm.anyStateTransitions)
+            if (t.destinationState != sMuerte) t.AddCondition(AnimatorConditionMode.IfNot, 0, "Muerto");
+
         EditorUtility.SetDirty(ctrl);
         return ctrl;
     }
 
-    static AnimatorStateTransition Transicion(AnimatorState desde, AnimatorState hasta)
+    internal static Sprite[] Cuadros(string prefijo, int n)
+    {
+        var cuadros = new Sprite[n];
+        for (int i = 0; i < n; i++) cuadros[i] = Spr($"{prefijo}_{i:00}.png");
+        return cuadros;
+    }
+
+    internal static AnimatorStateTransition Transicion(AnimatorState desde, AnimatorState hasta)
     {
         AnimatorStateTransition t = desde.AddTransition(hasta);
         t.hasExitTime = false; t.duration = 0f;
         return t;
     }
 
-    static AnimatorStateTransition Transicion(AnimatorStateMachine sm, AnimatorState hasta)
+    internal static AnimatorStateTransition Transicion(AnimatorStateMachine sm, AnimatorState hasta)
     {
         AnimatorStateTransition t = sm.AddAnyStateTransition(hasta);
         t.hasExitTime = false; t.duration = 0f; t.canTransitionToSelf = false;
         return t;
     }
 
-    static AnimationClip CrearClip(string nombre, Sprite[] cuadros, float fps, bool loop)
+    internal static AnimationClip CrearClip(string nombre, Sprite[] cuadros, float fps, bool loop)
     {
         string ruta = $"Assets/Art/Animations/{nombre}.anim";
         AssetDatabase.DeleteAsset(ruta);
@@ -270,6 +288,8 @@ public static class ConfigurarSprint1
         raiz.AddComponent<ParpadeoDano>();
         var controlador = raiz.AddComponent<PlayerController>();
         var tirador = raiz.AddComponent<PlayerShooter>();
+        raiz.AddComponent<InventarioJugador>();
+        raiz.AddComponent<ReaccionDanoJugador>();
 
         // Visual: sprite + animator (pivote en los pies)
         var visual = new GameObject("Visual") { layer = CapaPlayer };
@@ -299,7 +319,7 @@ public static class ConfigurarSprint1
         soTir.FindProperty("puntoDisparo").objectReferenceValue = puntoDisparo.transform;
         soTir.ApplyModifiedPropertiesWithoutUndo();
 
-        return Guardar(raiz, "Assets/Prefabs/Player/Alfarero.prefab");
+        return Guardar(raiz, RutaPrefabAlfarero);
     }
 
     static GameObject CrearPrefabDummy()
@@ -321,8 +341,17 @@ public static class ConfigurarSprint1
         so.ApplyModifiedPropertiesWithoutUndo();
 
         go.AddComponent<ParpadeoDano>();
+        go.AddComponent<EnemigoBasico>();
+
+        // Sin IA todavía: lastima al tocarlo
+        var dano = go.AddComponent<DanoPorContacto>();
+        var soDano = new SerializedObject(dano);
+        soDano.FindProperty("dano").intValue = 10;
+        soDano.FindProperty("capasObjetivo").FindPropertyRelative("m_Bits").intValue = 1 << CapaPlayer;
+        soDano.ApplyModifiedPropertiesWithoutUndo();
+
         go.transform.localScale = Vector3.one * 0.55f;  // El sprite del minero sale más grande que el de Mateo (~2 unidades de alto)
-        return Guardar(go, "Assets/Prefabs/Enemies/Minero_Dummy.prefab");
+        return Guardar(go, RutaPrefabMinero);
     }
 
     // ------------------------------------------------------------------ Escena
@@ -330,42 +359,13 @@ public static class ConfigurarSprint1
     {
         Scene escena = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         Sprite pixel = Spr("Environment/pixel_blanco.png");
-
-        // Fondo: segmentos distintos en orden. Cada uno (salvo el 1.º) trae el borde izquierdo con degradado
-        // de transparencia y se superpone Solape unidades sobre el anterior, así la unión no se nota.
-        var fondos = new GameObject("Fondo");
-        float xCentro = 0f;
-        for (int i = 0; i < Segmentos.Length; i++)
-        {
-            if (i > 0) xCentro += AnchoFondo - Segmentos[i].solapePx / PixelesPorUnidadFondo;
-            var f = new GameObject($"Fondo_{i + 1}");
-            f.transform.SetParent(fondos.transform, false);
-            f.transform.position = new Vector3(xCentro, 0f, 0f);
-            var sr = f.AddComponent<SpriteRenderer>();
-            sr.sprite = Spr("Environment/" + Segmentos[i].archivo);
-            sr.sortingOrder = -100 + i;
-        }
-
-        float izquierda = -AnchoFondo / 2f;
-        float derecha = xCentro + AnchoFondo / 2f;
-        float largo = derecha - izquierda;
-
-        // Suelo invisible a la altura del adoquín + muros en los extremos
-        var suelo = new GameObject("Suelo") { layer = CapaGround };
-        suelo.transform.position = new Vector3((izquierda + derecha) / 2f, YSuelo - 1f, 0f);
-        suelo.AddComponent<BoxCollider2D>().size = new Vector2(largo, 2f);
-        CrearMuro("Muro_Izquierdo", izquierda - 0.5f);
-        CrearMuro("Muro_Derecho", derecha + 0.5f);
+        CrearBaseNivel(prefabAlfarero, out _, out _);
 
         // Plataformas de una vía (se atraviesan desde abajo)
         CrearPlataforma("Plataforma_A", 12f, YSuelo + 2.4f, 5f, pixel);
         CrearPlataforma("Plataforma_B", 18f, YSuelo + 4.5f, 4f, pixel);
         CrearPlataforma("Plataforma_C", 46f, YSuelo + 2.4f, 5f, pixel);
         CrearPlataforma("Plataforma_D", 70f, YSuelo + 2.4f, 5f, pixel);
-
-        // Jugador
-        var alfarero = (GameObject)PrefabUtility.InstantiatePrefab(prefabAlfarero);
-        alfarero.transform.position = new Vector3(-6f, YSuelo + 0.02f, 0f);
 
         // Dummies para probar el disparo
         Dummy(prefabDummy, 4f, YSuelo);
@@ -375,6 +375,51 @@ public static class ConfigurarSprint1
         Dummy(prefabDummy, 52f, YSuelo);
         Dummy(prefabDummy, 64f, YSuelo);
         Dummy(prefabDummy, 78f, YSuelo);
+
+        EditorSceneManager.SaveScene(escena, RutaEscena);
+        EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(RutaEscena, true) };
+    }
+
+    /// <summary>
+    /// Lo común a todo nivel: fondo por segmentos, suelo, muros, Mateo, cámara que lo sigue y luz.
+    /// Devuelve la instancia del jugador y los límites izquierdo/derecho del mundo. Sin segmentos usa los de Dolores.
+    /// </summary>
+    internal static GameObject CrearBaseNivel(GameObject prefabAlfarero, out float izquierda, out float derecha) =>
+        CrearBaseNivel(prefabAlfarero, Segmentos, out izquierda, out derecha);
+
+    /// <summary>Igual, con los fondos de otro nivel (imágenes de 2752 px de ancho en Environment/).</summary>
+    internal static GameObject CrearBaseNivel(GameObject prefabAlfarero, (string archivo, int solapePx)[] segmentos,
+                                              out float izquierda, out float derecha)
+    {
+        // Fondo: segmentos distintos en orden. Cada uno (salvo el 1.º) trae el borde izquierdo con degradado
+        // de transparencia y se superpone Solape unidades sobre el anterior, así la unión no se nota.
+        var fondos = new GameObject("Fondo");
+        float xCentro = 0f;
+        for (int i = 0; i < segmentos.Length; i++)
+        {
+            if (i > 0) xCentro += AnchoFondo - segmentos[i].solapePx / PixelesPorUnidadFondo;
+            var f = new GameObject($"Fondo_{i + 1}");
+            f.transform.SetParent(fondos.transform, false);
+            f.transform.position = new Vector3(xCentro, 0f, 0f);
+            var sr = f.AddComponent<SpriteRenderer>();
+            sr.sprite = Spr("Environment/" + segmentos[i].archivo);
+            sr.sortingOrder = -100 + i;
+        }
+
+        izquierda = -AnchoFondo / 2f;
+        derecha = xCentro + AnchoFondo / 2f;
+        float largo = derecha - izquierda;
+
+        // Suelo invisible a la altura del adoquín + muros en los extremos
+        var suelo = new GameObject("Suelo") { layer = CapaGround };
+        suelo.transform.position = new Vector3((izquierda + derecha) / 2f, YSuelo - 1f, 0f);
+        suelo.AddComponent<BoxCollider2D>().size = new Vector2(largo, 2f);
+        CrearMuro("Muro_Izquierdo", izquierda - 0.5f);
+        CrearMuro("Muro_Derecho", derecha + 0.5f);
+
+        // Jugador
+        var alfarero = (GameObject)PrefabUtility.InstantiatePrefab(prefabAlfarero);
+        alfarero.transform.position = new Vector3(-6f, YSuelo + 0.02f, 0f);
 
         // Cámara
         var camGo = new GameObject("Main Camera") { tag = "MainCamera" };
@@ -396,16 +441,14 @@ public static class ConfigurarSprint1
 
         // El HUD de depuración (HudSandbox) ya no se agrega: tapaba la pantalla. Si se necesita, añadir el
         // componente HudSandbox a un objeto vacío y asignar jugador, salud y tirador.
-
-        EditorSceneManager.SaveScene(escena, RutaEscena);
-        EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(RutaEscena, true) };
+        return alfarero;
     }
 
     /// <summary>
     /// Con URP 2D los sprites usan el material "Lit": sin una Light 2D global se ven negros.
     /// Se crea por reflexión para que el proyecto compile igual sin URP.
     /// </summary>
-    static void CrearLuzGlobalSiHayURP()
+    internal static void CrearLuzGlobalSiHayURP()
     {
         System.Type tipoLuz = System.Type.GetType("UnityEngine.Rendering.Universal.Light2D, Unity.RenderPipelines.Universal.2D.Runtime")
                             ?? System.Type.GetType("UnityEngine.Rendering.Universal.Light2D, Unity.RenderPipelines.Universal.Runtime");
@@ -451,14 +494,14 @@ public static class ConfigurarSprint1
     }
 
     // ------------------------------------------------------------------ Utilidades
-    static Sprite Spr(string rutaRelativa)
+    internal static Sprite Spr(string rutaRelativa)
     {
         var s = AssetDatabase.LoadAssetAtPath<Sprite>(Sprites + rutaRelativa);
         if (s == null) throw new FileNotFoundException("No se pudo cargar el sprite: " + Sprites + rutaRelativa);
         return s;
     }
 
-    static GameObject Guardar(GameObject go, string ruta)
+    internal static GameObject Guardar(GameObject go, string ruta)
     {
         GameObject prefab = PrefabUtility.SaveAsPrefabAsset(go, ruta);
         Object.DestroyImmediate(go);

@@ -4,7 +4,8 @@ using UnityEngine.InputSystem;
 /// <summary>
 /// Movimiento del Alfarero: correr con aceleración, salto preciso (coyote time, buffer, altura variable,
 /// caída más pesada) y evasión rápida con invulnerabilidad.
-/// Controles: A/D o flechas = mover, Espacio o W = saltar, Shift izquierdo = evadir. El mouse apunta (PlayerShooter).
+/// Controles: A/D o flechas = mover, flecha arriba o W = saltar, Shift izquierdo = evadir.
+/// Espacio o clic = lanzar y el mouse apunta (PlayerShooter). Mateo mira hacia el último control usado: flechas o mouse.
 /// </summary>
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerController : MonoBehaviour
@@ -36,6 +37,13 @@ public class PlayerController : MonoBehaviour
     public bool EstaEvadiendo { get; private set; }
     public int DireccionMirada { get; private set; } = 1;   // 1 = derecha, -1 = izquierda
 
+    /// <summary>False durante pausa, muerte, victoria o cinemáticas: ignora la entrada del jugador.</summary>
+    public bool ControlActivo { get; set; } = true;
+
+    /// <summary>Montado en el alebrije corre y salta más (1 = a pie).</summary>
+    public float MultiplicadorVelocidad { get; set; } = 1f;
+    public float MultiplicadorSalto { get; set; } = 1f;
+
     // --- Componentes ---
     Rigidbody2D rb;
     PlayerShooter tirador;
@@ -53,6 +61,7 @@ public class PlayerController : MonoBehaviour
     float temporizadorBuffer;
     float temporizadorEvasion;
     float temporizadorCooldown;
+    float temporizadorEmpuje;
     int direccionEvasion;
 
     void Awake()
@@ -80,7 +89,8 @@ public class PlayerController : MonoBehaviour
             .With("Negative", "<Keyboard>/leftArrow")
             .With("Positive", "<Keyboard>/rightArrow");
 
-        accionSaltar = new InputAction("Saltar", InputActionType.Button, "<Keyboard>/space");
+        // Espacio quedó para lanzar cerámica (PlayerShooter)
+        accionSaltar = new InputAction("Saltar", InputActionType.Button, "<Keyboard>/upArrow");
         accionSaltar.AddBinding("<Keyboard>/w");
 
         accionEvadir = new InputAction("Evadir", InputActionType.Button, "<Keyboard>/leftShift");
@@ -102,8 +112,17 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        entradaHorizontal = accionMover.ReadValue<float>();
         EstaEnSuelo = Physics2D.OverlapBox(puntoSuelo.position, tamanoCajaSuelo, 0f, capaSuelo);
+        temporizadorEmpuje -= Time.deltaTime;
+
+        if (!ControlActivo || Time.timeScale == 0f)
+        {
+            entradaHorizontal = 0f;
+            if (EstaEvadiendo) TerminarEvasion();
+            return;
+        }
+
+        entradaHorizontal = accionMover.ReadValue<float>();
 
         ProcesarSalto();
         ProcesarEvasion();
@@ -119,10 +138,10 @@ public class PlayerController : MonoBehaviour
             // Durante la evasión: velocidad fija horizontal, sin caer
             velocidad = new Vector2(direccionEvasion * velocidadEvasion, 0f);
         }
-        else
+        else if (temporizadorEmpuje <= 0f)
         {
             // Aceleración / frenado hacia la velocidad objetivo
-            float objetivo = entradaHorizontal * velocidadMaxima;
+            float objetivo = entradaHorizontal * velocidadMaxima * MultiplicadorVelocidad;
             float tasa = Mathf.Abs(objetivo) > 0.01f ? aceleracion : desaceleracion;
             velocidad.x = Mathf.MoveTowards(velocidad.x, objetivo, tasa * Time.fixedDeltaTime);
         }
@@ -143,14 +162,15 @@ public class PlayerController : MonoBehaviour
         else             temporizadorCoyote -= Time.deltaTime;
 
         // Buffer: recordamos que se pulsó saltar unos milisegundos
-        if (accionSaltar.WasPressedThisFrame()) temporizadorBuffer = tiempoBufferSalto;
-        else                                    temporizadorBuffer -= Time.deltaTime;
+        if (PulsoSaltar()) temporizadorBuffer = tiempoBufferSalto;
+        else               temporizadorBuffer -= Time.deltaTime;
 
         if (!EstaEvadiendo && temporizadorBuffer > 0f && temporizadorCoyote > 0f)
         {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, fuerzaSalto);
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, fuerzaSalto * MultiplicadorSalto);
             temporizadorBuffer = 0f;   // Consumidos: evitan doble salto accidental
             temporizadorCoyote = 0f;
+            GestorAudio.Reproducir(Sfx.Salto);
         }
 
         // Altura variable: si sueltas el botón mientras subes, cortamos el impulso
@@ -158,6 +178,15 @@ public class PlayerController : MonoBehaviour
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y * multiplicadorCorteSalto);
         }
+    }
+
+    // Mientras se lanza con Espacio, la flecha arriba apunta hacia arriba (PlayerShooter) en lugar de saltar; W siempre salta
+    bool PulsoSaltar()
+    {
+        if (!accionSaltar.WasPressedThisFrame()) return false;
+        var kb = Keyboard.current;
+        bool soloFlecha = kb != null && kb.upArrowKey.wasPressedThisFrame && !kb.wKey.wasPressedThisFrame;
+        return !(soloFlecha && tirador != null && tirador.LanzandoConTeclado);
     }
 
     // --------------------------------------------------------------- Evasión
@@ -186,6 +215,15 @@ public class PlayerController : MonoBehaviour
         direccionEvasion = Mathf.Abs(entradaHorizontal) > 0.01f ? (int)Mathf.Sign(entradaHorizontal) : DireccionMirada;
 
         if (salud != null) salud.Invulnerable = true;   // Frames de invulnerabilidad
+        GestorAudio.Reproducir(Sfx.Evadir);
+    }
+
+    /// <summary>Empujón al recibir un golpe: durante unos instantes la entrada no frena el retroceso.</summary>
+    public void AplicarEmpuje(Vector2 velocidad, float duracion = 0.25f)
+    {
+        if (EstaEvadiendo) TerminarEvasion();
+        rb.linearVelocity = velocidad;
+        temporizadorEmpuje = duracion;
     }
 
     void TerminarEvasion()
@@ -197,14 +235,16 @@ public class PlayerController : MonoBehaviour
     // ----------------------------------------------------------- Orientación
     void ActualizarOrientacion()
     {
-        // Prioridad: hacia donde apunta el mouse; si no hay tirador, hacia donde se mueve
-        if (tirador != null && Mathf.Abs(tirador.DireccionApuntado.x) > 0.01f)
-        {
-            DireccionMirada = tirador.DireccionApuntado.x > 0f ? 1 : -1;
-        }
-        else if (Mathf.Abs(entradaHorizontal) > 0.01f)
+        // Gana el último control usado: caminar con flechas/A-D voltea hacia donde camina (y el disparo va al frente);
+        // si después se mueve el mouse, mira hacia el mouse
+        if (Mathf.Abs(entradaHorizontal) > 0.01f)
         {
             DireccionMirada = entradaHorizontal > 0f ? 1 : -1;
+            if (tirador != null) tirador.UsarTeclado();
+        }
+        else if (tirador != null && tirador.UsandoMouse && Mathf.Abs(tirador.DireccionApuntado.x) > 0.01f)
+        {
+            DireccionMirada = tirador.DireccionApuntado.x > 0f ? 1 : -1;
         }
 
         // Volteamos con la escala X. Ojo: al tener sprite y collider en la misma raíz, todo se voltea junto.
