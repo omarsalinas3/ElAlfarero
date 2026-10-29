@@ -5,7 +5,8 @@ using UnityEngine;
 
 /// <summary>
 /// Menú Alfarero > Construir WebGL (itch.io). Genera el juego para el navegador en Builds/WebGL con los ajustes
-/// que pide itch.io: compresión desactivada (Brotli da errores ahí), plantilla Default y canvas de 960x600.
+/// que pide itch.io: Gzip con descompresión en el navegador (Brotli da errores ahí; sin compresión, itch comprime al
+/// servir y el cargador de Unity se queda en 90 % con "Invalid binary data file size"), plantilla Default y 960x600.
 /// Deja fuera la escena Sandbox, que solo es para las pruebas. También arma la versión de Windows (Builds/Windows).
 /// En consola (Unity cerrado): Unity -batchmode -quit -buildTarget WebGL -executeMethod ConstruirWeb.Construir
 /// </summary>
@@ -30,8 +31,11 @@ public static class ConstruirWeb
     [MenuItem("Alfarero/Construir WebGL (itch.io)")]
     public static void Construir()
     {
-        PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Disabled;
-        PlayerSettings.WebGL.decompressionFallback = false;
+        PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Gzip;
+        PlayerSettings.WebGL.decompressionFallback = true;   // El cargador descomprime si el servidor no lo hace
+        // itch.io marca los archivos como gzip y el navegador los descomprime antes: el caché de datos de Unity
+        // (IndexedDB) se confunde con el tamaño y el juego se queda en 90 %. Sin caché se descarga en cada visita, pero carga
+        PlayerSettings.WebGL.dataCaching = false;
         PlayerSettings.WebGL.template = "APPLICATION:Default";
         PlayerSettings.defaultWebScreenWidth = 960;
         PlayerSettings.defaultWebScreenHeight = 600;
