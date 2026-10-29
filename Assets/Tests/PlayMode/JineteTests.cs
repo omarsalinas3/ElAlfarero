@@ -21,7 +21,7 @@ public class JineteTests
     {
         GestorGuardado.UsarRuta(GuardadoPruebas.Ruta);
         yield return SceneManager.LoadSceneAsync("Nivel2_Pozos", LoadSceneMode.Single);
-        yield return new WaitForSeconds(0.5f);
+        yield return EsperaLlegada.Terminar();
         jugador = Object.FindFirstObjectByType<PlayerController>();
         salud = jugador.GetComponent<Health>();
         salud.HacerInvulnerable(999f);

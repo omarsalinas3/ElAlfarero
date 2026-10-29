@@ -70,7 +70,7 @@ public class NivelDosTests
     public IEnumerator Nivel2_VencerAlJineteLoCompletaYLoGuarda()
     {
         yield return SceneManager.LoadSceneAsync("Nivel2_Pozos", LoadSceneMode.Single);
-        yield return new WaitForSeconds(0.5f);
+        yield return EsperaLlegada.Terminar();
         var gestor = GestorNivel.Actual;
         var jugador = Object.FindFirstObjectByType<PlayerController>();
         jugador.GetComponent<Health>().HacerInvulnerable(999f);

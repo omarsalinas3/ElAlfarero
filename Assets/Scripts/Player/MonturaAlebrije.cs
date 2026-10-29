@@ -211,15 +211,22 @@ public class MonturaAlebrije : MonoBehaviour
         if (Montado) { Pose("Golpe", 0f); siguienteZarpazo = Mathf.Max(siguienteZarpazo, Time.time + 0.3f); }
     }
 
-    void AlAgotarse()
+    // Se acabó la vida de la montura: Mateo cae y sigue a pie
+    void AlAgotarse() => Caer("¡EL ALEBRIJE SE CANSO!", "SIGUE A PIE");
+
+    /// <summary>Algo tumba a Mateo del alebrije (p. ej. la bola de fuego de la Bruja al llegar a Pozos).</summary>
+    public void Derribar(string letrero, string detalle) => Caer(letrero, detalle);
+
+    // Mateo sale volando hacia atrás y sigue a pie; el alebrije se va volando
+    void Caer(string letrero, string detalle)
     {
-        // Se acabó la vida de la montura: Mateo cae y sigue a pie; el alebrije se va volando
+        if (EstadoActual == Estado.Agotado) return;
         bool llevaba = Montado;
         Desmontar();
         EstadoActual = Estado.Agotado;
         if (llevaba) jinete.AplicarEmpuje(new Vector2(-jinete.DireccionMirada * 4f, 7f), 0.3f);
         if (saludJinete != null) saludJinete.HacerInvulnerable(1.5f);
-        GestorNivel.Actual?.MostrarLetrero("", "¡EL ALEBRIJE SE CANSO!", "SIGUE A PIE");
+        GestorNivel.Actual?.MostrarLetrero("", letrero, detalle);
         GestorAudio.Reproducir(Sfx.RugidoAlebrije, 0f);
         StartCoroutine(Irse());
     }

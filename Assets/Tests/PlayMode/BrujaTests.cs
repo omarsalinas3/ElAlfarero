@@ -20,7 +20,7 @@ public class BrujaTests
     public IEnumerator Preparar()
     {
         yield return SceneManager.LoadSceneAsync("Nivel2_Pozos", LoadSceneMode.Single);
-        yield return new WaitForSeconds(0.5f);
+        yield return EsperaLlegada.Terminar();
         bruja = Object.FindObjectsByType<IABruja>().OrderBy(b => Mathf.Abs(b.transform.position.x - XBruja)).FirstOrDefault();
         jugador = Object.FindFirstObjectByType<PlayerController>();
         Assert.IsNotNull(bruja, "El Nivel 2 tiene Brujas de Fuego");
