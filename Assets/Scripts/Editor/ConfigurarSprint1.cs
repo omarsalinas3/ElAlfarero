@@ -387,12 +387,12 @@ public static class ConfigurarSprint1
     internal static GameObject CrearBaseNivel(GameObject prefabAlfarero, out float izquierda, out float derecha) =>
         CrearBaseNivel(prefabAlfarero, Segmentos, out izquierda, out derecha);
 
-    /// <summary>Igual, con los fondos de otro nivel (imágenes de 2752 px de ancho en Environment/).</summary>
-    internal static GameObject CrearBaseNivel(GameObject prefabAlfarero, (string archivo, int solapePx)[] segmentos,
-                                              out float izquierda, out float derecha)
+    /// <summary>
+    /// Fondo: segmentos distintos en orden. Cada uno (salvo el 1.º) trae el borde izquierdo con degradado de
+    /// transparencia y se superpone Solape unidades sobre el anterior, así la unión no se nota.
+    /// </summary>
+    internal static void CrearFondos((string archivo, int solapePx)[] segmentos, out float izquierda, out float derecha)
     {
-        // Fondo: segmentos distintos en orden. Cada uno (salvo el 1.º) trae el borde izquierdo con degradado
-        // de transparencia y se superpone Solape unidades sobre el anterior, así la unión no se nota.
         var fondos = new GameObject("Fondo");
         float xCentro = 0f;
         for (int i = 0; i < segmentos.Length; i++)
@@ -408,6 +408,13 @@ public static class ConfigurarSprint1
 
         izquierda = -AnchoFondo / 2f;
         derecha = xCentro + AnchoFondo / 2f;
+    }
+
+    /// <summary>Igual, con los fondos de otro nivel (imágenes de 2752 px de ancho en Environment/).</summary>
+    internal static GameObject CrearBaseNivel(GameObject prefabAlfarero, (string archivo, int solapePx)[] segmentos,
+                                              out float izquierda, out float derecha)
+    {
+        CrearFondos(segmentos, out izquierda, out derecha);
         float largo = derecha - izquierda;
 
         // Suelo invisible a la altura del adoquín + muros en los extremos

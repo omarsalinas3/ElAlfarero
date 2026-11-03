@@ -10,6 +10,7 @@ public static class Escenas
     public const string Menu = "MenuPrincipal";
     public const string Intro = "Intro";
     public const string Nivel1 = "Nivel1_Dolores";
+    public const string Viaje = "Viaje_Pozos";          // Escena corta entre el Nivel 1 y el 2 (no es un nivel)
     public const string Nivel2 = "Nivel2_Pozos";
 
     // En orden: el número de nivel del guardado es su posición + 1
