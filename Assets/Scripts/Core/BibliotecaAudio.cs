@@ -8,7 +8,8 @@ public enum Sfx
     RomperHuacal, RomperHorno, RecogerGuacamaya, Moneda, RecogerCaguama, BeberCaguama,
     MenuMover, MenuAceptar, Pausa, JingleGameOver, JingleVictoria, JingleMision,
     Disparo, Escopetazo, Machetazo, RugidoAlebrije,
-    AullidoNahual, Estampida
+    AullidoNahual, Estampida,
+    CambioArma, RecogerArma, LanzarVidriado, Explosion, BloqueoEscudo, RomperEscudo
 }
 
 public enum Musica { Ninguna, Menu, Intro, Nivel1, Nivel2 }

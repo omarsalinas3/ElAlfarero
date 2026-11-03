@@ -60,6 +60,7 @@ public static partial class ConstructorJuego
         Poner(p.huacalMonedas, -2f, YSuelo, obstaculos);
         Minero(prefabMinero, 2f, enemigos);
         Minero(prefabMinero, 5f, enemigos);
+        Poner(p.huacalVidriado, 6.5f, YSuelo, obstaculos);       // Barro Vidriado de nuevo, por si no se trajo de Dolores
         PonerBandido(p.revolver, 8.5f, -1, enemigos);
         Poner(p.maceta, 10.5f, 0f, obstaculos);
 
@@ -77,6 +78,7 @@ public static partial class ConstructorJuego
         Minero(prefabMinero, 28.5f, enemigos);
         Poner(p.huacalMonedas, 30.5f, YSuelo, obstaculos);
         Poner(p.huacalGuacamaya, 30.5f, YSuelo + altoHuacal, obstaculos);   // La única curación antes de la emboscada
+        Poner(p.huacalNegro, 32.5f, YSuelo, obstaculos);          // Barro Negro para las 3 oleadas de la bocamina
 
         // Tramo 3: bocamina y castillete. Emboscada de 3 oleadas (una más que en Dolores)
         CrearEmboscada(35f, new[]

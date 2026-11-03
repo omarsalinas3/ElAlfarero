@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 /// <summary>
 /// HUD rústico: jarrito de barro + barra de vida (arriba izquierda), caguamas y su temporizador dorado,
-/// munición de Talavera en marco de azulejo y monedas (arriba derecha), y al centro puntaje, cronómetro
+/// arma actual con su munición en marco de azulejo y monedas (arriba derecha), y al centro puntaje, cronómetro
 /// y objetivo actual con su barra de avance (los lleva GestorNivel).
 /// </summary>
 public class HudJuego : MonoBehaviour
@@ -32,9 +32,13 @@ public class HudJuego : MonoBehaviour
     [SerializeField] GameObject grupoBarraObjetivo;
     [SerializeField] Image barraObjetivo;
 
+    [Header("Arma")]
+    [SerializeField] ArsenalJugador arsenal;
+    [SerializeField] Image iconoArma;
+    [SerializeField] Text textoMunicion;
+
     [Header("Otros")]
     [SerializeField] Text textoMonedas;
-    [SerializeField] Text textoMunicion;
 
     float vidaMostrada = 1f, retardoMostrado = 1f;
 
@@ -48,6 +52,19 @@ public class HudJuego : MonoBehaviour
     {
         if (textoMunicion != null) textoMunicion.text = "∞";
         if (gestor == null) gestor = GestorNivel.Actual;
+        if (arsenal != null) { arsenal.OnCambio += MostrarArma; MostrarArma(); }
+    }
+
+    void OnDestroy()
+    {
+        if (arsenal != null) arsenal.OnCambio -= MostrarArma;
+    }
+
+    // Icono del arma actual y su munición (∞ la Talavera); solo cuando cambia, no cada cuadro
+    void MostrarArma()
+    {
+        if (iconoArma != null) iconoArma.sprite = arsenal.Actual.icono;
+        if (textoMunicion != null) textoMunicion.text = arsenal.MunicionActual < 0 ? "∞" : arsenal.MunicionActual.ToString();
     }
 
     void Update()
