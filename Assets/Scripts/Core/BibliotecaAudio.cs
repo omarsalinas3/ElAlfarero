@@ -10,7 +10,8 @@ public enum Sfx
     Disparo, Escopetazo, Machetazo, RugidoAlebrije,
     AullidoNahual, Estampida,
     CambioArma, RecogerArma, LanzarVidriado, Explosion, BloqueoEscudo, RomperEscudo,
-    PunoLigero, PunoFuerte
+    PunoLigero, PunoFuerte,
+    Exvoto, AbrirCofre
 }
 
 public enum Musica { Ninguna, Menu, Intro, Nivel1, Nivel2 }

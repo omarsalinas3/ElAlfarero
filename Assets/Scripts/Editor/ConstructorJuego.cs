@@ -42,6 +42,7 @@ public static partial class ConstructorJuego
         public GameObject huacalMonedas, huacalGuacamaya, huacalCaguama, hornoCaguama, hornoMonedas;
         public GameObject escombros, maceta, guacamaya, caguama, moneda;
         public GameObject huacalVidriado, huacalNegro, huacalMaceta;          // Sueltan la caja de un arma (#33)
+        public GameObject muroSecreto, viga, exvoto, cofre;                    // Secretos (#63)
         public IABandido revolver, rifle, escopeta, machete;
         public JefeAlebrije alebrije;
     }
@@ -186,6 +187,8 @@ public static partial class ConstructorJuego
             (Sfx.RomperEscudo, new[] { "romper_escudo" }, 0.85f),
             (Sfx.PunoLigero, new[] { "puno_ligero_1", "puno_ligero_2" }, 0.7f),
             (Sfx.PunoFuerte, new[] { "puno_fuerte" }, 0.85f),
+            (Sfx.Exvoto, new[] { "exvoto" }, 0.75f),
+            (Sfx.AbrirCofre, new[] { "abrir_cofre" }, 0.8f),
         };
         b.efectos = efectos.Select(e => new BibliotecaAudio.EntradaSfx
         {
@@ -249,6 +252,7 @@ public static partial class ConstructorJuego
         p.escombros = Escombros();
         p.maceta = Maceta(restosMaceta);
         CrearArmas(p, huacal, restosHuacal, restosMaceta, chispa);
+        CrearPrefabsSecretos(p, chispa);
 
         // El minero esqueleto deja polvo de barro al morir
         var minero = PrefabUtility.LoadPrefabContents(RutaPrefabMinero);
@@ -695,6 +699,7 @@ public static partial class ConstructorJuego
 
         // Evento especial: emboscada de los bandidos del Charro en la plaza
         Poner(p.huacalMaceta, 43.5f, YSuelo, obstaculos);        // La maceta llega justo antes de la balacera
+        PonerSecretosNivel1(p, altoHuacal, obstaculos, recogibles);
         CrearEmboscada(p, 45f);
 
         // Jefe: la plaza de la parroquia queda libre como arena; el alebrije sale de entre las torres
@@ -966,6 +971,7 @@ public static partial class ConstructorJuego
         Text sub = Texto(panel.transform, "Subtitulo", "", 22, Crema, TextAnchor.MiddleCenter, new Vector2(0f, 115f + dy), new Vector2(880f, 70f));
         // Alto para 6 renglones: en la victoria se agregan RECORD y MEJOR (tiempo)
         Text resumen = Texto(panel.transform, "Resumen", "", 26, Crema, TextAnchor.MiddleLeft, new Vector2(-40f, -38f + dy), new Vector2(520f, 230f));
+        resumen.lineSpacing = 1.12f;             // Caben 7 renglones (la victoria agrega SECRETOS n/3)
         float yBotones = conSiguiente ? -275f : -235f;
         Button reintentar = Boton(panel.transform, "Reintentar", textoReintentar, new Vector2(-235f, yBotones), new Vector2(430f, 84f));
         Button menu = Boton(panel.transform, "Menu", "MENU PRINCIPAL", new Vector2(235f, yBotones), new Vector2(430f, 84f));

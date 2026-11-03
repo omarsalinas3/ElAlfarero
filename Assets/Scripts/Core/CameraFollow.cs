@@ -23,6 +23,7 @@ public class CameraFollow : MonoBehaviour
     float? xFija;
     float sacudidaHasta, fuerzaSacudida;
     Vector2 desfase;
+    Vector2 limitesNivel;                           // Los del inspector, para regresar a ellos
 
     /// <summary>Mitad del ancho visible en unidades del mundo.</summary>
     public float MitadAncho => cam.orthographicSize * cam.aspect;
@@ -38,6 +39,18 @@ public class CameraFollow : MonoBehaviour
 
     public void Desbloquear() => xFija = null;
 
+    /// <summary>
+    /// Otros límites (p. ej. el cuarto secreto bajo el tiro de mina, #63) y salta ahí sin deslizarse.
+    /// Sin argumentos regresa a los del nivel.
+    /// </summary>
+    public void CambiarLimites(float? izquierdo = null, float? derecho = null)
+    {
+        limiteIzquierdo = izquierdo ?? limitesNivel.x;
+        limiteDerecho = derecho ?? limitesNivel.y;
+        velocidadX = 0f;
+        if (objetivo != null) transform.position = new Vector3(ObjetivoX(), yFija, transform.position.z);
+    }
+
     public void Sacudir(float segundos, float fuerza)
     {
         sacudidaHasta = Mathf.Max(sacudidaHasta, Time.time + segundos);
@@ -47,6 +60,7 @@ public class CameraFollow : MonoBehaviour
     void Awake()
     {
         cam = GetComponent<Camera>();
+        limitesNivel = new Vector2(limiteIzquierdo, limiteDerecho);
         if (objetivo != null) jugador = objetivo.GetComponent<PlayerController>();
     }
 

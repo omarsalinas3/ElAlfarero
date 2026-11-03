@@ -30,6 +30,9 @@ public class GestorNivel : MonoBehaviour
     [SerializeField] string nombreNivel = "DOLORES HIDALGO";
     [SerializeField] Musica musica = Musica.Nivel1;
     [SerializeField] float esperaGameOver = 1.6f;
+    [Tooltip("Exvotos escondidos en el nivel (la victoria muestra SECRETOS n/este número).")]
+    [SerializeField] int exvotosEnNivel = 3;
+    [SerializeField] int puntosExvoto = 500;
     [Tooltip("Escena a la que lleva el botón de seguir en la victoria (vacío: el nivel no tiene siguiente todavía).")]
     [SerializeField] string escenaSiguiente = "";
 
@@ -133,6 +136,19 @@ public class GestorNivel : MonoBehaviour
         if (banner != null) banner.Mostrar(a, b, c);
     }
 
+    // ------------------------------------------------------------------ Secretos (#63)
+    public int ExvotosEnNivel => exvotosEnNivel;
+    public int ExvotosEncontrados => GestorGuardado.ExvotosEncontrados(numeroNivel);
+    public int NumeroNivel => numeroNivel;
+
+    /// <summary>Lo llama un Exvoto al tocarlo: queda guardado aunque no se gane el nivel.</summary>
+    public void EncontrarExvoto(int id)
+    {
+        bool nuevo = GestorGuardado.RegistrarExvoto(numeroNivel, id);
+        if (nuevo) SumarPuntos(puntosExvoto);
+        MostrarLetrero("", "¡EXVOTO!", $"SECRETOS {ExvotosEncontrados}/{exvotosEnNivel}");
+    }
+
     /// <summary>Quita el control a Mateo (y congela a los enemigos) mientras corre una escena.</summary>
     public void IniciarCinematica()
     {
@@ -197,7 +213,8 @@ public class GestorNivel : MonoBehaviour
         ResultadoVictoria r = GestorGuardado.RegistrarVictoria(numeroNivel, Puntaje, TiempoJugado, monedas);
         if (pantallaVictoria != null)
             pantallaVictoria.Mostrar("¡MISION CUMPLIDA!", nombreNivel + " está a salvo... por ahora.",
-                                     Resumen() + $"\nRECORD    {r.puntajeMaximo}\nMEJOR     {FormatoTiempo(r.mejorTiempo)}", r.NuevoRecord);
+                                     Resumen() + $"\nRECORD    {r.puntajeMaximo}\nMEJOR     {FormatoTiempo(r.mejorTiempo)}" +
+                                     $"\nSECRETOS  {ExvotosEncontrados}/{exvotosEnNivel}", r.NuevoRecord);
     }
 
     public void RegistrarEnemigoDerrotado() => EnemigosDerrotados++;

@@ -12,8 +12,18 @@ public class DatosGuardado
     public int monedas;                                           // Acumuladas de todos los niveles ganados
     public List<RecordNivel> records = new List<RecordNivel>();
     public List<string> armasDesbloqueadas = new List<string> { "Talavera" };
+    public List<ExvotosNivel> exvotos = new List<ExvotosNivel>();   // Secretos encontrados (#63)
 
     public RecordNivel Record(int nivel) => records.Find(r => r.nivel == nivel);
+    public ExvotosNivel Exvotos(int nivel) => exvotos.Find(e => e.nivel == nivel);
+}
+
+/// <summary>Qué exvotos (por número, 0..2) se han encontrado en un nivel, aunque no se haya ganado todavía.</summary>
+[Serializable]
+public class ExvotosNivel
+{
+    public int nivel;
+    public List<int> encontrados = new List<int>();
 }
 
 [Serializable]
@@ -95,6 +105,7 @@ public static class GestorGuardado
         datos ??= new DatosGuardado();
         datos.records ??= new List<RecordNivel>();
         datos.armasDesbloqueadas ??= new List<string>();
+        datos.exvotos ??= new List<ExvotosNivel>();
         if (!datos.armasDesbloqueadas.Contains("Talavera")) datos.armasDesbloqueadas.Insert(0, "Talavera");
         datos.nivelDesbloqueado = Mathf.Max(1, datos.nivelDesbloqueado);
     }
@@ -144,6 +155,20 @@ public static class GestorGuardado
         Datos.armasDesbloqueadas.Add(arma);
         Guardar();
     }
+
+    /// <summary>Anota un exvoto encontrado y guarda en el momento. False si ya se tenía.</summary>
+    public static bool RegistrarExvoto(int nivel, int id)
+    {
+        var e = Datos.Exvotos(nivel);
+        if (e == null) { e = new ExvotosNivel { nivel = nivel }; Datos.exvotos.Add(e); }
+        if (e.encontrados.Contains(id)) return false;
+        e.encontrados.Add(id);
+        Guardar();
+        return true;
+    }
+
+    public static bool TieneExvoto(int nivel, int id) => Datos.Exvotos(nivel)?.encontrados.Contains(id) ?? false;
+    public static int ExvotosEncontrados(int nivel) => Datos.Exvotos(nivel)?.encontrados.Count ?? 0;
 
     /// <summary>Borra la partida del disco y vuelve a empezar desde el Nivel 1.</summary>
     public static void Borrar()
