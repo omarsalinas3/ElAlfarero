@@ -25,6 +25,7 @@ public class PlayerShooter : MonoBehaviour
     Camera camara;
     PlayerController controlador;
     ArsenalJugador arsenal;
+    CombateCuerpo combate;
     float proximoDisparo;
     Vector2 ultimaPosMouse;
     bool posMouseLeida;
@@ -52,6 +53,7 @@ public class PlayerShooter : MonoBehaviour
         camara = Camera.main;
         controlador = GetComponent<PlayerController>();
         arsenal = GetComponent<ArsenalJugador>();
+        combate = GetComponent<CombateCuerpo>();
         accionDisparar = new InputAction("Disparar", InputActionType.Button, "<Mouse>/leftButton");
         accionDisparar.AddBinding("<Keyboard>/space");
 
@@ -73,6 +75,13 @@ public class PlayerShooter : MonoBehaviour
         ActualizarApuntado();
 
         if (ceramicaActual == null || ceramicaActual.prefabProyectil == null) return;
+
+        // Cuerpo a cuerpo (#62): con un enemigo pegado enfrente cada clic es un golpe del combo, no un lanzamiento
+        if (combate != null && (combate.Golpeando || combate.EnemigoCerca()))
+        {
+            if (accionDisparar.WasPressedThisFrame()) combate.Golpear();
+            return;
+        }
 
         // IsPressed = mientras se mantenga el botón (disparo automático según la cadencia)
         if (accionDisparar.IsPressed() && Time.time >= proximoDisparo)

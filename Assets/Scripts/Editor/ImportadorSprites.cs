@@ -55,6 +55,7 @@ public class ImportadorSprites : AssetPostprocessor
         // Cuadros recortados de las hojas de Flow: cada hoja salió a otra escala, así que se ajusta por nombre
         // para que Mateo mida igual que en la carrera (~2.5 u), los bandidos casi lo mismo y el alebrije ~4 u.
         if (nombre.StartsWith("mateo_idle") || nombre.StartsWith("mateo_muerte")) return 148f;
+        if (nombre.StartsWith("mateo_golpe")) return 94f;     // Combo (#62): la hoja salió más chica; mide igual que en reposo
         if (nombre.StartsWith("bandido_")) return 100f;
         if (nombre.StartsWith("alebrije_")) return 55f;
         if (nombre.StartsWith("montado_")) return 48f;        // Mateo montado en el alebrije: mismo tamaño que los dos por separado
