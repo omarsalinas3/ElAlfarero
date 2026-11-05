@@ -41,6 +41,7 @@ public static partial class ConstructorJuego
     {
         public GameObject huacalMonedas, huacalGuacamaya, huacalCaguama, hornoCaguama, hornoMonedas;
         public GameObject escombros, maceta, guacamaya, caguama, moneda;
+        public GameObject huacalVidriado, huacalNegro, huacalMaceta;          // Sueltan la caja de un arma (#33)
         public IABandido revolver, rifle, escopeta, machete;
         public JefeAlebrije alebrije;
     }
@@ -177,6 +178,12 @@ public static partial class ConstructorJuego
             (Sfx.RugidoAlebrije, new[] { "rugido_alebrije" }, 0.95f),
             (Sfx.AullidoNahual, new[] { "aullido_nahual" }, 0.8f),
             (Sfx.Estampida, new[] { "estampida" }, 0.9f),
+            (Sfx.CambioArma, new[] { "cambio_arma" }, 0.5f),
+            (Sfx.RecogerArma, new[] { "recoger_arma" }, 0.7f),
+            (Sfx.LanzarVidriado, new[] { "lanzar_vidriado" }, 0.55f),
+            (Sfx.Explosion, new[] { "explosion" }, 0.9f),
+            (Sfx.BloqueoEscudo, new[] { "bloqueo_escudo" }, 0.75f),
+            (Sfx.RomperEscudo, new[] { "romper_escudo" }, 0.85f),
         };
         b.efectos = efectos.Select(e => new BibliotecaAudio.EntradaSfx
         {
@@ -239,6 +246,7 @@ public static partial class ConstructorJuego
 
         p.escombros = Escombros();
         p.maceta = Maceta(restosMaceta);
+        CrearArmas(p, huacal, restosHuacal, restosMaceta, chispa);
 
         // El minero esqueleto deja polvo de barro al morir
         var minero = PrefabUtility.LoadPrefabContents(RutaPrefabMinero);
@@ -670,6 +678,7 @@ public static partial class ConstructorJuego
         Poner(p.huacalGuacamaya, 23f, YSuelo + altoHuacal, obstaculos);
         Minero(prefabMinero, 27f, enemigos);
         Poner(p.maceta, 31f, 0f, obstaculos);
+        Poner(p.huacalVidriado, 33f, YSuelo, obstaculos);        // Primera arma especial: abanico para los mineros
         Poner(p.hornoMonedas, 35f, YSuelo, obstaculos);
         PonerBandido(p.rifle, 37f, -1, enemigos);                // Se cubre detrás del horno
         Minero(prefabMinero, 39f, enemigos);
@@ -683,6 +692,7 @@ public static partial class ConstructorJuego
         Poner(p.guacamaya, 62.5f, YSuelo + 0.7f, recogibles);   // Antes del jefe
 
         // Evento especial: emboscada de los bandidos del Charro en la plaza
+        Poner(p.huacalMaceta, 43.5f, YSuelo, obstaculos);        // La maceta llega justo antes de la balacera
         CrearEmboscada(p, 45f);
 
         // Jefe: la plaza de la parroquia queda libre como arena; el alebrije sale de entre las torres
@@ -800,8 +810,10 @@ public static partial class ConstructorJuego
         Text textoCag = Texto(grupo, "Segundos", "5s", 26, Dorado, TextAnchor.MiddleLeft, new Vector2(370f, 0f), new Vector2(120f, 50f));
         Texto(grupo, "Etiqueta", "INVENCIBLE", 16, Crema, TextAnchor.MiddleCenter, new Vector2(150f, 48f), new Vector2(300f, 30f));
 
-        // Munición (azulejo) y monedas
-        Imagen(c, "MarcoMunicion", Spr("UI/hud_marco_azulejo.png"), new Vector2(-150f, -95f), new Vector2(235f, 158f), arribaDer);
+        // Arma actual con su munición (azulejo) y monedas
+        Imagen(c, "MarcoMunicion", Spr("UI/hud_marco_azulejo_vacio.png"), new Vector2(-150f, -95f), new Vector2(235f, 158f), arribaDer);
+        Image iconoArma = Imagen(c, "IconoArma", Spr("Projectiles/talavera_piece_00.png"), new Vector2(-190f, -95f), new Vector2(64f, 68f), arribaDer);
+        iconoArma.preserveAspect = true;
         Text municion = Texto(c, "Municion", "∞", 56, Dorado, TextAnchor.MiddleCenter, new Vector2(-115f, -95f), new Vector2(120f, 80f), arribaDer);
         Imagen(c, "IconoMoneda", Spr("UI/hud_moneda.png"), new Vector2(-235f, -220f), new Vector2(60f, 60f), arribaDer);
         Text monedas = Texto(c, "Monedas", "x00", 34, Crema, TextAnchor.MiddleLeft, new Vector2(-120f, -220f), new Vector2(170f, 60f), arribaDer);
@@ -818,8 +830,8 @@ public static partial class ConstructorJuego
         Rellenar(barraObj);
         barraObj.fillAmount = 0f;
 
-        Texto(c, "Ayuda", "ESPACIO LANZAR   ARRIBA SALTAR   E CAGUAMA   ESC PAUSA", 16, new Color(1f, 1f, 1f, 0.75f), TextAnchor.LowerRight,
-              new Vector2(-500f, 30f), new Vector2(960f, 40f), new Vector2(1f, 0f));
+        Texto(c, "Ayuda", "ESPACIO LANZAR   ARRIBA SALTAR   1-4 ARMA   E CAGUAMA   ESC PAUSA", 16, new Color(1f, 1f, 1f, 0.75f), TextAnchor.LowerRight,
+              new Vector2(-560f, 30f), new Vector2(1080f, 40f), new Vector2(1f, 0f));
 
         var hud = canvas.gameObject.AddComponent<HudJuego>();
         var so = new SerializedObject(hud);
@@ -837,6 +849,8 @@ public static partial class ConstructorJuego
         so.FindProperty("textoCaguama").objectReferenceValue = textoCag;
         so.FindProperty("textoMonedas").objectReferenceValue = monedas;
         so.FindProperty("textoMunicion").objectReferenceValue = municion;
+        so.FindProperty("arsenal").objectReferenceValue = jugador.GetComponent<ArsenalJugador>();
+        so.FindProperty("iconoArma").objectReferenceValue = iconoArma;
         so.FindProperty("textoPuntaje").objectReferenceValue = puntaje;
         so.FindProperty("textoTiempo").objectReferenceValue = tiempo;
         so.FindProperty("textoObjetivo").objectReferenceValue = objetivo;

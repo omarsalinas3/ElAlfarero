@@ -26,3 +26,12 @@ MonoBehaviour:
   disparosPorSegundo: 8
   proyectilesPorDisparo: 1
   dispersionGrados: 2
+  aperturaAbanico: 0
+  sonidoLanzar: 2
+  gravedad: 0
+  elevacionGrados: 0
+  radioExplosion: 0
+  danoExplosion: 0
+  prefabExplosion: {fileID: 0}
+  municionMaxima: 0
+  municionPorCaja: 10

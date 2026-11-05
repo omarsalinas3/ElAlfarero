@@ -3,6 +3,7 @@ using UnityEngine;
 /// <summary>
 /// Bala de los bandidos: vuela en línea recta, lastima a Mateo y se rompe contra paredes, huacales y hornos.
 /// Va en la capa EnemyProjectile, que solo choca con Player y Ground (no con otros enemigos ni con la cerámica).
+/// La Maceta Escudo de Mateo la detiene si le llega de frente.
 /// Sale de Reciclaje y vuelve ahí al chocar o al terminar su vida.
 /// </summary>
 [RequireComponent(typeof(Rigidbody2D))]
@@ -32,10 +33,13 @@ public class BalaEnemiga : MonoBehaviour
     {
         if (!gameObject.activeSelf) return;                 // Ya chocó en este cuadro con otra cosa
         var salud = otro.GetComponentInParent<Health>();
-        if (salud != null && otro.GetComponentInParent<PlayerController>() != null)
+        var jugador = otro.GetComponentInParent<PlayerController>();
+        if (salud != null && jugador != null)
         {
             if (salud.Invulnerable) return;   // Evadiendo: la bala le pasa de largo
-            salud.RecibirDano(dano);
+            // Con la Maceta Escudo al frente la bala se estrella en ella (#33)
+            var escudo = jugador.GetComponentInChildren<EscudoMaceta>();
+            if (escudo == null || !escudo.Bloquea(rb.linearVelocity)) salud.RecibirDano(dano);
         }
         Reciclaje.Guardar(gameObject);
     }

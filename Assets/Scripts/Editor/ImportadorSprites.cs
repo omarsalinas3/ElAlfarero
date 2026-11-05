@@ -65,6 +65,11 @@ public class ImportadorSprites : AssetPostprocessor
         if (nombre.StartsWith("jinete_calavera")) return 90f; // Calavera en llamas: ~1.1 u con todo y estela
         if (nombre.StartsWith("jinete_")) return 42f;         // Jinete sin Cabeza: ~6 u de largo y ~4.5 de alto, más grande que Mateo
         if (nombre.StartsWith("huella_fuego")) return 32f;    // Herradura en llamas del viaje a Pozos: ~0.9 u (pixel art de 28 px)
+        // Armas de la carpeta Modelos (#33), recortadas a 2K
+        if (nombre.StartsWith("caja_")) return 330f;          // Cajas de arma: ~1 u, como la de Talavera
+        if (nombre.StartsWith("negro_bomba")) return 450f;    // Granada de Barro Negro: ~0.8 u con todo y humo
+        if (nombre.StartsWith("negro_explosion")) return 200f; // Explosión: ~4 u, igual al radio de daño (2.2)
+        if (nombre.StartsWith("escudo_maceta")) return 260f;  // Maceta Escudo: ~1.7 u, le cubre el cuerpo a Mateo
 
         switch (carpeta)
         {

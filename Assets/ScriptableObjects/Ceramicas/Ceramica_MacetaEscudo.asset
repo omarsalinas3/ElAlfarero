@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c91157498f533347a82e63f771a6347, type: 3}
+  m_Name: Ceramica_MacetaEscudo
+  m_EditorClassIdentifier: Alfarero.Runtime::CeramicaData
+  nombre: Maceta Escudo
+  tipo: 3
+  icono: {fileID: 21300000, guid: 5d9be12e87ee15a4ba9d67feb608dc28, type: 3}
+  prefabProyectil: {fileID: 0}
+  dano: 10
+  velocidadProyectil: 18
+  tiempoVida: 1.5
+  capasImpacto:
+    serializedVersion: 2
+    m_Bits: 0
+  prefabImpacto: {fileID: 0}
+  disparosPorSegundo: 8
+  proyectilesPorDisparo: 1
+  dispersionGrados: 2
+  aperturaAbanico: 0
+  sonidoLanzar: 2
+  gravedad: 0
+  elevacionGrados: 0
+  radioExplosion: 0
+  danoExplosion: 0
+  prefabExplosion: {fileID: 0}
+  municionMaxima: 5
+  municionPorCaja: 5

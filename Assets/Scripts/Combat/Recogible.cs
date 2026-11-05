@@ -1,9 +1,10 @@
 using UnityEngine;
 
-public enum TipoRecogible { Guacamaya, Caguama, Moneda }
+public enum TipoRecogible { Guacamaya, Caguama, Moneda, Arma }
 
 /// <summary>
-/// Objeto que el jugador recoge al tocarlo: La Guacamaya (cura), La Caguama (se guarda para beberla) y monedas.
+/// Objeto que el jugador recoge al tocarlo: La Guacamaya (cura), La Caguama (se guarda para beberla), monedas y cajas
+/// de cerámica (Arma: desbloquea y da munición de Barro Vidriado, Barro Negro o Maceta Escudo).
 /// Si Mateo ya trae la vida llena o el máximo de caguamas, la guacamaya o la caguama se cambian por monedas.
 /// Flota arriba y abajo y puede animarse con una lista de cuadros.
 /// El botín de huacales y hornos sale de Reciclaje y vuelve ahí al recogerse; los puestos en la escena se destruyen.
@@ -16,6 +17,8 @@ public class Recogible : MonoBehaviour
     [SerializeField] int cantidad = 1;
     [Tooltip("Monedas que da si no se puede usar (vida llena / caguamas al máximo). 0 = se queda en el suelo.")]
     [SerializeField] int monedasSiLleno = -1;   // -1: valor por defecto según el tipo
+    [Tooltip("Solo para tipo Arma: la cerámica que trae la caja.")]
+    [SerializeField] CeramicaData arma;
 
     [Header("Visual")]
     [SerializeField] SpriteRenderer sprite;
@@ -25,6 +28,7 @@ public class Recogible : MonoBehaviour
     [SerializeField] SpriteAnimadoTemporal efectoRecoger;
 
     public TipoRecogible Tipo => tipo;
+    public CeramicaData Arma => arma;
     public int MonedasSiLleno => monedasSiLleno >= 0 ? monedasSiLleno : tipo switch
     {
         TipoRecogible.Guacamaya => 5,
@@ -56,6 +60,15 @@ public class Recogible : MonoBehaviour
     {
         var inventario = otro.GetComponentInParent<InventarioJugador>();
         if (inventario == null) return;
+
+        if (tipo == TipoRecogible.Arma)
+        {
+            var arsenal = otro.GetComponentInParent<ArsenalJugador>();
+            if (arsenal == null || !arsenal.Recoger(arma, cantidad)) return;   // Ya trae el máximo: se queda en el suelo
+            if (efectoRecoger != null) Reciclaje.Sacar(efectoRecoger, sprite.transform.position, Quaternion.identity);
+            Reciclaje.Guardar(gameObject);
+            return;
+        }
 
         bool recogido = tipo switch
         {

@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 /// (PlayerController llama a UsarTeclado) o se lanza con Espacio, se apunta al frente, hacia donde mira Mateo.
 /// Con teclado, mantener flecha arriba apunta hacia arriba (mientras se lanza, esa flecha no salta: ver PlayerController).
 /// Es el único script que lee la posición del mouse; PlayerController usa DireccionApuntado para voltear al personaje.
-/// El arma actual es un CeramicaData: el cambio de cerámica del Sprint 3 solo llama a EquiparCeramica().
+/// El arma actual es un CeramicaData que equipa ArsenalJugador (#33); cada lanzamiento le gasta una de munición.
 /// </summary>
 public class PlayerShooter : MonoBehaviour
 {
@@ -24,6 +24,7 @@ public class PlayerShooter : MonoBehaviour
     InputAction accionDisparar;
     Camera camara;
     PlayerController controlador;
+    ArsenalJugador arsenal;
     float proximoDisparo;
     Vector2 ultimaPosMouse;
     bool posMouseLeida;
@@ -50,6 +51,7 @@ public class PlayerShooter : MonoBehaviour
     {
         camara = Camera.main;
         controlador = GetComponent<PlayerController>();
+        arsenal = GetComponent<ArsenalJugador>();
         accionDisparar = new InputAction("Disparar", InputActionType.Button, "<Mouse>/leftButton");
         accionDisparar.AddBinding("<Keyboard>/space");
 
@@ -121,28 +123,37 @@ public class PlayerShooter : MonoBehaviour
     void Disparar()
     {
         proximoDisparo = Time.time + 1f / ceramicaActual.disparosPorSegundo;
+        CeramicaData ceramica = ceramicaActual;                    // Gastar la última puede regresar a la Talavera
+        if (arsenal != null && !arsenal.Gastar()) return;
 
-        for (int i = 0; i < ceramicaActual.proyectilesPorDisparo; i++)
+        // Las granadas salen un poco hacia arriba (hacia el lado al que se lanzan) para que el arco llegue lejos
+        Vector2 apuntado = DireccionApuntado;
+        if (ceramica.elevacionGrados != 0f && Mathf.Abs(apuntado.x) > 0.1f)
+            apuntado = Quaternion.Euler(0f, 0f, ceramica.elevacionGrados * Mathf.Sign(apuntado.x)) * apuntado;
+
+        int n = ceramica.proyectilesPorDisparo;
+        for (int i = 0; i < n; i++)
         {
-            // Desvío aleatorio dentro de ± dispersionGrados
-            float desvio = Random.Range(-ceramicaActual.dispersionGrados, ceramicaActual.dispersionGrados);
-            Vector2 direccion = (Vector2)(Quaternion.Euler(0f, 0f, desvio) * (Vector3)DireccionApuntado);
+            // Abanico parejo (Barro Vidriado) más un desvío aleatorio dentro de ± dispersionGrados
+            float abanico = n > 1 ? Mathf.Lerp(-ceramica.aperturaAbanico, ceramica.aperturaAbanico, (float)i / (n - 1)) * 0.5f : 0f;
+            float desvio = abanico + Random.Range(-ceramica.dispersionGrados, ceramica.dispersionGrados);
+            Vector2 direccion = (Vector2)(Quaternion.Euler(0f, 0f, desvio) * (Vector3)apuntado);
 
             float angulo = Mathf.Atan2(direccion.y, direccion.x) * Mathf.Rad2Deg;
 
             Projectile proyectil = Reciclaje.Sacar(
-                ceramicaActual.prefabProyectil,
+                ceramica.prefabProyectil,
                 puntoDisparo.position,
                 Quaternion.Euler(0f, 0f, angulo));
 
-            proyectil.Inicializar(ceramicaActual, direccion);
+            proyectil.Inicializar(ceramica, direccion);
         }
 
-        GestorAudio.Reproducir(Sfx.Lanzar, 0.1f);
+        GestorAudio.Reproducir(ceramica.sonidoLanzar, 0.1f);
         // TODO (Sprint 2/6): animación de disparo
     }
 
-    /// <summary>Se usará en el Sprint 3 al recoger cerámicas / cambiar de arma.</summary>
+    /// <summary>Lo llama ArsenalJugador al cambiar de arma. Null = no lanza nada (trae la Maceta Escudo).</summary>
     public void EquiparCeramica(CeramicaData nueva)
     {
         ceramicaActual = nueva;
