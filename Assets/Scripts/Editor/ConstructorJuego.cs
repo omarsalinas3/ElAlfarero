@@ -73,6 +73,7 @@ public static partial class ConstructorJuego
         CrearEscenaViaje();
         CrearEscenaMenu();
         CrearEscenaIntro();
+        CrearEscenaTransicion();
         CrearEscenaSplash();
 
         EditorBuildSettings.scenes = new[]
@@ -81,6 +82,7 @@ public static partial class ConstructorJuego
             new EditorBuildSettingsScene(RutaMenu, true),
             new EditorBuildSettingsScene(RutaIntro, true),
             new EditorBuildSettingsScene(RutaNivel1, true),
+            new EditorBuildSettingsScene(RutaTransicion, true),   // Viñetas del Nivel 1 al viaje (#35)
             new EditorBuildSettingsScene(RutaViaje, true),
             new EditorBuildSettingsScene(RutaNivel2, true),
             new EditorBuildSettingsScene(RutaEscena, true),   // Sandbox de pruebas
@@ -740,11 +742,12 @@ public static partial class ConstructorJuego
         so.FindProperty("menuPausa").objectReferenceValue = pausa;
         so.FindProperty("pantallaGameOver").objectReferenceValue = gameOver;
         so.FindProperty("pantallaVictoria").objectReferenceValue = victoria;
-        so.FindProperty("escenaSiguiente").stringValue = Escenas.Viaje;               // Viaje montado al Nivel 2 (#57)
+        so.FindProperty("escenaSiguiente").stringValue = Escenas.Transicion;          // Viñetas (#35) y luego el viaje montado (#57)
         so.FindProperty("xInicioRecorrido").floatValue = jugador.transform.position.x;
         so.FindProperty("xFinRecorrido").floatValue = encuentro.transform.position.x;   // Donde arranca el jefe
         so.ApplyModifiedPropertiesWithoutUndo();
         Asignar(hud, "gestor", gestor);
+        CrearDialogoInicio(DialogoDolores, 3.2f);   // Don Toribio presenta la misión tras el letrero (#35)
 
         EditorSceneManager.SaveScene(escena, RutaNivel1);
     }
@@ -879,6 +882,7 @@ public static partial class ConstructorJuego
         soB.FindProperty("linea3").objectReferenceValue = l3;
         soB.ApplyModifiedPropertiesWithoutUndo();
 
+        CrearCuadroDialogo(c);      // #35: diálogos con retrato
         CrearControlesTactiles();   // #36: solo se ven en pantallas táctiles
         return hud;
     }
@@ -1171,55 +1175,15 @@ public static partial class ConstructorJuego
     }
 
     // ================================================================== Intro
-    static void CrearEscenaIntro()
+    static readonly (string img, string txt)[] VinetasIntro =
     {
-        Scene escena = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-        CrearCamara();
-        CrearEventSystem();
-        Canvas canvas = CrearCanvas("Intro", 0);
-        Transform c = canvas.transform;
-        Estirar(c, "Negro").gameObject.AddComponent<Image>().color = Color.black;
+        ("intro_01", "Dolores Hidalgo, Guanajuato.\nMateo, alfarero de manos firmes, vivía en paz moldeando el barro junto a su esposa Carmen."),
+        ("intro_02", "Hasta que una noche la luna se tiñó de rojo...\ny del inframundo emergió EL CHARRO NEGRO."),
+        ("intro_03", "El Charro se llevó a Carmen a lo más hondo de los túneles de Guanajuato. A su paso despertaron las leyendas del Bajío."),
+        ("intro_04", "Mateo tomó sus piezas de Talavera consagradas. Para rescatar a Carmen y traer de vuelta el amanecer... tendrá que pelear."),
+    };
 
-        Image imagen = Imagen(c, "Ilustracion", Spr("Intro/intro_01.png"), new Vector2(0f, 110f), new Vector2(1500f, 844f));
-        imagen.preserveAspect = true;
-        var grupo = imagen.gameObject.AddComponent<CanvasGroup>();
-        grupo.alpha = 0f;
-
-        var caja = Centro(c, "CajaTexto", new Vector2(0f, -400f), new Vector2(1640f, 230f));
-        var imgCaja = caja.gameObject.AddComponent<Image>();
-        imgCaja.sprite = sprPanel;
-        imgCaja.type = Image.Type.Sliced;
-        imgCaja.pixelsPerUnitMultiplier = 0.5f;
-        Text texto = Texto(caja, "Texto", "", 26, Crema, TextAnchor.UpperLeft, new Vector2(0f, -5f), new Vector2(1520f, 170f));
-        Text ayudaIntro = Texto(c, "Ayuda", "ENTER SIGUIENTE   ESC SALTAR", 16, new Color(1f, 1f, 1f, 0.6f), TextAnchor.LowerRight,
-                                new Vector2(-280f, 18f), new Vector2(520f, 30f), new Vector2(1f, 0f));
-        SegunDispositivo(ayudaIntro, ayudaIntro.text, "A SIGUIENTE   START SALTAR", "TOCA PARA SEGUIR");
-
-        (string img, string txt)[] vinetas =
-        {
-            ("intro_01", "Dolores Hidalgo, Guanajuato.\nMateo, alfarero de manos firmes, vivía en paz moldeando el barro junto a su esposa Carmen."),
-            ("intro_02", "Hasta que una noche la luna se tiñó de rojo...\ny del inframundo emergió EL CHARRO NEGRO."),
-            ("intro_03", "El Charro se llevó a Carmen a lo más hondo de los túneles de Guanajuato. A su paso despertaron las leyendas del Bajío."),
-            ("intro_04", "Mateo tomó sus piezas de Talavera consagradas. Para rescatar a Carmen y traer de vuelta el amanecer... tendrá que pelear."),
-        };
-
-        var intro = canvas.gameObject.AddComponent<SecuenciaIntro>();
-        var so = new SerializedObject(intro);
-        var lista = so.FindProperty("vinetas");
-        lista.arraySize = vinetas.Length;
-        for (int i = 0; i < vinetas.Length; i++)
-        {
-            var e = lista.GetArrayElementAtIndex(i);
-            e.FindPropertyRelative("imagen").objectReferenceValue = Spr($"Intro/{vinetas[i].img}.png");
-            e.FindPropertyRelative("texto").stringValue = vinetas[i].txt;
-        }
-        so.FindProperty("imagen").objectReferenceValue = imagen;
-        so.FindProperty("grupoImagen").objectReferenceValue = grupo;
-        so.FindProperty("texto").objectReferenceValue = texto;
-        so.ApplyModifiedPropertiesWithoutUndo();
-
-        EditorSceneManager.SaveScene(escena, RutaIntro);
-    }
+    static void CrearEscenaIntro() => CrearEscenaVinetas(RutaIntro, "Intro", VinetasIntro, Escenas.Nivel1);
 
     // ================================================================== Ayudantes de UI
     static void CrearCamara()

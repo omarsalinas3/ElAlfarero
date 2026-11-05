@@ -56,7 +56,14 @@ public class ViajeTests
         Assert.AreEqual(siguiente.gameObject, EventSystem.current.currentSelectedGameObject, "Es la opción seleccionada");
         Assert.AreEqual(2, GestorGuardado.Datos.nivelDesbloqueado, "Ya quedó desbloqueado el Nivel 2");
 
+        // Primero la cinemática de viñetas (#35); al saltarla sigue el viaje montado
         siguiente.onClick.Invoke();
+        yield return EsperarEscena(Escenas.Transicion, 6f);
+        Assert.AreEqual(Escenas.Transicion, SceneManager.GetActiveScene().name, "Antes del viaje se ve la cinemática");
+        yield return new WaitForSeconds(0.6f);
+        InputSystem.QueueStateEvent(teclado, new KeyboardState(Key.Escape));
+        yield return null;
+        InputSystem.QueueStateEvent(teclado, new KeyboardState());
         yield return EsperarEscena(Escenas.Viaje, 6f);
         Assert.AreEqual(Escenas.Viaje, SceneManager.GetActiveScene().name);
     }
