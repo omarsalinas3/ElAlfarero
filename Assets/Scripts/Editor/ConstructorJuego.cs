@@ -903,11 +903,15 @@ public static partial class ConstructorJuego
         Asignar(principal, "primerSeleccionado", continuar.gameObject);
 
         Panel panelOpciones = CrearPanelOpciones(raiz, out Button volver);
+        Panel panelControles = CrearPanelControles(raiz, out Button volverControles);
 
         var mp = raiz.gameObject.AddComponent<MenuPausa>();
         var so = new SerializedObject(mp);
         so.FindProperty("panelPrincipal").objectReferenceValue = principal;
         so.FindProperty("panelOpciones").objectReferenceValue = panelOpciones;
+        so.FindProperty("panelControles").objectReferenceValue = panelControles;
+        so.FindProperty("botonControles").objectReferenceValue = panelOpciones.transform.Find("Controles").GetComponent<Button>();
+        so.FindProperty("botonVolverControles").objectReferenceValue = volverControles;
         so.FindProperty("botonContinuar").objectReferenceValue = continuar;
         so.FindProperty("botonReiniciar").objectReferenceValue = reiniciar;
         so.FindProperty("botonOpciones").objectReferenceValue = opciones;
@@ -918,27 +922,39 @@ public static partial class ConstructorJuego
     }
 
     /// <summary>
-    /// Volumen de música y efectos. Desde el menú principal (delMenu) también tiene CONTROLES y BORRAR PARTIDA;
-    /// el botón de controles se llama "Controles" para que el menú lo conecte.
+    /// Opciones en tres secciones (#26): AUDIO (volumen de música y efectos), GRAFICOS (calidad, pantalla y
+    /// resolución) y CONTROLES (abre el panel de controles). Desde el menú principal (delMenu) también tiene BORRAR
+    /// PARTIDA. Los botones "Controles" y "Volver" se buscan por nombre para conectarlos.
     /// </summary>
     static Panel CrearPanelOpciones(Transform padre, out Button volver, bool delMenu = false)
     {
-        // Del menú el panel es más alto y los renglones van más juntos para que quepan los dos botones extra
-        Panel panel = CrearPanel(padre, "PanelOpciones", Vector2.zero, new Vector2(800f, delMenu ? 640f : 560f));
-        float[] y = delMenu ? new[] { 260f, 185f, 140f, 85f, 40f } : new[] { 200f, 100f, 45f, -40f, -95f };
-        Texto(panel.transform, "Titulo", "OPCIONES", 48, Dorado, TextAnchor.MiddleCenter, new Vector2(0f, y[0]), new Vector2(700f, 70f));
-        Text tMusica = Texto(panel.transform, "TextoMusica", "MUSICA", 26, Crema, TextAnchor.MiddleCenter, new Vector2(0f, y[1]), new Vector2(700f, 50f));
-        Slider sMusica = CrearSlider(panel.transform, "SliderMusica", new Vector2(0f, y[2]));
-        Text tEfectos = Texto(panel.transform, "TextoEfectos", "EFECTOS", 26, Crema, TextAnchor.MiddleCenter, new Vector2(0f, y[3]), new Vector2(700f, 50f));
-        Slider sEfectos = CrearSlider(panel.transform, "SliderEfectos", new Vector2(0f, y[4]));
+        Panel panel = CrearPanel(padre, "PanelOpciones", Vector2.zero, new Vector2(820f, delMenu ? 900f : 820f));
+        float arriba = delMenu ? 400f : 360f;                 // Del menú el panel crece hacia abajo por BORRAR PARTIDA
+        Texto(panel.transform, "Titulo", "OPCIONES", 48, Dorado, TextAnchor.MiddleCenter, new Vector2(0f, arriba - 45f), new Vector2(700f, 70f));
+
+        Seccion(panel.transform, "AUDIO", arriba - 110f);
+        Text tMusica = Texto(panel.transform, "TextoMusica", "MUSICA", 24, Crema, TextAnchor.MiddleCenter, new Vector2(0f, arriba - 155f), new Vector2(700f, 44f));
+        Slider sMusica = CrearSlider(panel.transform, "SliderMusica", new Vector2(0f, arriba - 192f));
+        Text tEfectos = Texto(panel.transform, "TextoEfectos", "EFECTOS", 24, Crema, TextAnchor.MiddleCenter, new Vector2(0f, arriba - 235f), new Vector2(700f, 44f));
+        Slider sEfectos = CrearSlider(panel.transform, "SliderEfectos", new Vector2(0f, arriba - 272f));
+
+        Seccion(panel.transform, "GRAFICOS", arriba - 330f);
+        Vector2 tamFila = new Vector2(640f, 66f);
+        Button calidad = Boton(panel.transform, "Calidad", "CALIDAD", new Vector2(0f, arriba - 385f), tamFila);
+        Button pantalla = Boton(panel.transform, "Pantalla", "PANTALLA", new Vector2(0f, arriba - 460f), tamFila);
+        Button resolucion = Boton(panel.transform, "Resolucion", "RESOLUCION", new Vector2(0f, arriba - 535f), tamFila);
+
+        Seccion(panel.transform, "CONTROLES", arriba - 595f);
+        Boton(panel.transform, "Controles", "VER CONTROLES", new Vector2(0f, arriba - 650f), tamFila);
+        float yVolver = arriba - 740f;
         if (delMenu)
         {
-            Boton(panel.transform, "Controles", "CONTROLES", new Vector2(0f, -50f), new Vector2(620f, 76f));
-            Button borrar = Boton(panel.transform, "BorrarPartida", "BORRAR PARTIDA", new Vector2(0f, -140f), new Vector2(620f, 76f));
+            Button borrar = Boton(panel.transform, "BorrarPartida", "BORRAR PARTIDA", new Vector2(0f, arriba - 740f), tamFila);
             var bp = borrar.gameObject.AddComponent<BotonBorrarPartida>();
             Asignar(bp, "texto", borrar.GetComponentInChildren<Text>());
+            yVolver = arriba - 820f;
         }
-        volver = Boton(panel.transform, "Volver", "VOLVER", new Vector2(0f, delMenu ? -235f : -195f), new Vector2(400f, 76f));
+        volver = Boton(panel.transform, "Volver", "VOLVER", new Vector2(0f, yVolver), new Vector2(400f, 70f));
         Asignar(panel, "primerSeleccionado", sMusica.gameObject);
 
         var op = panel.gameObject.AddComponent<OpcionesAudio>();
@@ -948,6 +964,54 @@ public static partial class ConstructorJuego
         so.FindProperty("textoMusica").objectReferenceValue = tMusica;
         so.FindProperty("textoEfectos").objectReferenceValue = tEfectos;
         so.ApplyModifiedPropertiesWithoutUndo();
+
+        var og = panel.gameObject.AddComponent<OpcionesGraficos>();
+        var soG = new SerializedObject(og);
+        soG.FindProperty("botonCalidad").objectReferenceValue = calidad;
+        soG.FindProperty("botonPantalla").objectReferenceValue = pantalla;
+        soG.FindProperty("botonResolucion").objectReferenceValue = resolucion;
+        soG.ApplyModifiedPropertiesWithoutUndo();
+        return panel;
+    }
+
+    // Título dorado chico de una sección del panel de opciones, con una raya a cada lado
+    static void Seccion(Transform padre, string texto, float y)
+    {
+        Texto(padre, "Seccion" + texto, "- " + texto + " -", 22, Dorado, TextAnchor.MiddleCenter, new Vector2(0f, y), new Vector2(700f, 40f));
+    }
+
+    /// <summary>
+    /// Esquema de controles de teclado y de gamepad (#26), lo abren las opciones del menú y de la pausa.
+    /// En el gamepad, lo que todavía no tiene botón (moverse, saltar, lanzar y evadir llegan con #36) dice PRONTO.
+    /// </summary>
+    static Panel CrearPanelControles(Transform padre, out Button volver)
+    {
+        Panel panel = CrearPanel(padre, "PanelControles", Vector2.zero, new Vector2(1500f, 820f));
+        Texto(panel.transform, "Titulo", "CONTROLES", 44, Dorado, TextAnchor.MiddleCenter, new Vector2(0f, 345f), new Vector2(1000f, 70f));
+        (string accion, string teclado, string gamepad)[] filas =
+        {
+            ("MOVER", "A / D o FLECHAS", "PRONTO"),
+            ("SALTAR", "W o FLECHA ARRIBA", "PRONTO"),
+            ("EVADIR", "SHIFT", "PRONTO"),
+            ("LANZAR / GOLPEAR", "ESPACIO o CLIC", "PRONTO"),
+            ("APUNTAR", "MOUSE o FLECHAS", "PRONTO"),
+            ("APUNTAR ARRIBA", "ESPACIO + ARRIBA", "PRONTO"),
+            ("CAMBIAR ARMA", "1-4 o RUEDA", "LB / RB"),
+            ("BEBER CAGUAMA", "E o Q", "PRONTO"),
+            ("MONTAR ALEBRIJE", "F", "LB"),
+            ("ZARPAZO (MONTADO)", "ESPACIO o CLIC", "RT"),
+            ("BAJAR / SUBIR", "ABAJO / ARRIBA", "CRUCETA"),
+            ("PAUSA", "ESC o P", "START"),
+        };
+        Texto(panel.transform, "EncabezadoTeclado", "TECLADO", 26, Dorado, TextAnchor.MiddleLeft, new Vector2(130f, 280f), new Vector2(520f, 40f));
+        Texto(panel.transform, "EncabezadoGamepad", "GAMEPAD", 26, Dorado, TextAnchor.MiddleLeft, new Vector2(560f, 280f), new Vector2(300f, 40f));
+        string acciones = "", teclas = "", botones = "";
+        foreach (var f in filas) { acciones += f.accion + "\n"; teclas += f.teclado + "\n"; botones += f.gamepad + "\n"; }
+        Texto(panel.transform, "Acciones", acciones.TrimEnd(), 24, Crema, TextAnchor.UpperLeft, new Vector2(-440f, -10f), new Vector2(580f, 520f));
+        Texto(panel.transform, "Teclado", teclas.TrimEnd(), 24, Crema, TextAnchor.UpperLeft, new Vector2(130f, -10f), new Vector2(520f, 520f));
+        Texto(panel.transform, "Gamepad", botones.TrimEnd(), 24, Crema, TextAnchor.UpperLeft, new Vector2(560f, -10f), new Vector2(300f, 520f));
+        volver = Boton(panel.transform, "Volver", "VOLVER", new Vector2(0f, -340f), new Vector2(400f, 70f));
+        Asignar(panel, "primerSeleccionado", volver.gameObject);
         return panel;
     }
 
@@ -1060,24 +1124,11 @@ public static partial class ConstructorJuego
         Button no = Boton(panelConfirmar.transform, "No", "NO", new Vector2(200f, -90f), new Vector2(360f, 78f));
         Asignar(panelConfirmar, "primerSeleccionado", no.gameObject);   // Por si se presiona sin querer
 
-        // Controles (se abre desde Opciones)
-        Panel panelControles = CrearPanel(c, "PanelControles", new Vector2(0f, -140f), new Vector2(1180f, 600f));
-        Texto(panelControles.transform, "Titulo", "CONTROLES", 44, Dorado, TextAnchor.MiddleCenter, new Vector2(0f, 235f), new Vector2(1000f, 70f));
-        Texto(panelControles.transform, "Lista",
-              "MOVER ............ A / D o FLECHAS\n" +
-              "SALTAR ........... FLECHA ARRIBA o W\n" +
-              "EVADIR ........... SHIFT\n" +
-              "APUNTAR .......... MOUSE o FLECHAS\n" +
-              "APUNTAR ARRIBA ... ESPACIO + ARRIBA\n" +
-              "LANZAR CERAMICA .. ESPACIO o CLIC\n" +
-              "BEBER CAGUAMA .... E o Q\n" +
-              "PAUSA ............ ESC o P",
-              24, Crema, TextAnchor.MiddleLeft, new Vector2(0f, 10f), new Vector2(1000f, 340f));
-        Button volverControles = Boton(panelControles.transform, "Volver", "VOLVER", new Vector2(0f, -225f), new Vector2(400f, 76f));
-        Asignar(panelControles, "primerSeleccionado", volverControles.gameObject);
+        // Controles (se abre desde Opciones; el mismo panel que en la pausa)
+        Panel panelControles = CrearPanelControles(c, out Button volverControles);
 
         Panel panelOpciones = CrearPanelOpciones(c, out Button volverOpciones, true);
-        ((RectTransform)panelOpciones.transform).anchoredPosition = new Vector2(0f, -170f);   // Más alto por BORRAR PARTIDA: sin tapar el título ni los créditos
+        ((RectTransform)panelOpciones.transform).anchoredPosition = new Vector2(0f, -60f);   // 900 de alto: casi toda la pantalla
 
         var mp = canvas.gameObject.AddComponent<MenuPrincipal>();
         var so = new SerializedObject(mp);
