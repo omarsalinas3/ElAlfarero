@@ -68,6 +68,7 @@ public static partial class ConstructorJuego
 
         CrearEscenaNivel1(p);
         CrearEscenaNivel2(p);
+        CrearEscenaViaje();
         CrearEscenaMenu();
         CrearEscenaIntro();
         CrearEscenaSplash();
@@ -78,6 +79,7 @@ public static partial class ConstructorJuego
             new EditorBuildSettingsScene(RutaMenu, true),
             new EditorBuildSettingsScene(RutaIntro, true),
             new EditorBuildSettingsScene(RutaNivel1, true),
+            new EditorBuildSettingsScene(RutaViaje, true),
             new EditorBuildSettingsScene(RutaNivel2, true),
             new EditorBuildSettingsScene(RutaEscena, true),   // Sandbox de pruebas
         };
@@ -85,7 +87,7 @@ public static partial class ConstructorJuego
 
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
-        Debug.Log("Juego construido: splash, menú, intro, Nivel 1 y Nivel 2.");
+        Debug.Log("Juego construido: splash, menú, intro, Nivel 1, viaje y Nivel 2.");
     }
 
     // ================================================================== Splash
@@ -709,7 +711,8 @@ public static partial class ConstructorJuego
         soE.ApplyModifiedPropertiesWithoutUndo();
         MenuPausa pausa = CrearMenuPausa();
         PantallaFinal gameOver = CrearPantallaFinal("GameOver", new Color(0.95f, 0.2f, 0.15f), new Color(0.12f, 0f, 0f, 0.8f), "REINTENTAR", 40);
-        PantallaFinal victoria = CrearPantallaFinal("Victoria", Dorado, new Color(0f, 0.04f, 0.14f, 0.8f), "JUGAR DE NUEVO", 41, true);
+        PantallaFinal victoria = CrearPantallaFinal("Victoria", Dorado, new Color(0f, 0.04f, 0.14f, 0.8f), "JUGAR DE NUEVO", 41, true,
+                                                    "¡RUMBO A POZOS!");
 
         var gestor = new GameObject("GestorNivel").AddComponent<GestorNivel>();
         var so = new SerializedObject(gestor);
@@ -720,6 +723,7 @@ public static partial class ConstructorJuego
         so.FindProperty("menuPausa").objectReferenceValue = pausa;
         so.FindProperty("pantallaGameOver").objectReferenceValue = gameOver;
         so.FindProperty("pantallaVictoria").objectReferenceValue = victoria;
+        so.FindProperty("escenaSiguiente").stringValue = Escenas.Viaje;               // Viaje montado al Nivel 2 (#57)
         so.FindProperty("xInicioRecorrido").floatValue = jugador.transform.position.x;
         so.FindProperty("xFinRecorrido").floatValue = encuentro.transform.position.x;   // Donde arranca el jefe
         so.ApplyModifiedPropertiesWithoutUndo();
@@ -927,28 +931,35 @@ public static partial class ConstructorJuego
     }
 
     // ------------------------------------------------------------------ Game over / Victoria
-    static PantallaFinal CrearPantallaFinal(string nombre, Color colorTitulo, Color tinte, string textoReintentar, int orden, bool conRecord = false)
+    /// <param name="textoSiguiente">Si se da, agrega un botón ancho para seguir la historia (queda seleccionado).</param>
+    static PantallaFinal CrearPantallaFinal(string nombre, Color colorTitulo, Color tinte, string textoReintentar, int orden, bool conRecord = false,
+                                            string textoSiguiente = null)
     {
         Canvas canvas = CrearCanvas(nombre, orden);
         var raiz = Estirar(canvas.transform, "Raiz");
         raiz.gameObject.AddComponent<Image>().color = tinte;
 
-        Panel panel = CrearPanel(raiz, "Panel", Vector2.zero, new Vector2(1000f, 680f));
-        Text titulo = Texto(panel.transform, "Titulo", "GAME OVER", 80, colorTitulo, TextAnchor.MiddleCenter, new Vector2(0f, 220f), new Vector2(900f, 110f));
+        // Con el botón de seguir el panel crece 80 y todo sube 40 para dejarle lugar abajo
+        bool conSiguiente = !string.IsNullOrEmpty(textoSiguiente);
+        float dy = conSiguiente ? 40f : 0f;
+        Panel panel = CrearPanel(raiz, "Panel", Vector2.zero, new Vector2(1000f, conSiguiente ? 760f : 680f));
+        Text titulo = Texto(panel.transform, "Titulo", "GAME OVER", 80, colorTitulo, TextAnchor.MiddleCenter, new Vector2(0f, 220f + dy), new Vector2(900f, 110f));
         titulo.resizeTextForBestFit = true;      // Títulos largos ("¡MISION CUMPLIDA!") se encogen para caber en una línea
         titulo.resizeTextMinSize = 36;
         titulo.resizeTextMaxSize = 80;
-        Text sub = Texto(panel.transform, "Subtitulo", "", 22, Crema, TextAnchor.MiddleCenter, new Vector2(0f, 115f), new Vector2(880f, 70f));
+        Text sub = Texto(panel.transform, "Subtitulo", "", 22, Crema, TextAnchor.MiddleCenter, new Vector2(0f, 115f + dy), new Vector2(880f, 70f));
         // Alto para 6 renglones: en la victoria se agregan RECORD y MEJOR (tiempo)
-        Text resumen = Texto(panel.transform, "Resumen", "", 26, Crema, TextAnchor.MiddleLeft, new Vector2(-40f, -38f), new Vector2(520f, 230f));
-        Button reintentar = Boton(panel.transform, "Reintentar", textoReintentar, new Vector2(-235f, -235f), new Vector2(430f, 84f));
-        Button menu = Boton(panel.transform, "Menu", "MENU PRINCIPAL", new Vector2(235f, -235f), new Vector2(430f, 84f));
-        Asignar(panel, "primerSeleccionado", reintentar.gameObject);
+        Text resumen = Texto(panel.transform, "Resumen", "", 26, Crema, TextAnchor.MiddleLeft, new Vector2(-40f, -38f + dy), new Vector2(520f, 230f));
+        float yBotones = conSiguiente ? -275f : -235f;
+        Button reintentar = Boton(panel.transform, "Reintentar", textoReintentar, new Vector2(-235f, yBotones), new Vector2(430f, 84f));
+        Button menu = Boton(panel.transform, "Menu", "MENU PRINCIPAL", new Vector2(235f, yBotones), new Vector2(430f, 84f));
+        Button siguiente = conSiguiente ? Boton(panel.transform, "Siguiente", textoSiguiente, new Vector2(0f, -175f), new Vector2(900f, 84f)) : null;
+        Asignar(panel, "primerSeleccionado", (siguiente != null ? siguiente : reintentar).gameObject);
 
         GameObject avisoRecord = null;
         if (conRecord)
         {
-            Text aviso = Texto(panel.transform, "NuevoRecord", "¡NUEVO\nRECORD!", 30, Dorado, TextAnchor.MiddleCenter, new Vector2(340f, -10f), new Vector2(260f, 110f));
+            Text aviso = Texto(panel.transform, "NuevoRecord", "¡NUEVO\nRECORD!", 30, Dorado, TextAnchor.MiddleCenter, new Vector2(340f, -10f + dy), new Vector2(260f, 110f));
             aviso.gameObject.AddComponent<TextoParpadeante>();
             aviso.gameObject.SetActive(false);
             avisoRecord = aviso.gameObject;
@@ -962,6 +973,7 @@ public static partial class ConstructorJuego
         so.FindProperty("resumen").objectReferenceValue = resumen;
         so.FindProperty("botonReintentar").objectReferenceValue = reintentar;
         so.FindProperty("botonMenu").objectReferenceValue = menu;
+        so.FindProperty("botonSiguiente").objectReferenceValue = siguiente;
         so.FindProperty("avisoNuevoRecord").objectReferenceValue = avisoRecord;
         so.ApplyModifiedPropertiesWithoutUndo();
         return pf;

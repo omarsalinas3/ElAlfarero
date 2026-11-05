@@ -2,7 +2,10 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>Pantalla de GAME OVER o de MISIÓN CUMPLIDA: título que cae, mensaje, resumen y dos botones.</summary>
+/// <summary>
+/// Pantalla de GAME OVER o de MISIÓN CUMPLIDA: título que cae, mensaje, resumen y dos botones. La victoria de un nivel
+/// con continuación agrega un tercero para seguir la historia (p. ej. "RUMBO A POZOS").
+/// </summary>
 public class PantallaFinal : MonoBehaviour
 {
     [SerializeField] Panel panel;
@@ -11,12 +14,14 @@ public class PantallaFinal : MonoBehaviour
     [SerializeField] Text resumen;
     [SerializeField] Button botonReintentar;
     [SerializeField] Button botonMenu;
+    [SerializeField] Button botonSiguiente;            // Opcional
     [SerializeField] GameObject avisoNuevoRecord;      // "¡NUEVO RECORD!" parpadeando (solo en la pantalla de victoria)
 
     void Awake()
     {
         botonReintentar.onClick.AddListener(() => GestorNivel.Actual?.Reintentar());
         botonMenu.onClick.AddListener(() => GestorNivel.Actual?.IrAlMenu());
+        if (botonSiguiente != null) botonSiguiente.onClick.AddListener(() => GestorNivel.Actual?.IrAlSiguiente());
         gameObject.SetActive(false);
     }
 

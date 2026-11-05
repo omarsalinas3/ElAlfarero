@@ -30,6 +30,8 @@ public class GestorNivel : MonoBehaviour
     [SerializeField] string nombreNivel = "DOLORES HIDALGO";
     [SerializeField] Musica musica = Musica.Nivel1;
     [SerializeField] float esperaGameOver = 1.6f;
+    [Tooltip("Escena a la que lleva el botón de seguir en la victoria (vacío: el nivel no tiene siguiente todavía).")]
+    [SerializeField] string escenaSiguiente = "";
 
     [Header("Puntaje y objetivo")]
     [SerializeField] int puntosPorMoneda = 10;
@@ -249,4 +251,8 @@ public class GestorNivel : MonoBehaviour
     // ------------------------------------------------------------------ Botones
     public void Reintentar() => CambioEscena.Reiniciar();
     public void IrAlMenu() => CambioEscena.Cargar(Escenas.Menu);
+    public void IrAlSiguiente()
+    {
+        if (!string.IsNullOrEmpty(escenaSiguiente)) CambioEscena.Cargar(escenaSiguiente);
+    }
 }

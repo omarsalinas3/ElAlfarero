@@ -36,7 +36,8 @@ public class ImportadorSprites : AssetPostprocessor
         var ajustes = new TextureImporterSettings();
         importador.ReadTextureSettings(ajustes);
         bool pivoteEnPies = carpeta == "Player" || (carpeta == "Enemies" && !nombre.StartsWith("bruja_")) || carpeta == "Allies"
-                            || carpeta == "Bosses" || (carpeta == "Obstacles" && !nombre.StartsWith("maceta"));   // La bruja vuela: pivote al centro
+                            || carpeta == "Bosses" || (carpeta == "Obstacles" && !nombre.StartsWith("maceta"))    // La bruja vuela: pivote al centro
+                            || nombre.StartsWith("huella_");                                                      // Las huellas arden sobre el suelo
         ajustes.spriteAlignment = (int)(pivoteEnPies ? SpriteAlignment.BottomCenter : SpriteAlignment.Center);
         ajustes.spriteMeshType = SpriteMeshType.FullRect;
         importador.SetTextureSettings(ajustes);
@@ -63,6 +64,7 @@ public class ImportadorSprites : AssetPostprocessor
         if (nombre.StartsWith("nahual_")) return 155f;        // Nahual de la estampida: ~2.8 u de largo y ~1.8 de alto, más bajo que el salto de Mateo
         if (nombre.StartsWith("jinete_calavera")) return 90f; // Calavera en llamas: ~1.1 u con todo y estela
         if (nombre.StartsWith("jinete_")) return 42f;         // Jinete sin Cabeza: ~6 u de largo y ~4.5 de alto, más grande que Mateo
+        if (nombre.StartsWith("huella_fuego")) return 32f;    // Herradura en llamas del viaje a Pozos: ~0.9 u (pixel art de 28 px)
 
         switch (carpeta)
         {
