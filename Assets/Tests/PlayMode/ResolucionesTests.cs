@@ -48,7 +48,8 @@ public class ResolucionesTests
         yield return null;
         yield return null;
 
-        var escaladores = Object.FindObjectsByType<CanvasScaler>(FindObjectsInactive.Include)
+        // Los activos: los controles táctiles en PC están apagados y su AreaSegura se aplica al encenderse
+        var escaladores = Object.FindObjectsByType<CanvasScaler>(FindObjectsInactive.Exclude)
                                 .Where(e => e.GetComponent<Canvas>().renderMode == RenderMode.ScreenSpaceOverlay).ToArray();
         Assert.IsNotEmpty(escaladores);
         foreach (var e in escaladores)
