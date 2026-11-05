@@ -44,6 +44,7 @@ public class Destructible : MonoBehaviour
         GestorAudio.Reproducir(sonidoRomper);
         if (GestorNivel.Actual != null) GestorNivel.Actual.SumarPuntos(puntos);
         Vector3 pos = transform.position;
+        Efectos.Particulas(TipoParticula.Astillas, pos + Vector3.up * 0.6f);
 
         if (prefabRestos != null)
         {

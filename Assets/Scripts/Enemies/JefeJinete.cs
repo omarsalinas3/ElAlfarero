@@ -267,7 +267,7 @@ public class JefeJinete : MonoBehaviour
         Teñir(Color.white);
         if (animator != null) animator.SetBool(AnimMuerto, true);
         GestorAudio.Reproducir(Sfx.RugidoAlebrije, 0f);
-        Camera.main?.GetComponent<CameraFollow>()?.Sacudir(0.8f, 0.3f);
+        Efectos.GolpeFuerte(0.15f, 0.3f, 0.8f);                     // El golpe final se congela un instante (#30)
         StartCoroutine(Victoria());
     }
 

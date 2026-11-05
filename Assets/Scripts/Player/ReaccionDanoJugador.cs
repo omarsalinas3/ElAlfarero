@@ -29,6 +29,7 @@ public class ReaccionDanoJugador : MonoBehaviour
     void AlRecibirDano(int cantidad)
     {
         GestorAudio.Reproducir(Sfx.DanoJugador);
+        Efectos.GolpeFuerte(0.04f, 0.12f, 0.15f);
         if (salud.EstaMuerto) return;
         salud.HacerInvulnerable(invulnerabilidadTrasGolpe);
         parpadeoHasta = Time.time + invulnerabilidadTrasGolpe;

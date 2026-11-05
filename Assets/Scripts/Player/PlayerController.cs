@@ -62,6 +62,8 @@ public class PlayerController : MonoBehaviour
     float temporizadorEvasion;
     float temporizadorCooldown;
     float temporizadorEmpuje;
+    float caidaMaxima;                              // Velocidad de caída más fuerte desde que dejó el suelo (#30)
+    float proximoPolvo;
     int direccionEvasion;
 
     void Awake()
@@ -112,8 +114,10 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        bool estabaEnSuelo = EstaEnSuelo;
         EstaEnSuelo = Physics2D.OverlapBox(puntoSuelo.position, tamanoCajaSuelo, 0f, capaSuelo);
         temporizadorEmpuje -= Time.deltaTime;
+        EfectosDeSuelo(estabaEnSuelo);
 
         if (!ControlActivo || Time.timeScale == 0f)
         {
@@ -152,6 +156,19 @@ public class PlayerController : MonoBehaviour
         if (EstaEvadiendo)            rb.gravityScale = 0f;
         else if (velocidad.y < 0f)    rb.gravityScale = gravedadBase * multiplicadorCaida;
         else                          rb.gravityScale = gravedadBase;
+    }
+
+    // Polvo (#30): una nube al caer de alto y motas que se quedan atrás al correr
+    void EfectosDeSuelo(bool estabaEnSuelo)
+    {
+        if (!EstaEnSuelo) { caidaMaxima = Mathf.Min(caidaMaxima, rb.linearVelocity.y); return; }
+        if (!estabaEnSuelo && caidaMaxima < -6f) Efectos.Particulas(TipoParticula.Aterrizaje, puntoSuelo.position);
+        caidaMaxima = 0f;
+        if (Mathf.Abs(rb.linearVelocity.x) > velocidadMaxima * 0.6f && Time.time >= proximoPolvo)
+        {
+            proximoPolvo = Time.time + 0.12f;
+            Efectos.Particulas(TipoParticula.Polvo, puntoSuelo.position, (int)Mathf.Sign(rb.linearVelocity.x));
+        }
     }
 
     // ------------------------------------------------------------------ Salto
