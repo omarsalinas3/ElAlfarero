@@ -79,6 +79,7 @@ public static partial class ConstructorJuego
         Poner(p.huacalMonedas, 30.5f, YSuelo, obstaculos);
         Poner(p.huacalGuacamaya, 30.5f, YSuelo + altoHuacal, obstaculos);   // La única curación antes de la emboscada
         Poner(p.huacalNegro, 32.5f, YSuelo, obstaculos);          // Barro Negro para las 3 oleadas de la bocamina
+        PonerSecretosNivel2(p, derecha, altoHuacal, obstaculos, recogibles);
 
         // Tramo 3: bocamina y castillete. Emboscada de 3 oleadas (una más que en Dolores)
         CrearEmboscada(35f, new[]

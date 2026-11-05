@@ -71,6 +71,12 @@ public class ImportadorSprites : AssetPostprocessor
         if (nombre.StartsWith("negro_bomba")) return 450f;    // Granada de Barro Negro: ~0.8 u con todo y humo
         if (nombre.StartsWith("negro_explosion")) return 200f; // Explosión: ~4 u, igual al radio de daño (2.2)
         if (nombre.StartsWith("escudo_maceta")) return 260f;  // Maceta Escudo: ~1.7 u, le cubre el cuerpo a Mateo
+        // Secretos (#63), de objetos_secretos_flow.jpg
+        if (nombre.StartsWith("muro_agrietado")) return 75f;  // ~3.8 u de alto: más que el salto de Mateo (~3.3)
+        if (nombre.StartsWith("viga_")) return 120f;          // Plataforma de ~3 u de ancho
+        if (nombre.StartsWith("tiro_mina")) return 100f;      // Bocamina de ~3 u
+        if (nombre.StartsWith("exvoto")) return 150f;         // ~1 u de alto
+        if (nombre.StartsWith("cofre_")) return 190f;         // ~1.2 u
 
         switch (carpeta)
         {

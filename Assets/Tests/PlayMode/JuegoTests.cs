@@ -112,7 +112,7 @@ public class JuegoTests
     {
         yield return CargarNivel1();
         int recogiblesAntes = Object.FindObjectsByType<Recogible>().Length;
-        var huacal = Object.FindObjectsByType<Destructible>().OrderBy(d => d.transform.position.x).First();
+        var huacal = Object.FindObjectsByType<Destructible>().Where(d => d.name.StartsWith("Huacal")).OrderBy(d => d.transform.position.x).First();
         huacal.GetComponent<Health>().RecibirDano(1000);
         yield return null;
 
