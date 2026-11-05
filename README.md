@@ -27,7 +27,7 @@ La dificultad sube de nivel en nivel: más enemigos y más resistentes, ataques 
 
 ### Modificaciones respecto al GDD
 
-El GDD original solo daba ejemplos de jefes ("figuras icónicas como La Llorona, El Charro Negro y Alebrijes Gigantes") y proponía cinco zonas. Durante el Sprint 2 (22 de octubre) el equipo acordó estos cambios:
+El GDD original solo daba ejemplos de jefes ("figuras icónicas como La Llorona, El Charro Negro y Alebrijes Gigantes") y proponía cinco zonas. Durante el Sprint 2 (22 de octubre) el equipo acordó estos cambios (la tabla completa de mecánicas, con la justificación de cada cambio, está en [Docs/MECANICAS.md](Docs/MECANICAS.md)):
 
 | Cambio | Antes (GDD) | Ahora | Por qué |
 |---|---|---|---|
@@ -86,7 +86,7 @@ Lo que **ya existe**:
 - **Sonido:** música por pantalla y nivel, y efectos para cada acción.
 - **Pruebas automáticas** de PlayMode del movimiento, el disparo, la IA, los niveles, el guardado, los menús y el rendimiento.
 
-Lo que **todavía no**: Barro Negro, Barro Vidriado y Maceta Escudo; los niveles 3 y 4 con La Llorona y El Charro Negro; gamepad y controles táctiles.
+Lo que **todavía no**: los niveles 3 y 4 con La Llorona y El Charro Negro; gamepad completo y controles táctiles. La comparación completa con el GDD (qué está implementado, qué cambió y por qué, y qué falta) está en [Docs/MECANICAS.md](Docs/MECANICAS.md).
 
 ## Cómo ejecutarlo
 
@@ -117,7 +117,7 @@ Assets/
 Docs/                 ARQUITECTURA.md, BITACORA.md, contexto del proyecto y originales del arte
 ```
 
-Más detalle en [Docs/ARQUITECTURA.md](Docs/ARQUITECTURA.md), [Docs/BITACORA.md](Docs/BITACORA.md) y [SETUP.md](SETUP.md).
+Más detalle en [Docs/ARQUITECTURA.md](Docs/ARQUITECTURA.md), [Docs/BITACORA.md](Docs/BITACORA.md), [Docs/MECANICAS.md](Docs/MECANICAS.md) (mecánicas del GDD y modificaciones justificadas) y [SETUP.md](SETUP.md).
 
 ## Equipo
 
