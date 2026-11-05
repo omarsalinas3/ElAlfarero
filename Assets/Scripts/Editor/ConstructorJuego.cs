@@ -184,6 +184,8 @@ public static partial class ConstructorJuego
             (Sfx.Explosion, new[] { "explosion" }, 0.9f),
             (Sfx.BloqueoEscudo, new[] { "bloqueo_escudo" }, 0.75f),
             (Sfx.RomperEscudo, new[] { "romper_escudo" }, 0.85f),
+            (Sfx.PunoLigero, new[] { "puno_ligero_1", "puno_ligero_2" }, 0.7f),
+            (Sfx.PunoFuerte, new[] { "puno_fuerte" }, 0.85f),
         };
         b.efectos = efectos.Select(e => new BibliotecaAudio.EntradaSfx
         {

@@ -9,7 +9,8 @@ public enum Sfx
     MenuMover, MenuAceptar, Pausa, JingleGameOver, JingleVictoria, JingleMision,
     Disparo, Escopetazo, Machetazo, RugidoAlebrije,
     AullidoNahual, Estampida,
-    CambioArma, RecogerArma, LanzarVidriado, Explosion, BloqueoEscudo, RomperEscudo
+    CambioArma, RecogerArma, LanzarVidriado, Explosion, BloqueoEscudo, RomperEscudo,
+    PunoLigero, PunoFuerte
 }
 
 public enum Musica { Ninguna, Menu, Intro, Nivel1, Nivel2 }

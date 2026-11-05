@@ -132,6 +132,11 @@ public static class ConfigurarSprint1
         AnimationClip correr = CrearClip("Mateo_Run", run, 12f, true);
         AnimationClip saltar = CrearClip("Mateo_Jump", new[] { run[2] }, 1f, true);
         AnimationClip evadir = CrearClip("Mateo_Evadir", new[] { run[0] }, 1f, true);
+        // Combo cuerpo a cuerpo (#62, hoja de Flow mateo_combo_flow.jpg): el 3.er cuadro es el puño extendido.
+        // Duran lo mismo que en CombateCuerpo (0.25, 0.25 y 0.4 s); al terminar CombateCuerpo regresa a Idle
+        AnimationClip golpe1 = CrearClip("Mateo_Golpe1", Cuadros("Player/mateo_golpe1", 4), 16f, false);
+        AnimationClip golpe2 = CrearClip("Mateo_Golpe2", Cuadros("Player/mateo_golpe2", 4), 16f, false);
+        AnimationClip golpe3 = CrearClip("Mateo_Golpe3", Cuadros("Player/mateo_golpe3", 4), 10f, false);
 
         const string ruta = "Assets/Art/Animations/Mateo.controller";
         AssetDatabase.DeleteAsset(ruta);
@@ -147,6 +152,9 @@ public static class ConfigurarSprint1
         AnimatorState sJump = sm.AddState("Jump"); sJump.motion = saltar;
         AnimatorState sEvadir = sm.AddState("Evadir"); sEvadir.motion = evadir;
         AnimatorState sMuerte = sm.AddState("Muerte"); sMuerte.motion = morir;
+        sm.AddState("Golpe1").motion = golpe1;                   // Sin transiciones: los pide CombateCuerpo con Play
+        sm.AddState("Golpe2").motion = golpe2;
+        sm.AddState("Golpe3").motion = golpe3;
         sm.defaultState = sIdle;
 
         Transicion(sIdle, sRun).AddCondition(AnimatorConditionMode.Greater, 0.3f, "Velocidad");
@@ -290,6 +298,10 @@ public static class ConfigurarSprint1
         var tirador = raiz.AddComponent<PlayerShooter>();
         raiz.AddComponent<InventarioJugador>();
         raiz.AddComponent<ReaccionDanoJugador>();
+        var combate = raiz.AddComponent<CombateCuerpo>();          // Golpes cuando un enemigo está pegado (#62)
+        var soCombate = new SerializedObject(combate);
+        soCombate.FindProperty("capasEnemigo").FindPropertyRelative("m_Bits").intValue = 1 << CapaEnemy;
+        soCombate.ApplyModifiedPropertiesWithoutUndo();
 
         // Visual: sprite + animator (pivote en los pies)
         var visual = new GameObject("Visual") { layer = CapaPlayer };

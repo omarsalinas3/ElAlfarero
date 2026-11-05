@@ -139,6 +139,15 @@ MonoBehaviour:
     clips:
     - {fileID: 8300000, guid: 5930c87959fcbaf4ea39a17e9cdc01d1, type: 3}
     volumen: 0.85
+  - id: 31
+    clips:
+    - {fileID: 8300000, guid: f677b0b297cfe6b42ac3f49e4a6bab48, type: 3}
+    - {fileID: 8300000, guid: 1ef44f8ddef60464a81a92cf7b8021a5, type: 3}
+    volumen: 0.7
+  - id: 32
+    clips:
+    - {fileID: 8300000, guid: 857dff5e7cdc5f945b22900f9c3f6b6e, type: 3}
+    volumen: 0.85
   musicas:
   - id: 1
     clip: {fileID: 8300000, guid: 156eddd018cab7a418adf1014d372383, type: 3}
