@@ -1101,19 +1101,22 @@ public static partial class ConstructorJuego
         Button salir = Boton(panelMenu.transform, "Salir", "SALIR", new Vector2(0f, -168f), new Vector2(440f, 78f));
         Asignar(panelMenu, "primerSeleccionado", jugar.gameObject);
 
-        // Créditos (los completos, con licencias de música y arte, son la #24)
-        Panel panelCreditos = CrearPanel(c, "PanelCreditos", new Vector2(0f, -170f), new Vector2(1180f, 600f));
-        Texto(panelCreditos.transform, "Titulo", "CREDITOS", 44, Dorado, TextAnchor.MiddleCenter, new Vector2(0f, 235f), new Vector2(1000f, 70f));
-        Texto(panelCreditos.transform, "Lista",
-              "PROGRAMACION, ARTE Y MUSICA\n" +
-              "OMAR SALINAS  ·  NOE CHAVERO\n\n" +
-              "CREACION DE VIDEOJUEGOS  ·  UTNG  ·  GIDS6102\n" +
-              "PROFESOR GABRIEL BARRON\n\n" +
-              "ARTE Y MUSICA HECHOS CON GOOGLE FLOW\n" +
-              "FUENTE PRESS START 2P (CODEMAN38, OFL)\n" +
-              "HECHO CON UNITY 6",
-              22, Crema, TextAnchor.MiddleCenter, new Vector2(0f, 10f), new Vector2(1100f, 360f));
-        Button volverCreditos = Boton(panelCreditos.transform, "Volver", "VOLVER", new Vector2(0f, -225f), new Vector2(400f, 76f));
+        // Créditos (#24): autores, herramientas y licencias que suben solos; la misma lista está en Docs/CREDITOS.md
+        Panel panelCreditos = CrearPanel(c, "PanelCreditos", new Vector2(0f, -60f), new Vector2(1180f, 860f));
+        Texto(panelCreditos.transform, "Titulo", "CREDITOS", 44, Dorado, TextAnchor.MiddleCenter, new Vector2(0f, 370f), new Vector2(1000f, 70f));
+        var ventana = Centro(panelCreditos.transform, "Ventana", new Vector2(0f, 20f), new Vector2(1100f, 590f));
+        ventana.gameObject.AddComponent<RectMask2D>();
+        // Ancla arriba: la posición y crece conforme el texto sube
+        var lista = Texto(ventana, "Lista", TextoCreditos.Contenido, 22, Crema, TextAnchor.UpperCenter, Vector2.zero, new Vector2(1060f, 0f),
+                          new Vector2(0.5f, 1f));
+        lista.rectTransform.pivot = new Vector2(0.5f, 1f);
+        lista.gameObject.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+        Texto(panelCreditos.transform, "Ayuda", "ABAJO ACELERA   ARRIBA REGRESA", 14, new Color(1f, 1f, 1f, 0.55f), TextAnchor.MiddleCenter,
+              new Vector2(0f, -300f), new Vector2(1000f, 30f));
+        var desplazar = panelCreditos.gameObject.AddComponent<CreditosDesplazables>();
+        Asignar(desplazar, "contenido", lista.rectTransform);
+        Asignar(desplazar, "ventana", ventana);
+        Button volverCreditos = Boton(panelCreditos.transform, "Volver", "VOLVER", new Vector2(0f, -365f), new Vector2(400f, 76f));
         Asignar(panelCreditos, "primerSeleccionado", volverCreditos.gameObject);
 
         // Confirmación al jugar con partida guardada (empezar de nuevo la borra)
