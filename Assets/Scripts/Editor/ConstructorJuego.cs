@@ -1078,6 +1078,12 @@ public static partial class ConstructorJuego
         Sprite portada = AssetDatabase.LoadAssetAtPath<Sprite>(Sprites + "UI/portada.png") ?? Spr("Environment/lvl1_dolores_noche.png");
         Image fondo = Imagen(c, "Fondo", portada, Vector2.zero, new Vector2(2040f, 1148f));
         fondo.raycastTarget = false;
+        // Cubre toda la pantalla en cualquier proporción (#37); un poco más grande para que el vaivén no deje orillas
+        fondo.preserveAspect = false;
+        var cubrir = fondo.gameObject.AddComponent<AspectRatioFitter>();
+        cubrir.aspectMode = AspectRatioFitter.AspectMode.EnvelopeParent;
+        cubrir.aspectRatio = 16f / 9f;
+        fondo.rectTransform.localScale = Vector3.one * 1.08f;
         var oscuro = Estirar(c, "Oscurecer").gameObject.AddComponent<Image>();
         oscuro.color = new Color(0f, 0f, 0f, 0.35f);
         oscuro.raycastTarget = false;
@@ -1234,11 +1240,14 @@ public static partial class ConstructorJuego
         var canvas = go.AddComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         canvas.sortingOrder = orden;
+        // #37: "Expand" garantiza al menos 1920x1080 de referencia en cualquier proporción (4:3, 21:9, celular), así
+        // nada diseñado para 16:9 se corta; AreaSegura acomoda el contenido en la zona de juego 16:9 y la Safe Area.
         var escalador = go.AddComponent<CanvasScaler>();
         escalador.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         escalador.referenceResolution = new Vector2(1920f, 1080f);
-        escalador.matchWidthOrHeight = 0.5f;
+        escalador.screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
         go.AddComponent<GraphicRaycaster>();
+        go.AddComponent<AreaSegura>();
         return canvas;
     }
 
