@@ -56,6 +56,8 @@ public class PlayerShooter : MonoBehaviour
         combate = GetComponent<CombateCuerpo>();
         accionDisparar = new InputAction("Disparar", InputActionType.Button, "<Mouse>/leftButton");
         accionDisparar.AddBinding("<Keyboard>/space");
+        accionDisparar.AddBinding("<Gamepad>/buttonWest");      // X (#36)
+        accionDisparar.AddBinding("<Gamepad>/rightTrigger");
 
         if (puntoDisparo == null)
         {
@@ -94,6 +96,24 @@ public class PlayerShooter : MonoBehaviour
     {
         DetectarMouse();
         if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame) UsarTeclado();
+
+        // Gamepad (#36): el stick derecho apunta en cualquier dirección; sin él, al frente (o arriba con el izquierdo)
+        var g = Gamepad.current;
+        if (g != null)
+        {
+            Vector2 stick = g.rightStick.ReadValue();
+            if (stick.sqrMagnitude > 0.16f)
+            {
+                UsandoMouse = false;
+                DireccionApuntado = stick.normalized;
+                return;
+            }
+            if (!UsandoMouse && g.leftStick.ReadValue().y > 0.7f)
+            {
+                DireccionApuntado = Vector2.up;
+                return;
+            }
+        }
 
         if (!UsandoMouse || camara == null)
         {

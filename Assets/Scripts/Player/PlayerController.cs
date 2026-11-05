@@ -82,7 +82,8 @@ public class PlayerController : MonoBehaviour
             puntoSuelo = transform;
         }
 
-        // Mover: A/D y flechas como eje horizontal (-1 a 1)
+        // Mover: A/D y flechas como eje horizontal (-1 a 1); en gamepad (#36), stick izquierdo o cruceta.
+        // El joystick táctil alimenta el mismo stick de un gamepad virtual (ControlesTactiles)
         accionMover = new InputAction("Mover", InputActionType.Value);
         accionMover.AddCompositeBinding("1DAxis")
             .With("Negative", "<Keyboard>/a")
@@ -90,12 +91,16 @@ public class PlayerController : MonoBehaviour
         accionMover.AddCompositeBinding("1DAxis")
             .With("Negative", "<Keyboard>/leftArrow")
             .With("Positive", "<Keyboard>/rightArrow");
+        accionMover.AddBinding("<Gamepad>/leftStick/x").WithProcessor("axisDeadzone(min=0.25)");
+        accionMover.AddBinding("<Gamepad>/dpad/x");
 
-        // Espacio quedó para lanzar cerámica (PlayerShooter)
+        // Espacio quedó para lanzar cerámica (PlayerShooter); en gamepad saltar es A y evadir B
         accionSaltar = new InputAction("Saltar", InputActionType.Button, "<Keyboard>/upArrow");
         accionSaltar.AddBinding("<Keyboard>/w");
+        accionSaltar.AddBinding("<Gamepad>/buttonSouth");
 
         accionEvadir = new InputAction("Evadir", InputActionType.Button, "<Keyboard>/leftShift");
+        accionEvadir.AddBinding("<Gamepad>/buttonEast");
     }
 
     void OnEnable()

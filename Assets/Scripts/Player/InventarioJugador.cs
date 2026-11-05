@@ -39,6 +39,7 @@ public class InventarioJugador : MonoBehaviour
 
         accionBeber = new InputAction("BeberCaguama", InputActionType.Button, "<Keyboard>/e");
         accionBeber.AddBinding("<Keyboard>/q");
+        accionBeber.AddBinding("<Gamepad>/buttonNorth");          // Y (#36)
     }
 
     void OnEnable() { accionBeber.Enable(); }

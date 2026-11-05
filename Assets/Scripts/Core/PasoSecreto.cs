@@ -33,6 +33,7 @@ public class PasoSecreto : MonoBehaviour
             : new InputAction("BajarTiro", InputActionType.Button, "<Keyboard>/downArrow");
         accion.AddBinding(conArriba ? "<Keyboard>/w" : "<Keyboard>/s");
         accion.AddBinding(conArriba ? "<Gamepad>/dpad/up" : "<Gamepad>/dpad/down");
+        accion.AddBinding(conArriba ? "<Gamepad>/leftStick/up" : "<Gamepad>/leftStick/down");   // También el joystick táctil (#36)
         GetComponent<Collider2D>().isTrigger = true;
         if (aviso != null) aviso.SetActive(false);
     }

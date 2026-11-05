@@ -837,8 +837,10 @@ public static partial class ConstructorJuego
         Rellenar(barraObj);
         barraObj.fillAmount = 0f;
 
-        Texto(c, "Ayuda", "ESPACIO LANZAR   ARRIBA SALTAR   1-4 ARMA   E CAGUAMA   ESC PAUSA", 16, new Color(1f, 1f, 1f, 0.75f), TextAnchor.LowerRight,
-              new Vector2(-560f, 30f), new Vector2(1080f, 40f), new Vector2(1f, 0f));
+        Text ayuda = Texto(c, "Ayuda", "ESPACIO LANZAR   ARRIBA SALTAR   1-4 ARMA   E CAGUAMA   ESC PAUSA", 16, new Color(1f, 1f, 1f, 0.75f), TextAnchor.LowerRight,
+                           new Vector2(-560f, 30f), new Vector2(1080f, 40f), new Vector2(1f, 0f));
+        // Con el dedo la ayuda sobra: los botones ya dicen qué hacen (y quedarían encima)
+        SegunDispositivo(ayuda, ayuda.text, "X LANZAR   A SALTAR   B EVADIR   LB/RB ARMA   Y CAGUAMA   START PAUSA", " ");
 
         var hud = canvas.gameObject.AddComponent<HudJuego>();
         var so = new SerializedObject(hud);
@@ -876,6 +878,8 @@ public static partial class ConstructorJuego
         soB.FindProperty("linea2").objectReferenceValue = l2;
         soB.FindProperty("linea3").objectReferenceValue = l3;
         soB.ApplyModifiedPropertiesWithoutUndo();
+
+        CrearControlesTactiles();   // #36: solo se ven en pantallas táctiles
         return hud;
     }
 
@@ -990,14 +994,14 @@ public static partial class ConstructorJuego
         Texto(panel.transform, "Titulo", "CONTROLES", 44, Dorado, TextAnchor.MiddleCenter, new Vector2(0f, 345f), new Vector2(1000f, 70f));
         (string accion, string teclado, string gamepad)[] filas =
         {
-            ("MOVER", "A / D o FLECHAS", "PRONTO"),
-            ("SALTAR", "W o FLECHA ARRIBA", "PRONTO"),
-            ("EVADIR", "SHIFT", "PRONTO"),
-            ("LANZAR / GOLPEAR", "ESPACIO o CLIC", "PRONTO"),
-            ("APUNTAR", "MOUSE o FLECHAS", "PRONTO"),
-            ("APUNTAR ARRIBA", "ESPACIO + ARRIBA", "PRONTO"),
+            ("MOVER", "A / D o FLECHAS", "STICK IZQ"),
+            ("SALTAR", "W o FLECHA ARRIBA", "A"),
+            ("EVADIR", "SHIFT", "B"),
+            ("LANZAR / GOLPEAR", "ESPACIO o CLIC", "X o RT"),
+            ("APUNTAR", "MOUSE o FLECHAS", "STICK DER"),
+            ("APUNTAR ARRIBA", "ESPACIO + ARRIBA", "STICK DER"),
             ("CAMBIAR ARMA", "1-4 o RUEDA", "LB / RB"),
-            ("BEBER CAGUAMA", "E o Q", "PRONTO"),
+            ("BEBER CAGUAMA", "E o Q", "Y"),
             ("MONTAR ALEBRIJE", "F", "LB"),
             ("ZARPAZO (MONTADO)", "ESPACIO o CLIC", "RT"),
             ("BAJAR / SUBIR", "ABAJO / ARRIBA", "CRUCETA"),
@@ -1095,6 +1099,7 @@ public static partial class ConstructorJuego
         Imagen(titulo, "JarraDer", Spr("Projectiles/talavera_piece_09.png"), new Vector2(700f, 290f), new Vector2(120f, 120f));
         Text presiona = Texto(c, "Presiona", "PRESIONA CUALQUIER TECLA", 30, Crema, TextAnchor.MiddleCenter, new Vector2(0f, -360f), new Vector2(1400f, 60f));
         presiona.gameObject.AddComponent<TextoParpadeante>();
+        SegunDispositivo(presiona, "PRESIONA CUALQUIER TECLA", "PRESIONA START", "TOCA LA PANTALLA");
         Texto(c, "Creditos", "OMAR SALINAS  ·  NOE CHAVERO  ·  2026", 16, new Color(1f, 1f, 1f, 0.6f), TextAnchor.MiddleCenter,
               new Vector2(0f, 30f), new Vector2(1400f, 40f), new Vector2(0.5f, 0f));
 
@@ -1186,8 +1191,9 @@ public static partial class ConstructorJuego
         imgCaja.type = Image.Type.Sliced;
         imgCaja.pixelsPerUnitMultiplier = 0.5f;
         Text texto = Texto(caja, "Texto", "", 26, Crema, TextAnchor.UpperLeft, new Vector2(0f, -5f), new Vector2(1520f, 170f));
-        Texto(c, "Ayuda", "ENTER SIGUIENTE   ESC SALTAR", 16, new Color(1f, 1f, 1f, 0.6f), TextAnchor.LowerRight,
-              new Vector2(-280f, 18f), new Vector2(520f, 30f), new Vector2(1f, 0f));
+        Text ayudaIntro = Texto(c, "Ayuda", "ENTER SIGUIENTE   ESC SALTAR", 16, new Color(1f, 1f, 1f, 0.6f), TextAnchor.LowerRight,
+                                new Vector2(-280f, 18f), new Vector2(520f, 30f), new Vector2(1f, 0f));
+        SegunDispositivo(ayudaIntro, ayudaIntro.text, "A SIGUIENTE   START SALTAR", "TOCA PARA SEGUIR");
 
         (string img, string txt)[] vinetas =
         {

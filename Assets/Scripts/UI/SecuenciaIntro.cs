@@ -34,6 +34,7 @@ public class SecuenciaIntro : MonoBehaviour
         accionAvanzar.AddBinding("<Keyboard>/space");
         accionAvanzar.AddBinding("<Mouse>/leftButton");
         accionAvanzar.AddBinding("<Gamepad>/buttonSouth");
+        accionAvanzar.AddBinding("<Touchscreen>/primaryTouch/press");
         accionSaltar = new InputAction("SaltarIntro", InputActionType.Button, "<Keyboard>/escape");
         accionSaltar.AddBinding("<Gamepad>/start");
     }
