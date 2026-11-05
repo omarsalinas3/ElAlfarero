@@ -67,6 +67,7 @@ public static partial class ConstructorJuego
         CrearBibliotecaAudio();
         ConstructorAnimaciones.Construir();
         Prefabs p = CrearPrefabs();
+        CrearPrefabLlorona();   // Jefa del Nivel 3 (#59); su pelea es del Sprint 4
 
         CrearEscenaNivel1(p);
         CrearEscenaNivel2(p);
