@@ -109,7 +109,8 @@ public static partial class ConstructorJuego
         EncuentroJinete encuentro = CrearEncuentroJinete(inicioArena, derecha, CrearBarraJefe(hud.transform), enemigos);
         MenuPausa pausa = CrearMenuPausa();
         PantallaFinal gameOver = CrearPantallaFinal("GameOver", new Color(0.95f, 0.2f, 0.15f), new Color(0.12f, 0f, 0f, 0.8f), "REINTENTAR", 40);
-        PantallaFinal victoria = CrearPantallaFinal("Victoria", Dorado, new Color(0f, 0.04f, 0.14f, 0.8f), "JUGAR DE NUEVO", 41, true);
+        PantallaFinal victoria = CrearPantallaFinal("Victoria", Dorado, new Color(0f, 0.04f, 0.14f, 0.8f), "JUGAR DE NUEVO", 41, true,
+                                                    "¡AL PANTEON!");
 
         var gestor = new GameObject("GestorNivel").AddComponent<GestorNivel>();
         var so = new SerializedObject(gestor);
@@ -120,6 +121,7 @@ public static partial class ConstructorJuego
         so.FindProperty("menuPausa").objectReferenceValue = pausa;
         so.FindProperty("pantallaGameOver").objectReferenceValue = gameOver;
         so.FindProperty("pantallaVictoria").objectReferenceValue = victoria;
+        so.FindProperty("escenaSiguiente").stringValue = Escenas.Nivel3;
         so.FindProperty("numeroNivel").intValue = 2;
         so.FindProperty("tituloMision").stringValue = "MISION 2";
         so.FindProperty("nombreNivel").stringValue = "MINERAL DE POZOS";

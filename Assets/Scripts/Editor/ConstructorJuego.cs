@@ -70,6 +70,7 @@ public static partial class ConstructorJuego
 
         CrearEscenaNivel1(p);
         CrearEscenaNivel2(p);
+        CrearEscenaNivel3(p);
         CrearEscenaViaje();
         CrearEscenaMenu();
         CrearEscenaIntro();
@@ -83,13 +84,14 @@ public static partial class ConstructorJuego
             new EditorBuildSettingsScene(RutaNivel1, true),
             new EditorBuildSettingsScene(RutaViaje, true),
             new EditorBuildSettingsScene(RutaNivel2, true),
+            new EditorBuildSettingsScene(RutaNivel3, true),
             new EditorBuildSettingsScene(RutaEscena, true),   // Sandbox de pruebas
         };
         PlayerSettings.productName = "El Alfarero de Dolores";
 
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
-        Debug.Log("Juego construido: splash, menú, intro, Nivel 1, viaje y Nivel 2.");
+        Debug.Log("Juego construido: splash, menú, intro, Nivel 1, viaje, Nivel 2 y Nivel 3.");
     }
 
     // ================================================================== Splash
@@ -198,7 +200,7 @@ public static partial class ConstructorJuego
         }).ToArray();
 
         // Música: se toma lo que haya en Assets/Audio/Music (menu, intro, nivel1 en .ogg/.mp3/.wav)
-        (Musica id, string nombre, float vol)[] pistas = { (Musica.Menu, "menu", 0.55f), (Musica.Intro, "intro", 0.55f), (Musica.Nivel1, "nivel1", 0.5f), (Musica.Nivel2, "nivel2", 0.5f) };
+        (Musica id, string nombre, float vol)[] pistas = { (Musica.Menu, "menu", 0.55f), (Musica.Intro, "intro", 0.55f), (Musica.Nivel1, "nivel1", 0.5f), (Musica.Nivel2, "nivel2", 0.5f), (Musica.Nivel3, "nivel3", 0.5f), (Musica.Llorona, "llorona", 0.55f) };
         b.musicas = pistas.Select(m => new BibliotecaAudio.EntradaMusica { id = m.id, volumen = m.vol, clip = BuscarMusica(m.nombre) })
                           .Where(m => m.clip != null).ToArray();
 

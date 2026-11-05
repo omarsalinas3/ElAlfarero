@@ -12,9 +12,10 @@ public static class Escenas
     public const string Nivel1 = "Nivel1_Dolores";
     public const string Viaje = "Viaje_Pozos";          // Escena corta entre el Nivel 1 y el 2 (no es un nivel)
     public const string Nivel2 = "Nivel2_Pozos";
+    public const string Nivel3 = "Nivel3_Panteon";
 
     // En orden: el número de nivel del guardado es su posición + 1
-    static readonly string[] Niveles = { Nivel1, Nivel2 };
+    static readonly string[] Niveles = { Nivel1, Nivel2, Nivel3 };
 
     /// <summary>Escena del nivel n (1 = Dolores). Si ese nivel aún no existe, el último que sí.</summary>
     public static string Nivel(int n) => Niveles[Mathf.Clamp(n, 1, Niveles.Length) - 1];
