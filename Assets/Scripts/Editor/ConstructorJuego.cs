@@ -71,6 +71,7 @@ public static partial class ConstructorJuego
 
         CrearEscenaNivel1(p);
         CrearEscenaNivel2(p);
+        CrearEscenaNivel3();      // Base del Panteón junto al río (#58)
         CrearEscenaViaje();
         CrearEscenaMenu();
         CrearEscenaIntro();
@@ -86,13 +87,14 @@ public static partial class ConstructorJuego
             new EditorBuildSettingsScene(RutaTransicion, true),   // Viñetas del Nivel 1 al viaje (#35)
             new EditorBuildSettingsScene(RutaViaje, true),
             new EditorBuildSettingsScene(RutaNivel2, true),
+            new EditorBuildSettingsScene(RutaNivel3, true),
             new EditorBuildSettingsScene(RutaEscena, true),   // Sandbox de pruebas
         };
         PlayerSettings.productName = "El Alfarero de Dolores";
 
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
-        Debug.Log("Juego construido: splash, menú, intro, Nivel 1, viaje y Nivel 2.");
+        Debug.Log("Juego construido: splash, menú, intro, Nivel 1, viaje, Nivel 2 y base del Nivel 3.");
     }
 
     // ================================================================== Splash
