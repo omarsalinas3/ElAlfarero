@@ -131,6 +131,7 @@ public static partial class ConstructorJuego
         so.FindProperty("xFinRecorrido").floatValue = encuentro.transform.position.x;   // Donde arranca el jefe
         so.ApplyModifiedPropertiesWithoutUndo();
         Asignar(hud, "gestor", gestor);
+        CrearDialogoInicio(DialogoPozos, 9f);       // El Charro se burla cuando Mateo ya va a pie (#35)
 
         EditorSceneManager.SaveScene(escena, RutaNivel2);
     }

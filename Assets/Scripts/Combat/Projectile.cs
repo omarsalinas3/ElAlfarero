@@ -65,6 +65,7 @@ public class Projectile : MonoBehaviour
         if (salud != null) salud.RecibirDano(datos.dano);
 
         if (datos.prefabImpacto != null) Reciclaje.Sacar(datos.prefabImpacto, transform.position, Quaternion.identity);
+        Efectos.Particulas(TipoParticula.Fragmentos, transform.position);
         GestorAudio.Reproducir(Sfx.ImpactoCeramica, 0.12f);
         Reciclaje.Guardar(gameObject);
     }
@@ -85,8 +86,8 @@ public class Projectile : MonoBehaviour
 
         if (datos.prefabExplosion != null) Reciclaje.Sacar(datos.prefabExplosion, centro, Quaternion.identity);
         GestorAudio.Reproducir(Sfx.Explosion, 0.08f);
-        var cam = Camera.main != null ? Camera.main.GetComponent<CameraFollow>() : null;
-        if (cam != null) cam.Sacudir(0.25f, 0.18f);
+        Efectos.Particulas(TipoParticula.Chispas, centro);
+        Efectos.GolpeFuerte(0.05f, 0.18f, 0.25f);
         datos = null;                                      // No vuelve a explotar mientras regresa a la reserva
         Reciclaje.Guardar(gameObject);
     }

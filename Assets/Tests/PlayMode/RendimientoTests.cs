@@ -56,6 +56,9 @@ public class RendimientoTests
     [UnityTest]
     public IEnumerator Nivel2_CorreFluidoDisparando() { yield return MedirNivel("Nivel2_Pozos"); }
 
+    [UnityTest]
+    public IEnumerator Nivel3_CorreFluidoDisparando() { yield return MedirNivel("Nivel3_Panteon"); }
+
     /// <summary>
     /// Mateo cruza el nivel disparando sin parar (invulnerable) mientras se miden los cuadros. Cada segundo se adelanta
     /// un tramo para que la medición pase por todo el recorrido (si no, se queda trabado en el primer huacal).

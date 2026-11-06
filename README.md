@@ -2,7 +2,7 @@
 
 Videojuego 2D de acción *run and gun* de desplazamiento lateral (al estilo Metal Slug) ambientado en un Guanajuato sobrenatural y tétrico. Proyecto de la materia Creación de Videojuegos (10.º cuatrimestre), desarrollado en **Unity 6.6** para **PC** (Windows y navegador).
 
-> Estado actual: **Sprint 2 de 6** (niveles 1 y 2 jugables). Todavía no es un juego completo; ver [Hasta dónde llega el proyecto](#hasta-dónde-llega-el-proyecto).
+> Estado actual: **Sprint 3 de 6** (niveles 1 y 2 jugables, base del Nivel 3). Todavía no es un juego completo; ver [Hasta dónde llega el proyecto](#hasta-dónde-llega-el-proyecto). Manual: [Docs/MANUAL_USUARIO.md](Docs/MANUAL_USUARIO.md) · GDD: [Docs/GDD.md](Docs/GDD.md).
 
 ## ¿De qué trata?
 
@@ -60,7 +60,10 @@ El GDD original solo daba ejemplos de jefes ("figuras icónicas como La Llorona,
 | Montar / desmontar al Alebrije | F |
 | Beber caguama (invencible 5 s) | E o Q |
 | Pausa | Esc o P |
+| Diálogos | Enter adelanta, Retroceso salta |
 | Menús | Mouse o flechas + Enter |
+
+Con **gamepad**: stick izquierdo mueve, A salta, B evade, X o RT lanza, stick derecho apunta, Y bebe caguama, LB/RB cambia de arma, Start pausa. En **pantallas táctiles** aparecen un joystick y botones. Detalle en el [manual](Docs/MANUAL_USUARIO.md#3-controles).
 
 ## Hasta dónde llega el proyecto
 
@@ -69,8 +72,8 @@ El plan son **6 sprints de 2 semanas** (12 semanas). Estado:
 | Sprint | Fechas | Enfoque | Estado |
 |---|---|---|---|
 | 1 | 1–14 oct | Núcleo: movimiento, salto, evasión, disparo de Talavera, vida y daño, menú, intro y Nivel 1 base | **Hecho** |
-| 2 | 15–29 oct | Nivel 1 completo (IA, emboscada, Alebrije), guardado, HUD, splash, Nivel 2 (Mineral de Pozos), tutorial | **Cerrando** |
-| 3 | 29 oct–12 nov | Armas nuevas, Bruja de Fuego, opciones, narrativa, gamepad, Nivel 3 (fondos y Llorona) | En curso |
+| 2 | 15–29 oct | Nivel 1 completo (IA, emboscada, Alebrije), guardado, HUD, splash, Nivel 2 (Mineral de Pozos), tutorial | **Hecho** |
+| 3 | 29 oct–12 nov | Armas nuevas, combo, secretos, Bruja de Fuego, opciones, créditos, efectos, narrativa, gamepad y táctil, resoluciones, Nivel 3 (fondos y Llorona), GDD y manual | **Cerrando** |
 | 4 | 12–26 nov | Nivel 3 y La Llorona | Pendiente |
 | 5 | 26 nov–10 dic | Nivel 4 y El Charro Negro | Pendiente |
 | 6 | 10–24 dic | Balance, cinemática final, empaquetado y publicación | Pendiente |
@@ -86,7 +89,11 @@ Lo que **ya existe**:
 - **Sonido:** música por pantalla y nivel, y efectos para cada acción.
 - **Pruebas automáticas** de PlayMode del movimiento, el disparo, la IA, los niveles, el guardado, los menús y el rendimiento.
 
-Lo que **todavía no**: los niveles 3 y 4 con La Llorona y El Charro Negro; gamepad completo y controles táctiles. La comparación completa con el GDD (qué está implementado, qué cambió y por qué, y qué falta) está en [Docs/MECANICAS.md](Docs/MECANICAS.md).
+- **Narrativa:** diálogos con retrato (Don Toribio, Carmen y el Charro Negro) y cinemática de viñetas entre los niveles 1 y 2.
+- **Controles:** teclado y mouse, gamepad completo y controles táctiles en pantalla; las ayudas muestran el botón del dispositivo que se esté usando.
+- **Interfaz adaptable** a 16:9, 16:10, 4:3, 21:9 y celulares (Safe Area), con partículas, *hit stop* y créditos con licencias ([Docs/CREDITOS.md](Docs/CREDITOS.md)).
+
+Lo que **todavía no**: la pelea con La Llorona (el Nivel 3 ya tiene fondos, escena base y sus sprites) y el Nivel 4 con El Charro Negro. La comparación completa con el GDD (qué está implementado, qué cambió y por qué, y qué falta) está en [Docs/MECANICAS.md](Docs/MECANICAS.md).
 
 ## Cómo ejecutarlo
 

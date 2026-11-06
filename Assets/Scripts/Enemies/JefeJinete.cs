@@ -125,6 +125,7 @@ public class JefeJinete : MonoBehaviour
     IEnumerator Pelear()
     {
         int ataque = 0;
+        bool vieneDeSablazo = false;
         while (EstadoActual != Estado.Muerto)
         {
             if (!PuedePelear()) { Mover(0f); yield return null; continue; }
@@ -142,8 +143,12 @@ public class JefeJinete : MonoBehaviour
             }
             if (EstadoActual == Estado.Muerto) yield break;
 
+            // Pegado a Mateo: sablazo, pero nunca dos seguidos. Contra la orilla de la arena no puede alejarse al
+            // rondar y se quedaba dando sablazos para siempre; así vuelve a cargar (lo cruza) o a lanzar
             float distancia = Mathf.Abs(objetivo.position.x - transform.position.x);
-            if (distancia < distanciaSablazo) yield return Sablazo();
+            bool tocaSablazo = distancia < distanciaSablazo && !vieneDeSablazo;
+            vieneDeSablazo = tocaSablazo;
+            if (tocaSablazo) yield return Sablazo();
             else if (ataque++ % 2 == 0)
             {
                 yield return Carga();
@@ -262,7 +267,7 @@ public class JefeJinete : MonoBehaviour
         Teñir(Color.white);
         if (animator != null) animator.SetBool(AnimMuerto, true);
         GestorAudio.Reproducir(Sfx.RugidoAlebrije, 0f);
-        Camera.main?.GetComponent<CameraFollow>()?.Sacudir(0.8f, 0.3f);
+        Efectos.GolpeFuerte(0.15f, 0.3f, 0.8f);                     // El golpe final se congela un instante (#30)
         StartCoroutine(Victoria());
     }
 

@@ -67,6 +67,7 @@ public static partial class ConstructorJuego
         CrearBibliotecaAudio();
         ConstructorAnimaciones.Construir();
         Prefabs p = CrearPrefabs();
+        CrearPrefabLlorona();   // Jefa del Nivel 3
 
         CrearEscenaNivel1(p);
         CrearEscenaNivel2(p);
@@ -74,6 +75,7 @@ public static partial class ConstructorJuego
         CrearEscenaViaje();
         CrearEscenaMenu();
         CrearEscenaIntro();
+        CrearEscenaTransicion();
         CrearEscenaSplash();
 
         EditorBuildSettings.scenes = new[]
@@ -82,6 +84,7 @@ public static partial class ConstructorJuego
             new EditorBuildSettingsScene(RutaMenu, true),
             new EditorBuildSettingsScene(RutaIntro, true),
             new EditorBuildSettingsScene(RutaNivel1, true),
+            new EditorBuildSettingsScene(RutaTransicion, true),   // Viñetas del Nivel 1 al viaje (#35)
             new EditorBuildSettingsScene(RutaViaje, true),
             new EditorBuildSettingsScene(RutaNivel2, true),
             new EditorBuildSettingsScene(RutaNivel3, true),
@@ -191,6 +194,8 @@ public static partial class ConstructorJuego
             (Sfx.PunoFuerte, new[] { "puno_fuerte" }, 0.85f),
             (Sfx.Exvoto, new[] { "exvoto" }, 0.75f),
             (Sfx.AbrirCofre, new[] { "abrir_cofre" }, 0.8f),
+            (Sfx.GritoLlorona, new[] { "grito_llorona" }, 0.8f),
+            (Sfx.ChorroAgua, new[] { "chorro_agua" }, 0.7f),
         };
         b.efectos = efectos.Select(e => new BibliotecaAudio.EntradaSfx
         {
@@ -742,11 +747,12 @@ public static partial class ConstructorJuego
         so.FindProperty("menuPausa").objectReferenceValue = pausa;
         so.FindProperty("pantallaGameOver").objectReferenceValue = gameOver;
         so.FindProperty("pantallaVictoria").objectReferenceValue = victoria;
-        so.FindProperty("escenaSiguiente").stringValue = Escenas.Viaje;               // Viaje montado al Nivel 2 (#57)
+        so.FindProperty("escenaSiguiente").stringValue = Escenas.Transicion;          // Viñetas (#35) y luego el viaje montado (#57)
         so.FindProperty("xInicioRecorrido").floatValue = jugador.transform.position.x;
         so.FindProperty("xFinRecorrido").floatValue = encuentro.transform.position.x;   // Donde arranca el jefe
         so.ApplyModifiedPropertiesWithoutUndo();
         Asignar(hud, "gestor", gestor);
+        CrearDialogoInicio(DialogoDolores, 3.2f);   // Don Toribio presenta la misión tras el letrero (#35)
 
         EditorSceneManager.SaveScene(escena, RutaNivel1);
     }
@@ -839,8 +845,10 @@ public static partial class ConstructorJuego
         Rellenar(barraObj);
         barraObj.fillAmount = 0f;
 
-        Texto(c, "Ayuda", "ESPACIO LANZAR   ARRIBA SALTAR   1-4 ARMA   E CAGUAMA   ESC PAUSA", 16, new Color(1f, 1f, 1f, 0.75f), TextAnchor.LowerRight,
-              new Vector2(-560f, 30f), new Vector2(1080f, 40f), new Vector2(1f, 0f));
+        Text ayuda = Texto(c, "Ayuda", "ESPACIO LANZAR   ARRIBA SALTAR   1-4 ARMA   E CAGUAMA   ESC PAUSA", 16, new Color(1f, 1f, 1f, 0.75f), TextAnchor.LowerRight,
+                           new Vector2(-560f, 30f), new Vector2(1080f, 40f), new Vector2(1f, 0f));
+        // Con el dedo la ayuda sobra: los botones ya dicen qué hacen (y quedarían encima)
+        SegunDispositivo(ayuda, ayuda.text, "X LANZAR   A SALTAR   B EVADIR   LB/RB ARMA   Y CAGUAMA   START PAUSA", " ");
 
         var hud = canvas.gameObject.AddComponent<HudJuego>();
         var so = new SerializedObject(hud);
@@ -878,6 +886,9 @@ public static partial class ConstructorJuego
         soB.FindProperty("linea2").objectReferenceValue = l2;
         soB.FindProperty("linea3").objectReferenceValue = l3;
         soB.ApplyModifiedPropertiesWithoutUndo();
+
+        CrearCuadroDialogo(c);      // #35: diálogos con retrato
+        CrearControlesTactiles();   // #36: solo se ven en pantallas táctiles
         return hud;
     }
 
@@ -992,14 +1003,14 @@ public static partial class ConstructorJuego
         Texto(panel.transform, "Titulo", "CONTROLES", 44, Dorado, TextAnchor.MiddleCenter, new Vector2(0f, 345f), new Vector2(1000f, 70f));
         (string accion, string teclado, string gamepad)[] filas =
         {
-            ("MOVER", "A / D o FLECHAS", "PRONTO"),
-            ("SALTAR", "W o FLECHA ARRIBA", "PRONTO"),
-            ("EVADIR", "SHIFT", "PRONTO"),
-            ("LANZAR / GOLPEAR", "ESPACIO o CLIC", "PRONTO"),
-            ("APUNTAR", "MOUSE o FLECHAS", "PRONTO"),
-            ("APUNTAR ARRIBA", "ESPACIO + ARRIBA", "PRONTO"),
+            ("MOVER", "A / D o FLECHAS", "STICK IZQ"),
+            ("SALTAR", "W o FLECHA ARRIBA", "A"),
+            ("EVADIR", "SHIFT", "B"),
+            ("LANZAR / GOLPEAR", "ESPACIO o CLIC", "X o RT"),
+            ("APUNTAR", "MOUSE o FLECHAS", "STICK DER"),
+            ("APUNTAR ARRIBA", "ESPACIO + ARRIBA", "STICK DER"),
             ("CAMBIAR ARMA", "1-4 o RUEDA", "LB / RB"),
-            ("BEBER CAGUAMA", "E o Q", "PRONTO"),
+            ("BEBER CAGUAMA", "E o Q", "Y"),
             ("MONTAR ALEBRIJE", "F", "LB"),
             ("ZARPAZO (MONTADO)", "ESPACIO o CLIC", "RT"),
             ("BAJAR / SUBIR", "ABAJO / ARRIBA", "CRUCETA"),
@@ -1080,6 +1091,12 @@ public static partial class ConstructorJuego
         Sprite portada = AssetDatabase.LoadAssetAtPath<Sprite>(Sprites + "UI/portada.png") ?? Spr("Environment/lvl1_dolores_noche.png");
         Image fondo = Imagen(c, "Fondo", portada, Vector2.zero, new Vector2(2040f, 1148f));
         fondo.raycastTarget = false;
+        // Cubre toda la pantalla en cualquier proporción (#37); un poco más grande para que el vaivén no deje orillas
+        fondo.preserveAspect = false;
+        var cubrir = fondo.gameObject.AddComponent<AspectRatioFitter>();
+        cubrir.aspectMode = AspectRatioFitter.AspectMode.EnvelopeParent;
+        cubrir.aspectRatio = 16f / 9f;
+        fondo.rectTransform.localScale = Vector3.one * 1.08f;
         var oscuro = Estirar(c, "Oscurecer").gameObject.AddComponent<Image>();
         oscuro.color = new Color(0f, 0f, 0f, 0.35f);
         oscuro.raycastTarget = false;
@@ -1091,6 +1108,7 @@ public static partial class ConstructorJuego
         Imagen(titulo, "JarraDer", Spr("Projectiles/talavera_piece_09.png"), new Vector2(700f, 290f), new Vector2(120f, 120f));
         Text presiona = Texto(c, "Presiona", "PRESIONA CUALQUIER TECLA", 30, Crema, TextAnchor.MiddleCenter, new Vector2(0f, -360f), new Vector2(1400f, 60f));
         presiona.gameObject.AddComponent<TextoParpadeante>();
+        SegunDispositivo(presiona, "PRESIONA CUALQUIER TECLA", "PRESIONA START", "TOCA LA PANTALLA");
         Texto(c, "Creditos", "OMAR SALINAS  ·  NOE CHAVERO  ·  2026", 16, new Color(1f, 1f, 1f, 0.6f), TextAnchor.MiddleCenter,
               new Vector2(0f, 30f), new Vector2(1400f, 40f), new Vector2(0.5f, 0f));
 
@@ -1103,19 +1121,22 @@ public static partial class ConstructorJuego
         Button salir = Boton(panelMenu.transform, "Salir", "SALIR", new Vector2(0f, -168f), new Vector2(440f, 78f));
         Asignar(panelMenu, "primerSeleccionado", jugar.gameObject);
 
-        // Créditos (los completos, con licencias de música y arte, son la #24)
-        Panel panelCreditos = CrearPanel(c, "PanelCreditos", new Vector2(0f, -170f), new Vector2(1180f, 600f));
-        Texto(panelCreditos.transform, "Titulo", "CREDITOS", 44, Dorado, TextAnchor.MiddleCenter, new Vector2(0f, 235f), new Vector2(1000f, 70f));
-        Texto(panelCreditos.transform, "Lista",
-              "PROGRAMACION, ARTE Y MUSICA\n" +
-              "OMAR SALINAS  ·  NOE CHAVERO\n\n" +
-              "CREACION DE VIDEOJUEGOS  ·  UTNG  ·  GIDS6102\n" +
-              "PROFESOR GABRIEL BARRON\n\n" +
-              "ARTE Y MUSICA HECHOS CON GOOGLE FLOW\n" +
-              "FUENTE PRESS START 2P (CODEMAN38, OFL)\n" +
-              "HECHO CON UNITY 6",
-              22, Crema, TextAnchor.MiddleCenter, new Vector2(0f, 10f), new Vector2(1100f, 360f));
-        Button volverCreditos = Boton(panelCreditos.transform, "Volver", "VOLVER", new Vector2(0f, -225f), new Vector2(400f, 76f));
+        // Créditos (#24): autores, herramientas y licencias que suben solos; la misma lista está en Docs/CREDITOS.md
+        Panel panelCreditos = CrearPanel(c, "PanelCreditos", new Vector2(0f, -60f), new Vector2(1180f, 860f));
+        Texto(panelCreditos.transform, "Titulo", "CREDITOS", 44, Dorado, TextAnchor.MiddleCenter, new Vector2(0f, 370f), new Vector2(1000f, 70f));
+        var ventana = Centro(panelCreditos.transform, "Ventana", new Vector2(0f, 20f), new Vector2(1100f, 590f));
+        ventana.gameObject.AddComponent<RectMask2D>();
+        // Ancla arriba: la posición y crece conforme el texto sube
+        var lista = Texto(ventana, "Lista", TextoCreditos.Contenido, 22, Crema, TextAnchor.UpperCenter, Vector2.zero, new Vector2(1060f, 0f),
+                          new Vector2(0.5f, 1f));
+        lista.rectTransform.pivot = new Vector2(0.5f, 1f);
+        lista.gameObject.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+        Texto(panelCreditos.transform, "Ayuda", "ABAJO ACELERA   ARRIBA REGRESA", 14, new Color(1f, 1f, 1f, 0.55f), TextAnchor.MiddleCenter,
+              new Vector2(0f, -300f), new Vector2(1000f, 30f));
+        var desplazar = panelCreditos.gameObject.AddComponent<CreditosDesplazables>();
+        Asignar(desplazar, "contenido", lista.rectTransform);
+        Asignar(desplazar, "ventana", ventana);
+        Button volverCreditos = Boton(panelCreditos.transform, "Volver", "VOLVER", new Vector2(0f, -365f), new Vector2(400f, 76f));
         Asignar(panelCreditos, "primerSeleccionado", volverCreditos.gameObject);
 
         // Confirmación al jugar con partida guardada (empezar de nuevo la borra)
@@ -1159,54 +1180,15 @@ public static partial class ConstructorJuego
     }
 
     // ================================================================== Intro
-    static void CrearEscenaIntro()
+    static readonly (string img, string txt)[] VinetasIntro =
     {
-        Scene escena = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-        CrearCamara();
-        CrearEventSystem();
-        Canvas canvas = CrearCanvas("Intro", 0);
-        Transform c = canvas.transform;
-        Estirar(c, "Negro").gameObject.AddComponent<Image>().color = Color.black;
+        ("intro_01", "Dolores Hidalgo, Guanajuato.\nMateo, alfarero de manos firmes, vivía en paz moldeando el barro junto a su esposa Carmen."),
+        ("intro_02", "Hasta que una noche la luna se tiñó de rojo...\ny del inframundo emergió EL CHARRO NEGRO."),
+        ("intro_03", "El Charro se llevó a Carmen a lo más hondo de los túneles de Guanajuato. A su paso despertaron las leyendas del Bajío."),
+        ("intro_04", "Mateo tomó sus piezas de Talavera consagradas. Para rescatar a Carmen y traer de vuelta el amanecer... tendrá que pelear."),
+    };
 
-        Image imagen = Imagen(c, "Ilustracion", Spr("Intro/intro_01.png"), new Vector2(0f, 110f), new Vector2(1500f, 844f));
-        imagen.preserveAspect = true;
-        var grupo = imagen.gameObject.AddComponent<CanvasGroup>();
-        grupo.alpha = 0f;
-
-        var caja = Centro(c, "CajaTexto", new Vector2(0f, -400f), new Vector2(1640f, 230f));
-        var imgCaja = caja.gameObject.AddComponent<Image>();
-        imgCaja.sprite = sprPanel;
-        imgCaja.type = Image.Type.Sliced;
-        imgCaja.pixelsPerUnitMultiplier = 0.5f;
-        Text texto = Texto(caja, "Texto", "", 26, Crema, TextAnchor.UpperLeft, new Vector2(0f, -5f), new Vector2(1520f, 170f));
-        Texto(c, "Ayuda", "ENTER SIGUIENTE   ESC SALTAR", 16, new Color(1f, 1f, 1f, 0.6f), TextAnchor.LowerRight,
-              new Vector2(-280f, 18f), new Vector2(520f, 30f), new Vector2(1f, 0f));
-
-        (string img, string txt)[] vinetas =
-        {
-            ("intro_01", "Dolores Hidalgo, Guanajuato.\nMateo, alfarero de manos firmes, vivía en paz moldeando el barro junto a su esposa Carmen."),
-            ("intro_02", "Hasta que una noche la luna se tiñó de rojo...\ny del inframundo emergió EL CHARRO NEGRO."),
-            ("intro_03", "El Charro se llevó a Carmen a lo más hondo de los túneles de Guanajuato. A su paso despertaron las leyendas del Bajío."),
-            ("intro_04", "Mateo tomó sus piezas de Talavera consagradas. Para rescatar a Carmen y traer de vuelta el amanecer... tendrá que pelear."),
-        };
-
-        var intro = canvas.gameObject.AddComponent<SecuenciaIntro>();
-        var so = new SerializedObject(intro);
-        var lista = so.FindProperty("vinetas");
-        lista.arraySize = vinetas.Length;
-        for (int i = 0; i < vinetas.Length; i++)
-        {
-            var e = lista.GetArrayElementAtIndex(i);
-            e.FindPropertyRelative("imagen").objectReferenceValue = Spr($"Intro/{vinetas[i].img}.png");
-            e.FindPropertyRelative("texto").stringValue = vinetas[i].txt;
-        }
-        so.FindProperty("imagen").objectReferenceValue = imagen;
-        so.FindProperty("grupoImagen").objectReferenceValue = grupo;
-        so.FindProperty("texto").objectReferenceValue = texto;
-        so.ApplyModifiedPropertiesWithoutUndo();
-
-        EditorSceneManager.SaveScene(escena, RutaIntro);
-    }
+    static void CrearEscenaIntro() => CrearEscenaVinetas(RutaIntro, "Intro", VinetasIntro, Escenas.Nivel1);
 
     // ================================================================== Ayudantes de UI
     static void CrearCamara()
@@ -1233,11 +1215,14 @@ public static partial class ConstructorJuego
         var canvas = go.AddComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         canvas.sortingOrder = orden;
+        // #37: "Expand" garantiza al menos 1920x1080 de referencia en cualquier proporción (4:3, 21:9, celular), así
+        // nada diseñado para 16:9 se corta; AreaSegura acomoda el contenido en la zona de juego 16:9 y la Safe Area.
         var escalador = go.AddComponent<CanvasScaler>();
         escalador.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         escalador.referenceResolution = new Vector2(1920f, 1080f);
-        escalador.matchWidthOrHeight = 0.5f;
+        escalador.screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
         go.AddComponent<GraphicRaycaster>();
+        go.AddComponent<AreaSegura>();
         return canvas;
     }
 

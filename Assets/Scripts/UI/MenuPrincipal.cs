@@ -82,7 +82,8 @@ public class MenuPrincipal : MonoBehaviour
     {
         return (Keyboard.current != null && Keyboard.current.anyKey.wasPressedThisFrame)
             || (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
-            || (Gamepad.current != null && (Gamepad.current.startButton.wasPressedThisFrame || Gamepad.current.buttonSouth.wasPressedThisFrame));
+            || (Gamepad.current != null && (Gamepad.current.startButton.wasPressedThisFrame || Gamepad.current.buttonSouth.wasPressedThisFrame))
+            || (Touchscreen.current != null && Touchscreen.current.primaryTouch.press.wasPressedThisFrame);
     }
 
     // ------------------------------------------------------------------ Botones

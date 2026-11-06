@@ -78,7 +78,17 @@ public class CameraFollow : MonoBehaviour
         desfase = Time.time < sacudidaHasta
             ? Random.insideUnitCircle * fuerzaSacudida * Mathf.Clamp01((sacudidaHasta - Time.time) * 4f)
             : Vector2.zero;
-        transform.position = new Vector3(x + desfase.x, yFija + desfase.y, transform.position.z);
+        transform.position = new Vector3(AlPixel(x + desfase.x), AlPixel(yFija + desfase.y), transform.position.z);
+    }
+
+    /// <summary>
+    /// Redondea a un píxel de pantalla (#37): con filtro Point, una cámara entre píxeles hace que las orillas de los
+    /// sprites y las uniones de los fondos "tiemblen" al caminar.
+    /// </summary>
+    float AlPixel(float v)
+    {
+        float tamPixel = cam.orthographicSize * 2f / Mathf.Max(1, cam.pixelHeight);
+        return Mathf.Round(v / tamPixel) * tamPixel;
     }
 
     float ObjetivoX()

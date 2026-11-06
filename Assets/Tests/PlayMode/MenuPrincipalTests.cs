@@ -127,4 +127,22 @@ public class MenuPrincipalTests
         yield return null;
         Assert.IsTrue(PanelVisible("PanelMenu"));
     }
+
+    [UnityTest]
+    public IEnumerator Creditos_ListanAutoresYLicenciasYSeDesplazanSolos()
+    {
+        yield return AbrirMenu();
+        Boton("PanelMenu", "Creditos").onClick.Invoke();
+        yield return null;
+
+        var lista = Object.FindObjectsByType<Text>().First(t => t.name == "Lista");
+        foreach (var dato in new[] { "OMAR SALINAS", "NOE CHAVERO", "UNITY 6.6", "INPUT SYSTEM", "GOOGLE FLOW MUSIC",
+                                     "PRESS START 2P", "SIL OPEN FONT LICENSE", "SINTETIZADOS" })
+            StringAssert.Contains(dato, lista.text);
+
+        var creditos = Object.FindAnyObjectByType<CreditosDesplazables>();
+        float antes = creditos.Posicion;
+        yield return new WaitForSeconds(0.5f);
+        Assert.Greater(creditos.Posicion, antes + 10f, "El texto sube solo");
+    }
 }

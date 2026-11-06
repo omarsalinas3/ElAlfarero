@@ -74,8 +74,9 @@ public static partial class ConstructorJuego
         var grupo = caja.gameObject.AddComponent<CanvasGroup>();
         Texto(caja, "Titulo", "RUMBO A MINERAL DE POZOS", 44, Dorado, TextAnchor.MiddleCenter, new Vector2(0f, 35f), new Vector2(1600f, 70f));
         Texto(caja, "Detalle", "SIGUE LAS HUELLAS DE FUEGO DEL CHARRO", 22, Crema, TextAnchor.MiddleCenter, new Vector2(0f, -40f), new Vector2(1600f, 40f));
-        Texto(canvas.transform, "Ayuda", "ENTER SALTAR", 16, new Color(1f, 1f, 1f, 0.6f), TextAnchor.LowerRight,
-              new Vector2(-180f, 18f), new Vector2(320f, 30f), new Vector2(1f, 0f));
+        Text ayuda = Texto(canvas.transform, "Ayuda", "ENTER SALTAR", 16, new Color(1f, 1f, 1f, 0.6f), TextAnchor.LowerRight,
+                           new Vector2(-180f, 18f), new Vector2(320f, 30f), new Vector2(1f, 0f));
+        SegunDispositivo(ayuda, ayuda.text, "A SALTAR", "TOCA PARA SALTAR");
 
         var viaje = new GameObject("Viaje").AddComponent<ViajeMontado>();
         var so = new SerializedObject(viaje);

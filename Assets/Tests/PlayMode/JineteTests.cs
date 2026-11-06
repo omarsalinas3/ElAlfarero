@@ -88,7 +88,7 @@ public class JineteTests
         }
         Time.timeScale = 1f;
         Assert.IsTrue(cargo, $"Carga a galope cruzando la arena (recorrió {maxX - minX:0.0} u)");
-        Assert.IsTrue(lanzo, "Lanza la calavera en llamas de su linterna");
+        Assert.IsTrue(lanzo, "Lanza la calavera en llamas de su linterna (aunque Mateo se quede pegado a la orilla de la arena)");
     }
 
     [UnityTest]

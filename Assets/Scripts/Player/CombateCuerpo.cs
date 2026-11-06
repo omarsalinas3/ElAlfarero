@@ -116,8 +116,8 @@ public class CombateCuerpo : MonoBehaviour
         GestorAudio.Reproducir(g.fuerte ? Sfx.PunoFuerte : Sfx.PunoLigero);
         if (g.fuerte)
         {
-            var cam = Camera.main != null ? Camera.main.GetComponent<CameraFollow>() : null;
-            if (cam != null) cam.Sacudir(0.2f, 0.15f);
+            Efectos.Particulas(TipoParticula.Chispas, (Vector2)transform.position + new Vector2(jugador.DireccionMirada * 1.3f, 1.3f));
+            Efectos.GolpeFuerte(0.07f, 0.15f);
         }
     }
 
