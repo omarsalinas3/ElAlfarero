@@ -85,6 +85,7 @@ MonoBehaviour:
   tipo: 0
   cantidad: 35
   monedasSiLleno: -1
+  arma: {fileID: 0}
   sprite: {fileID: 169532820487144903}
   cuadros:
   - {fileID: 21300000, guid: d15a56e6882b8984296b5b80ea948e29, type: 3}

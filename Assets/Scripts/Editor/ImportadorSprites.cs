@@ -37,7 +37,7 @@ public class ImportadorSprites : AssetPostprocessor
         importador.ReadTextureSettings(ajustes);
         bool pivoteEnPies = carpeta == "Player" || (carpeta == "Enemies" && !nombre.StartsWith("bruja_")) || carpeta == "Allies"
                             || carpeta == "Bosses" || (carpeta == "Obstacles" && !nombre.StartsWith("maceta"))    // La bruja vuela: pivote al centro
-                            || nombre.StartsWith("huella_");                                                      // Las huellas arden sobre el suelo
+                            || nombre.StartsWith("huella_") || nombre.StartsWith("chorro_");                      // Las huellas y los chorros salen del suelo
         ajustes.spriteAlignment = (int)(pivoteEnPies ? SpriteAlignment.BottomCenter : SpriteAlignment.Center);
         ajustes.spriteMeshType = SpriteMeshType.FullRect;
         importador.SetTextureSettings(ajustes);
@@ -65,6 +65,9 @@ public class ImportadorSprites : AssetPostprocessor
         if (nombre.StartsWith("nahual_")) return 155f;        // Nahual de la estampida: ~2.8 u de largo y ~1.8 de alto, más bajo que el salto de Mateo
         if (nombre.StartsWith("jinete_calavera")) return 90f; // Calavera en llamas: ~1.1 u con todo y estela
         if (nombre.StartsWith("jinete_")) return 42f;         // Jinete sin Cabeza: ~6 u de largo y ~4.5 de alto, más grande que Mateo
+        if (nombre.StartsWith("llorona_")) return 40f;        // La Llorona (#59): ~4.3 u de alto, flotando sobre Mateo
+        if (nombre.StartsWith("onda_sonica")) return 32f;     // Onda sónica de la Llorona: ~1 x 1.6 u (pixel art)
+        if (nombre.StartsWith("chorro_")) return 32f;         // Chorro de agua de la Llorona: ~1.5 u de ancho y 4 de alto
         if (nombre.StartsWith("huella_fuego")) return 32f;    // Herradura en llamas del viaje a Pozos: ~0.9 u (pixel art de 28 px)
         // Armas de la carpeta Modelos (#33), recortadas a 2K
         if (nombre.StartsWith("caja_")) return 330f;          // Cajas de arma: ~1 u, como la de Talavera

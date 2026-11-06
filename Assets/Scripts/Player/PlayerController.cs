@@ -62,6 +62,8 @@ public class PlayerController : MonoBehaviour
     float temporizadorEvasion;
     float temporizadorCooldown;
     float temporizadorEmpuje;
+    float caidaMaxima;                              // Velocidad de caída más fuerte desde que dejó el suelo (#30)
+    float proximoPolvo;
     int direccionEvasion;
 
     void Awake()
@@ -80,7 +82,8 @@ public class PlayerController : MonoBehaviour
             puntoSuelo = transform;
         }
 
-        // Mover: A/D y flechas como eje horizontal (-1 a 1)
+        // Mover: A/D y flechas como eje horizontal (-1 a 1); en gamepad (#36), stick izquierdo o cruceta.
+        // El joystick táctil alimenta el mismo stick de un gamepad virtual (ControlesTactiles)
         accionMover = new InputAction("Mover", InputActionType.Value);
         accionMover.AddCompositeBinding("1DAxis")
             .With("Negative", "<Keyboard>/a")
@@ -88,12 +91,16 @@ public class PlayerController : MonoBehaviour
         accionMover.AddCompositeBinding("1DAxis")
             .With("Negative", "<Keyboard>/leftArrow")
             .With("Positive", "<Keyboard>/rightArrow");
+        accionMover.AddBinding("<Gamepad>/leftStick/x").WithProcessor("axisDeadzone(min=0.25)");
+        accionMover.AddBinding("<Gamepad>/dpad/x");
 
-        // Espacio quedó para lanzar cerámica (PlayerShooter)
+        // Espacio quedó para lanzar cerámica (PlayerShooter); en gamepad saltar es A y evadir B
         accionSaltar = new InputAction("Saltar", InputActionType.Button, "<Keyboard>/upArrow");
         accionSaltar.AddBinding("<Keyboard>/w");
+        accionSaltar.AddBinding("<Gamepad>/buttonSouth");
 
         accionEvadir = new InputAction("Evadir", InputActionType.Button, "<Keyboard>/leftShift");
+        accionEvadir.AddBinding("<Gamepad>/buttonEast");
     }
 
     void OnEnable()
@@ -112,8 +119,10 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        bool estabaEnSuelo = EstaEnSuelo;
         EstaEnSuelo = Physics2D.OverlapBox(puntoSuelo.position, tamanoCajaSuelo, 0f, capaSuelo);
         temporizadorEmpuje -= Time.deltaTime;
+        EfectosDeSuelo(estabaEnSuelo);
 
         if (!ControlActivo || Time.timeScale == 0f)
         {
@@ -152,6 +161,19 @@ public class PlayerController : MonoBehaviour
         if (EstaEvadiendo)            rb.gravityScale = 0f;
         else if (velocidad.y < 0f)    rb.gravityScale = gravedadBase * multiplicadorCaida;
         else                          rb.gravityScale = gravedadBase;
+    }
+
+    // Polvo (#30): una nube al caer de alto y motas que se quedan atrás al correr
+    void EfectosDeSuelo(bool estabaEnSuelo)
+    {
+        if (!EstaEnSuelo) { caidaMaxima = Mathf.Min(caidaMaxima, rb.linearVelocity.y); return; }
+        if (!estabaEnSuelo && caidaMaxima < -6f) Efectos.Particulas(TipoParticula.Aterrizaje, puntoSuelo.position);
+        caidaMaxima = 0f;
+        if (Mathf.Abs(rb.linearVelocity.x) > velocidadMaxima * 0.6f && Time.time >= proximoPolvo)
+        {
+            proximoPolvo = Time.time + 0.12f;
+            Efectos.Particulas(TipoParticula.Polvo, puntoSuelo.position, (int)Mathf.Sign(rb.linearVelocity.x));
+        }
     }
 
     // ------------------------------------------------------------------ Salto

@@ -2,7 +2,7 @@
 
 Videojuego 2D de acción *run and gun* de desplazamiento lateral (al estilo Metal Slug) ambientado en un Guanajuato sobrenatural y tétrico. Proyecto de la materia Creación de Videojuegos (10.º cuatrimestre), desarrollado en **Unity 6.6** para **PC** (Windows y navegador).
 
-> Estado actual: **Sprint 2 de 6** (niveles 1 y 2 jugables). Todavía no es un juego completo; ver [Hasta dónde llega el proyecto](#hasta-dónde-llega-el-proyecto).
+> Estado actual: **Sprint 3 de 6** (niveles 1, 2 y 3 jugables). Todavía no es un juego completo; ver [Hasta dónde llega el proyecto](#hasta-dónde-llega-el-proyecto). Manual: [Docs/MANUAL_USUARIO.md](Docs/MANUAL_USUARIO.md) · GDD: [Docs/GDD.md](Docs/GDD.md).
 
 ## ¿De qué trata?
 
@@ -20,7 +20,7 @@ Público objetivo: jugadores de 12 años en adelante y adultos nostálgicos de l
 |---|---|---|---|---|
 | 1 | **Dolores Hidalgo** (calles y parroquia de noche) | Mineros esqueleto, bandidos del Charro (revólver, rifle, escopeta y machete) | Emboscada de bandidos en oleadas | **Alebrije Gigante**: sale de entre las torres de la parroquia. Al vencerlo se rompe el hechizo y se vuelve la **montura** de Mateo |
 | 2 | **Mineral de Pozos** (pueblo fantasma y ruinas mineras) | Bandidos, mineros esqueleto, **Bruja de Fuego** | **Estampida de nahuales** en la cañada y emboscada de 3 oleadas | **Jinete sin Cabeza**, en el patio de la capilla en ruinas |
-| 3 | **Panteón junto al río** | Esqueletos y otras almas en pena | Por definir | **La Llorona** (ataques sónicos y de agua) |
+| 3 | **Panteón junto al río** | Esqueletos, bandidos y Brujas de Fuego | Emboscada de 3 oleadas en las capillas | **La Llorona** (ataques sónicos y de agua), en la orilla del río |
 | 4 | **Túneles de Guanajuato** | Bandidos y esqueletos | Derrumbe de mina | **El Charro Negro** (jefe final); rescate de Carmen al amanecer |
 
 La dificultad sube de nivel en nivel: más enemigos y más resistentes, ataques desde el aire y menos curación.
@@ -60,33 +60,41 @@ El GDD original solo daba ejemplos de jefes ("figuras icónicas como La Llorona,
 | Montar / desmontar al Alebrije | F |
 | Beber caguama (invencible 5 s) | E o Q |
 | Pausa | Esc o P |
+| Diálogos | Enter adelanta, Retroceso salta |
 | Menús | Mouse o flechas + Enter |
+
+Con **gamepad**: stick izquierdo mueve, A salta, B evade, X o RT lanza, stick derecho apunta, Y bebe caguama, LB/RB cambia de arma, Start pausa. En **pantallas táctiles** aparecen un joystick y botones. Detalle en el [manual](Docs/MANUAL_USUARIO.md#3-controles).
 
 ## Hasta dónde llega el proyecto
 
-El plan son **6 sprints de 2 semanas** (12 semanas). Estado:
+El proyecto se divide en **6 sprints**, cada uno cierra con una entrega del curso. La entrega final es el **viernes 27 de noviembre**. Estado:
 
 | Sprint | Fechas | Enfoque | Estado |
 |---|---|---|---|
 | 1 | 1–14 oct | Núcleo: movimiento, salto, evasión, disparo de Talavera, vida y daño, menú, intro y Nivel 1 base | **Hecho** |
-| 2 | 15–29 oct | Nivel 1 completo (IA, emboscada, Alebrije), guardado, HUD, splash, Nivel 2 (Mineral de Pozos), tutorial | **Cerrando** |
-| 3 | 29 oct–12 nov | Armas nuevas, Bruja de Fuego, opciones, narrativa, gamepad, Nivel 3 (fondos y Llorona) | En curso |
-| 4 | 12–26 nov | Nivel 3 y La Llorona | Pendiente |
-| 5 | 26 nov–10 dic | Nivel 4 y El Charro Negro | Pendiente |
-| 6 | 10–24 dic | Balance, cinemática final, empaquetado y publicación | Pendiente |
+| 2 | 15–29 oct | Nivel 1 completo (IA, emboscada, Alebrije), guardado, HUD, splash, Nivel 2 (Mineral de Pozos), tutorial | **Hecho** |
+| 3 | 29 oct–6 nov | Armas nuevas, combo, secretos, Bruja de Fuego, opciones, créditos, efectos, narrativa, gamepad y táctil, resoluciones, Nivel 3 con La Llorona, GDD y manual | **Cerrando** (Avance 3) |
+| 4 | 6–13 nov | Nivel 4, El Charro Negro, derrumbe de mina, final y narrativa entre niveles | Pendiente (Avance 4) |
+| 5 | 13–20 nov | Builds de Web y Móvil, pruebas y corrección de errores | Pendiente (Avance 5) |
+| 6 | 20–27 nov | Balance, juego terminado en las 3 plataformas, documentación y presentación | Pendiente (Final) |
 
 **Meta final:** publicar el juego en [itch.io](https://itch.io) con un nivel jugable por zona y los jefes de leyenda.
 
 Lo que **ya existe**:
-- **Flujo completo:** splash con el logo del equipo, menú principal (Jugar, Continuar, Opciones, Créditos, Salir), intro con viñetas, Nivel 1 y Nivel 2 jugables, pausa, game over y misión cumplida con récord.
+- **Flujo completo:** splash con el logo del equipo, menú principal (Jugar, Continuar, Opciones, Créditos, Salir), intro con viñetas, niveles 1, 2 y 3 jugables, pausa, game over y misión cumplida con récord.
 - **Nivel 1 (Dolores Hidalgo):** tutorial al inicio, mineros esqueleto animados, bandidos con IA (revólver, rifle, escopeta y machete), emboscada en oleadas y el Alebrije Gigante con su cinemática.
 - **Nivel 2 (Mineral de Pozos):** pueblo fantasma de noche, Brujas de Fuego, emboscada de 3 oleadas y estampida de nahuales.
+- **Nivel 3 (Panteón junto al río):** 5 tramos con neblina, emboscada de 3 oleadas, Brujas de Fuego, secretos y La Llorona con su propia música de pelea.
 - **Guardado:** nivel desbloqueado, récord y mejor tiempo por nivel, monedas y armas.
 - **HUD de barro:** vida, caguamas, puntaje, tiempo y objetivo con barra de progreso.
 - **Sonido:** música por pantalla y nivel, y efectos para cada acción.
 - **Pruebas automáticas** de PlayMode del movimiento, el disparo, la IA, los niveles, el guardado, los menús y el rendimiento.
 
-Lo que **todavía no**: los niveles 3 y 4 con La Llorona y El Charro Negro; gamepad completo y controles táctiles. La comparación completa con el GDD (qué está implementado, qué cambió y por qué, y qué falta) está en [Docs/MECANICAS.md](Docs/MECANICAS.md).
+- **Narrativa:** diálogos con retrato (Don Toribio, Carmen y el Charro Negro) y cinemática de viñetas entre los niveles 1 y 2.
+- **Controles:** teclado y mouse, gamepad completo y controles táctiles en pantalla; las ayudas muestran el botón del dispositivo que se esté usando.
+- **Interfaz adaptable** a 16:9, 16:10, 4:3, 21:9 y celulares (Safe Area), con partículas, *hit stop* y créditos con licencias ([Docs/CREDITOS.md](Docs/CREDITOS.md)).
+
+Lo que **todavía no**: el Nivel 4 con El Charro Negro y el final, y el build para móvil. La comparación completa con el GDD (qué está implementado, qué cambió y por qué, y qué falta) está en [Docs/MECANICAS.md](Docs/MECANICAS.md).
 
 ## Cómo ejecutarlo
 

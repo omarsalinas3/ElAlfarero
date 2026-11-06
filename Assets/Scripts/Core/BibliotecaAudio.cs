@@ -11,10 +11,11 @@ public enum Sfx
     AullidoNahual, Estampida,
     CambioArma, RecogerArma, LanzarVidriado, Explosion, BloqueoEscudo, RomperEscudo,
     PunoLigero, PunoFuerte,
-    Exvoto, AbrirCofre
+    Exvoto, AbrirCofre,
+    GritoLlorona, ChorroAgua
 }
 
-public enum Musica { Ninguna, Menu, Intro, Nivel1, Nivel2 }
+public enum Musica { Ninguna, Menu, Intro, Nivel1, Nivel2, Nivel3, Llorona }
 
 /// <summary>
 /// Tabla de sonidos del juego (un solo asset en Resources/BibliotecaAudio). El código pide sonidos por nombre (Sfx / Musica)

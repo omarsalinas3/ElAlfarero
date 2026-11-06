@@ -91,6 +91,34 @@ Registro por fecha de qué se hizo, quién lo hizo, qué problemas salieron y qu
 
 ---
 
+## Sprint 3 (29 de octubre – 12 de noviembre de 2026)
+
+**Meta:** armas de la Unidad 1, opciones, pulido (efectos, controles por plataforma, resoluciones), narrativa, base del Nivel 3 y documentación de entrega.
+
+### 3 de noviembre — Trabajo de Omar
+| Quién | Qué se hizo |
+|---|---|
+| Omar | Viaje montado del Nivel 1 al 2 (#57); armas Barro Vidriado, Barro Negro y Maceta Escudo (#33); combo de 3 golpes (#62); lugares secretos y exvotos (#63); opciones de gráficos y controles (#26); pruebas de integración (#40); documento de mecánicas (#34) |
+
+### 5 de noviembre — Trabajo de Noé
+| Quién | Qué se hizo |
+|---|---|
+| Noé | Créditos con desplazamiento y licencias, y `Docs/CREDITOS.md` (#24); interfaz adaptable: zona 16:9 con barras, Safe Area y escalado *Expand* (#37); partículas, *hit stop* y entrada escalonada de menús (#30); gamepad completo y controles táctiles con textos según el dispositivo (#36); diálogos con retrato y cinemática del Nivel 1 al 2 (#35); sprites y Animator de La Llorona (#59); escena base del Nivel 3 con 5 tramos (#58); GDD v3 y manual de usuario en PDF (#39) |
+
+**Problemas:**
+- Unity en batch se cerraba por falta de memoria con otras apps abiertas (la PC tiene 7 GB): hay que cerrar navegador, IDE y bases de datos antes de construir o correr las pruebas.
+- Las pruebas corrían en una ventana 4:3 y escondían un error real en 16:9: el Jinete se quedaba dando sablazos contra la orilla de la arena si Mateo se pegaba a ella. Se corrigió (nunca dos sablazos seguidos) y ahora las pruebas usan la zona de juego 16:9.
+- Con URP, lo que queda fuera del viewport de la cámara no se limpia: hace falta una cámara de fondo negra para las barras.
+- Flow seguía sin aceptar la subida automática de archivos: Noé sube las referencias y el resto (prompts, descarga y recorte) se hace desde el navegador integrado.
+
+**Decisiones:**
+- El juego siempre muestra la zona 16:9 (barras negras en otras proporciones) para no romper las arenas de jefes, que miden una pantalla.
+- Los diálogos no detienen la acción: aparecen arriba, debajo del objetivo, y avanzan solos (Enter/Select adelanta, Retroceso o mantener Select salta).
+- Los controles táctiles usan los controles en pantalla del Input System sobre un gamepad virtual; solo aparecen si se usa el dedo. Montar en táctil usa L3 porque LB también cambia de arma.
+- El Nivel 3 se queda con una meta provisional en la orilla del río hasta que la Llorona tenga su IA (Sprint 4).
+
+---
+
 ## Plantilla para la siguiente entrada
 
 ```

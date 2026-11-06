@@ -43,6 +43,7 @@ public class ViajeMontado : MonoBehaviour
         accionSaltar.AddBinding("<Keyboard>/escape");
         accionSaltar.AddBinding("<Mouse>/leftButton");
         accionSaltar.AddBinding("<Gamepad>/buttonSouth");
+        accionSaltar.AddBinding("<Touchscreen>/primaryTouch/press");
         accionSaltar.AddBinding("<Gamepad>/start");
     }
 

@@ -67,7 +67,8 @@ public class Splash : MonoBehaviour
     {
         return (Keyboard.current != null && Keyboard.current.anyKey.wasPressedThisFrame)
             || (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
-            || (Gamepad.current != null && GamepadPresionado(Gamepad.current));
+            || (Gamepad.current != null && GamepadPresionado(Gamepad.current))
+            || (Touchscreen.current != null && Touchscreen.current.primaryTouch.press.wasPressedThisFrame);
     }
 
     static bool GamepadPresionado(Gamepad g) =>

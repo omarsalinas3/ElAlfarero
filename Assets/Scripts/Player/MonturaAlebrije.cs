@@ -63,9 +63,11 @@ public class MonturaAlebrije : MonoBehaviour
 
         accionMontar = new InputAction("Montar", InputActionType.Button, "<Keyboard>/f");
         accionMontar.AddBinding("<Gamepad>/leftShoulder");
+        accionMontar.AddBinding("<Gamepad>/leftStickPress");      // Lo usa el botón táctil MONTA (#36): LB también cambia de arma
         accionZarpazo = new InputAction("Zarpazo", InputActionType.Button, "<Keyboard>/space");
         accionZarpazo.AddBinding("<Mouse>/leftButton");
         accionZarpazo.AddBinding("<Gamepad>/rightTrigger");
+        accionZarpazo.AddBinding("<Gamepad>/buttonWest");
     }
 
     void OnEnable()

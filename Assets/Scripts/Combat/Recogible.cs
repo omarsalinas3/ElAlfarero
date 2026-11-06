@@ -66,6 +66,7 @@ public class Recogible : MonoBehaviour
             var arsenal = otro.GetComponentInParent<ArsenalJugador>();
             if (arsenal == null || !arsenal.Recoger(arma, cantidad)) return;   // Ya trae el máximo: se queda en el suelo
             if (efectoRecoger != null) Reciclaje.Sacar(efectoRecoger, sprite.transform.position, Quaternion.identity);
+            Efectos.Particulas(TipoParticula.Brillo, sprite.transform.position);
             Reciclaje.Guardar(gameObject);
             return;
         }
@@ -92,6 +93,7 @@ public class Recogible : MonoBehaviour
             _ => Sfx.Moneda,
         });
         if (efectoRecoger != null) Reciclaje.Sacar(efectoRecoger, sprite.transform.position, Quaternion.identity);
+        Efectos.Particulas(TipoParticula.Brillo, sprite.transform.position);
         Reciclaje.Guardar(gameObject);
     }
 }

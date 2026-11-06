@@ -9,22 +9,26 @@ using static ConfigurarSprint1;
 /// </summary>
 public static partial class ConstructorJuego
 {
-    // (x, texto con teclado, texto con gamepad). La zona segura va del inicio (x = -6) al primer minero (x = 9)
-    static readonly (float x, string teclado, string gamepad)[] CartelesTutorial =
+    // (x, teclado, gamepad, táctil; #36). La zona segura va del inicio (x = -6) al primer minero (x = 9)
+    static readonly (float x, string teclado, string gamepad, string tactil)[] CartelesTutorial =
     {
-        (-6.5f, "LLEGA A LA PARROQUIA\nY RESCATA A CARMEN\n\nMUEVETE: A D O FLECHAS", "LLEGA A LA PARROQUIA\nY RESCATA A CARMEN\n\nMUEVETE: STICK IZQUIERDO"),
-        (-2.5f, "SALTA: W O FLECHA ARRIBA\n\nEVADE: SHIFT\n(INVENCIBLE UN INSTANTE)", "SALTA: A\n\nEVADE: B\n(INVENCIBLE UN INSTANTE)"),
-        (1f, "LANZA: ESPACIO O CLIC\nAPUNTA: MOUSE\nARRIBA: ESPACIO + FLECHA ARRIBA", "LANZA: X O GATILLO DERECHO\nAPUNTA: STICK DERECHO"),
-        (4.5f, "ROMPE HUACALES Y HORNOS:\nTRAEN MONEDAS Y CURACION\n\nCAGUAMA: E O Q\n(5 S INVENCIBLE)", "ROMPE HUACALES Y HORNOS:\nTRAEN MONEDAS Y CURACION\n\nCAGUAMA: Y\n(5 S INVENCIBLE)"),
+        (-6.5f, "LLEGA A LA PARROQUIA\nY RESCATA A CARMEN\n\nMUEVETE: A D O FLECHAS", "LLEGA A LA PARROQUIA\nY RESCATA A CARMEN\n\nMUEVETE: STICK IZQUIERDO",
+                "LLEGA A LA PARROQUIA\nY RESCATA A CARMEN\n\nMUEVETE: JOYSTICK"),
+        (-2.5f, "SALTA: W O FLECHA ARRIBA\n\nEVADE: SHIFT\n(INVENCIBLE UN INSTANTE)", "SALTA: A\n\nEVADE: B\n(INVENCIBLE UN INSTANTE)",
+                "SALTA: BOTON SALTO\n\nEVADE: BOTON EVADE\n(INVENCIBLE UN INSTANTE)"),
+        (1f, "LANZA: ESPACIO O CLIC\nAPUNTA: MOUSE\nARRIBA: ESPACIO + FLECHA ARRIBA", "LANZA: X O GATILLO DERECHO\nAPUNTA: STICK DERECHO",
+             "LANZA: MANTEN LANZA\nARRIBA: JOYSTICK ARRIBA\n+ LANZA"),
+        (4.5f, "ROMPE HUACALES Y HORNOS:\nTRAEN MONEDAS Y CURACION\n\nCAGUAMA: E O Q\n(5 S INVENCIBLE)", "ROMPE HUACALES Y HORNOS:\nTRAEN MONEDAS Y CURACION\n\nCAGUAMA: Y\n(5 S INVENCIBLE)",
+               "ROMPE HUACALES Y HORNOS:\nTRAEN MONEDAS Y CURACION\n\nCAGUAMA: BOTON CAGUAMA\n(5 S INVENCIBLE)"),
     };
 
     static void CrearTutorial()
     {
         var padre = new GameObject("Tutorial").transform;
-        foreach (var c in CartelesTutorial) CrearCartel(padre, c.x, c.teclado, c.gamepad);
+        foreach (var c in CartelesTutorial) CrearCartel(padre, c.x, c.teclado, c.gamepad, c.tactil);
     }
 
-    static CartelTutorial CrearCartel(Transform padre, float x, string teclado, string gamepad)
+    static CartelTutorial CrearCartel(Transform padre, float x, string teclado, string gamepad, string tactil)
     {
         var go = new GameObject("Cartel");
         go.transform.SetParent(padre, false);
@@ -52,6 +56,7 @@ public static partial class ConstructorJuego
         so.FindProperty("grupo").objectReferenceValue = grupo;
         so.FindProperty("textoTeclado").stringValue = teclado;
         so.FindProperty("textoGamepad").stringValue = gamepad;
+        so.FindProperty("textoTactil").stringValue = tactil;
         so.ApplyModifiedPropertiesWithoutUndo();
         return cartel;
     }

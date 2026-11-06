@@ -246,7 +246,7 @@ public class JefeAlebrije : MonoBehaviour
         if (danoContacto != null) danoContacto.enabled = false;
         foreach (var s in sprites) s.color = Color.white;
         GestorAudio.Reproducir(Sfx.RugidoAlebrije, 0f);
-        Camera.main?.GetComponent<CameraFollow>()?.Sacudir(0.8f, 0.3f);
+        Efectos.GolpeFuerte(0.15f, 0.3f, 0.8f);                     // El golpe final se congela un instante (#30)
         if (montura != null) { StartCoroutine(Liberarse()); return; }
         if (animator != null) animator.SetBool(AnimMuerto, true);
         StartCoroutine(Victoria());

@@ -12,12 +12,12 @@
 
 | Estado | Cantidad |
 |---|---|
-| ✅ Implementadas tal cual | 13 |
+| ✅ Implementadas tal cual | 14 |
 | 🔁 Implementadas con cambios | 14 |
-| ⏳ Pendientes | 5 |
+| ⏳ Pendientes | 4 |
 | ➕ Agregadas | 10 |
 
-Lo esencial del GDD ya funciona: movimiento con salto y evasión, las cuatro cerámicas (Talavera, Barro Vidriado, Barro Negro y Maceta Escudo), cajas de armas, emboscadas en oleadas, estampida, bandidos y calaveras con IA, el primer jefe de leyenda, la interfaz de barro y las cerámicas definidas con *ScriptableObjects*. Lo pendiente son los dos jefes de los niveles 3 y 4 (La Llorona y El Charro Negro), el derrumbe de mina y el *parallax*.
+Lo esencial del GDD ya funciona: movimiento con salto y evasión, las cuatro cerámicas (Talavera, Barro Vidriado, Barro Negro y Maceta Escudo), cajas de armas, emboscadas en oleadas, estampida, bandidos y calaveras con IA, tres jefes de leyenda (Alebrije, Jinete sin Cabeza y La Llorona), la interfaz de barro y las cerámicas definidas con *ScriptableObjects*. Lo pendiente es el jefe del Nivel 4 (El Charro Negro), el derrumbe de mina y el *parallax*.
 
 ---
 
@@ -51,7 +51,7 @@ Lo esencial del GDD ya funciona: movimiento con salto y evasión, las cuatro cer
 |---|---|---|---|
 | Emboscadas que obligan a sobrevivir oleadas | ✅ | La cámara se fija y entran bandidos por ambos lados: 2 oleadas en Dolores y 3 en Pozos | `Emboscada` |
 | Estampidas de animales | 🔁 | **Estampida de nahuales** en la cañada de Pozos: la cámara se fija y cruzan manadas a toda velocidad, con aviso antes de cada una; se esquivan saltando o evadiendo | `Estampida`, `Nahual` (#53) |
-| Derrumbes de minas | ⏳ | Planeado como evento del Nivel 4 (Túneles de Guanajuato), Sprint 5 | — |
+| Derrumbes de minas | ⏳ | Evento del Nivel 4 (Túneles de Guanajuato), Sprint 4 | — |
 
 ### 2.4 Personajes y enemigos
 
@@ -63,8 +63,8 @@ Lo esencial del GDD ya funciona: movimiento con salto y evasión, las cuatro cer
 | Calaveras animadas | 🔁 | **Mineros esqueleto** con pico: patrullan, persiguen, brincan obstáculos bajos, embisten y regresan a su zona | `IAEsqueleto` (#51) |
 | Nahuales menores | 🔁 | No son enemigos comunes: forman la **estampida** del Nivel 2 | `Estampida` (#53) |
 | Jefe: Alebrijes Gigantes (ataques físicos y transformaciones) | 🔁 | **Alebrije Gigante** del Nivel 1: acecho, zarpazo, salto con onda de choque y transformación al 50 % de vida. Al vencerlo **se libera del hechizo y se vuelve la montura de Mateo** | `JefeAlebrije`, `MonturaAlebrije` (#50) |
-| Jefe: La Llorona (ataques sónicos y de agua) | ⏳ | Jefa del Nivel 3 (Panteón junto al río), Sprint 4; sus sprites están en curso (#59) | — |
-| Jefe: El Charro Negro (montado, ráfagas de fuego infernal) | ⏳ | Jefe final del Nivel 4, Sprint 5 | — |
+| Jefe: La Llorona (ataques sónicos y de agua) | ✅ | Jefa del Nivel 3: onda sónica y chorros de agua; se desvanece si Mateo se le pega y se enfurece a media vida. Al liberarla se completa el nivel | `JefeLlorona`, `ChorroAgua`, `EncuentroLlorona` |
+| Jefe: El Charro Negro (montado, ráfagas de fuego infernal) | ⏳ | Jefe final del Nivel 4, Sprint 4 | — |
 
 ### 2.5 Desarrollo, arte y lanzamiento
 
@@ -75,7 +75,7 @@ Lo esencial del GDD ya funciona: movimiento con salto y evasión, las cuatro cer
 | Interfaz rústica de barro | ✅ | HUD con jarrito de vida que se cuartea, barra de barro, marco de azulejo y botones de barro | `HudJuego` (#29) |
 | Sprites y animaciones del alfarero y los jefes | 🔁 | Generados con Google Flow y procesados (recorte, alineado por los pies, animación por código); el fuego del Charro y el aura de la Llorona quedan para sus niveles | `Docs/Arte/Flow`, `ConstructorAnimaciones` |
 | Efectos de sonido y música | ✅ | Música por pantalla y nivel (Flow Music) y efectos propios para cada acción | `BibliotecaAudio` |
-| Playtesting semanal desde el Sprint 3 y tablero Kanban de errores | 🔁 | Tablero de GitHub Projects con issues, sprints y estimación; **104 pruebas automáticas** de PlayMode (incluye recorrer el Nivel 2 completo) en lugar de sesiones semanales con externos, que quedan para el Sprint 6 | Tablero del proyecto, `Assets/Tests/PlayMode` (#40) |
+| Playtesting semanal desde el Sprint 3 y tablero Kanban de errores | 🔁 | Tablero de GitHub Projects con issues, sprints y estimación; **139 pruebas automáticas** de PlayMode (incluye recorrer el Nivel 2 completo) en lugar de sesiones semanales con externos, que quedan para el Sprint 6 | Tablero del proyecto, `Assets/Tests/PlayMode` (#40) |
 | Publicación en itch.io | ⏳ | Página en borrador con build WebGL; se publica en el Sprint 6 | `ConstruirWeb` (#38) |
 | Kit de prensa y tráiler de un minuto | ⏳ | Sprint 6 | — |
 | Plataforma PC | 🔁 | PC (Windows) **y navegador** (WebGL para itch.io) | `ConstruirWeb` (#38) |
@@ -104,7 +104,7 @@ Lo esencial del GDD ya funciona: movimiento con salto y evasión, las cuatro cer
 
 **Fondos sin *parallax*.** El arte de los escenarios se generó con Google Flow como ilustraciones completas de una pantalla, no por capas. Separarlas en capas no salía limpio, así que cada nivel se arma con 5 tramos unidos con degradado. El *parallax* queda como mejora para el Sprint 6 si da tiempo.
 
-**Pruebas automáticas en lugar de playtesting semanal.** Con dos integrantes y PRs frecuentes, las 104 pruebas de PlayMode detectan antes que se rompió algo al juntar el trabajo de los dos; por ejemplo, avisaron de referencias del HUD perdidas al regenerar las escenas. El playtesting con jugadores externos se mantiene para el Sprint 6, antes de publicar.
+**Pruebas automáticas en lugar de playtesting semanal.** Con dos integrantes y PRs frecuentes, las 139 pruebas de PlayMode detectan antes que se rompió algo al juntar el trabajo de los dos; por ejemplo, avisaron de referencias del HUD perdidas al regenerar las escenas. El playtesting con jugadores externos se mantiene para el Sprint 6, antes de publicar.
 
 **PC y navegador.** Publicar en itch.io con una versión que se juega en el navegador hace que más gente lo pruebe sin descargar nada. El build de Windows se mantiene.
 
@@ -139,9 +139,8 @@ Lo esencial del GDD ya funciona: movimiento con salto y evasión, las cuatro cer
 
 | Pendiente | Sprint | Issue o responsable |
 |---|---|---|
-| Nivel 3 (Panteón junto al río) y **La Llorona** | 4 | Noé (#58, #59) |
-| Nivel 4 (Túneles de Guanajuato), **El Charro Negro** y **derrumbe de mina** | 5 | Por repartir |
-| Rescate de Carmen al amanecer (final) | 5 | Narrativa (#35) |
-| Gamepad completo y controles táctiles | 3 | Noé (#36) |
+| Nivel 4 (Túneles de Guanajuato), **El Charro Negro** y **derrumbe de mina** | 4 | Por repartir |
+| Rescate de Carmen al amanecer (final) | 4 | Por repartir |
+| Build para móvil y pruebas en celular | 5 | Por repartir |
 | *Parallax* en los fondos | 6 | Mejora si da tiempo |
 | Playtesting con jugadores externos, kit de prensa, tráiler y publicación en itch.io | 6 | Equipo |
