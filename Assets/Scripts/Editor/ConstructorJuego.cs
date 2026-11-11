@@ -68,6 +68,7 @@ public static partial class ConstructorJuego
         ConstructorAnimaciones.Construir();
         Prefabs p = CrearPrefabs();
         CrearPrefabLlorona();   // Jefa del Nivel 3
+        CrearArteCharro();      // Jefe final (#89): sus dos fases y su fuego; la IA llega con la #90
 
         CrearEscenaNivel1(p);
         CrearEscenaNivel2(p);
