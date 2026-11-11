@@ -116,7 +116,7 @@ MonoBehaviour:
   aviso: 0.8
   duracion: 0.7
   cuadrosPorSegundo: 12
-  dano: 14
+  dano: 18
   caja: {x: 1.2, y: 3.6}
   capaJugador:
     serializedVersion: 2

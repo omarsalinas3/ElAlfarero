@@ -14,7 +14,7 @@ public class ChorroAgua : MonoBehaviour
     [SerializeField] float aviso = 0.8f;
     [SerializeField] float duracion = 0.7f;
     [SerializeField] float cuadrosPorSegundo = 12f;
-    [SerializeField] int dano = 14;
+    [SerializeField] int dano = 18;
     [SerializeField] Vector2 caja = new Vector2(1.2f, 3.6f);
     [SerializeField] LayerMask capaJugador;
 

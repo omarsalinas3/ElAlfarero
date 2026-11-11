@@ -63,7 +63,7 @@ Lo esencial del GDD ya funciona: movimiento con salto y evasión, las cuatro cer
 | Calaveras animadas | 🔁 | **Mineros esqueleto** con pico: patrullan, persiguen, brincan obstáculos bajos, embisten y regresan a su zona | `IAEsqueleto` (#51) |
 | Nahuales menores | 🔁 | No son enemigos comunes: forman la **estampida** del Nivel 2 | `Estampida` (#53) |
 | Jefe: Alebrijes Gigantes (ataques físicos y transformaciones) | 🔁 | **Alebrije Gigante** del Nivel 1: acecho, zarpazo, salto con onda de choque y transformación al 50 % de vida. Al vencerlo **se libera del hechizo y se vuelve la montura de Mateo** | `JefeAlebrije`, `MonturaAlebrije` (#50) |
-| Jefe: La Llorona (ataques sónicos y de agua) | ✅ | Jefa del Nivel 3: onda sónica y chorros de agua; se desvanece si Mateo se le pega y se enfurece a media vida. Al liberarla se completa el nivel | `JefeLlorona`, `ChorroAgua`, `EncuentroLlorona` |
+| Jefe: La Llorona (ataques sónicos y de agua) | ✅ | Jefa del Nivel 3: onda sónica y chorros de agua; se desvanece si Mateo se le pega y se enfurece a media vida. Furiosa grita dos veces seguidas, sus chorros persiguen a Mateo con una segunda tanda y tras cada ataque de agua reaparece en el otro extremo. Se endureció tras la retroalimentación del Avance 3 (el doble de vida que el Jinete y más daño). Al liberarla se completa el nivel | `JefeLlorona`, `ChorroAgua`, `EncuentroLlorona` |
 | Jefe: El Charro Negro (montado, ráfagas de fuego infernal) | ⏳ | Jefe final del Nivel 4, Sprint 4 | — |
 
 ### 2.5 Desarrollo, arte y lanzamiento

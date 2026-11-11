@@ -5,7 +5,10 @@ using UnityEngine;
 /// Jefa del Nivel 3: La Llorona, hechizada por el Charro Negro, en la orilla del río. Flota sin tocar el suelo y guarda
 /// su distancia. Ataques: onda sónica que va directo a Mateo (se esquiva saltando o evadiendo; la Maceta Escudo la
 /// detiene) y chorros de agua que brotan bajo sus pies con un aviso de burbujas. Si Mateo se le pega, se desvanece y
-/// reaparece del otro lado. A la mitad de la vida se enfurece: más rápida, tres ondas en abanico y más chorros.
+/// reaparece del otro lado. A la mitad de la vida se enfurece: más rápida, grita dos veces seguidas (tres ondas en
+/// abanico cada vez), sus chorros persiguen a Mateo con una segunda tanda y tras cada ataque de agua se esfuma y
+/// reaparece en el otro extremo de la orilla. Se endureció tras la retroalimentación del Avance 3, que pedía una
+/// pelea más difícil: con la Talavera (unos 80 de daño por segundo) caía en segundos.
 /// Empieza dormida (la despierta EncuentroLlorona) y al morir la Talavera rompe el hechizo y se completa el nivel.
 /// El arte mira a la IZQUIERDA.
 /// </summary>
@@ -19,21 +22,23 @@ public class JefeLlorona : MonoBehaviour
     [Header("Acecho")]
     [SerializeField] float velocidad = 2.6f;
     [SerializeField] float distanciaIdeal = 7f;
-    [SerializeField] float multiplicadorFuriosa = 1.4f;
-    [SerializeField] float pausaEntreAtaques = 1.3f;
+    [SerializeField] float multiplicadorFuriosa = 1.5f;
+    [SerializeField] float pausaEntreAtaques = 1f;
     [SerializeField] float amplitudFlote = 0.25f;
 
     [Header("Onda sónica")]
     [SerializeField] BalaEnemiga prefabOnda;
     [SerializeField] float avisoGrito = 0.55f;
-    [SerializeField] float velocidadOnda = 9f;
-    [SerializeField] int danoOnda = 14;
+    [SerializeField] float velocidadOnda = 11f;
+    [SerializeField] int danoOnda = 18;
     [SerializeField] Vector2 boca = new Vector2(1.2f, 3.4f);     // De dónde sale la onda, desde su posición
+    [SerializeField] float retrasoSegundoGrito = 0.7f;           // Más que el enfriamiento de la evasión (0.6 s): se puede evadir las dos
 
     [Header("Chorros de agua")]
     [SerializeField] ChorroAgua prefabChorro;
     [SerializeField] float separacionChorros = 3f;
     [SerializeField] float retrasoEntreChorros = 0.15f;
+    [SerializeField] float retrasoPersecucion = 0.6f;            // Furiosa: segunda tanda donde Mateo fue a parar
     [SerializeField] float ySuelo = -4.5f;
 
     [Header("Desvanecerse")]
@@ -50,6 +55,9 @@ public class JefeLlorona : MonoBehaviour
     public bool Furiosa { get; private set; }
     public Health Salud => salud;
     public int Direccion { get; private set; } = -1;
+    /// <summary>Cuántas ondas y chorros ha lanzado en total: sirven a las pruebas para medir cada ataque.</summary>
+    public int OndasLanzadas { get; private set; }
+    public int ChorrosLanzados { get; private set; }
 
     Rigidbody2D rb;
     Health salud;
@@ -143,7 +151,12 @@ public class JefeLlorona : MonoBehaviour
             if (Mathf.Abs(objetivo.position.x - transform.position.x) < distanciaDesvanecer)
                 yield return Desvanecerse();
             else if (ataque++ % 2 == 0) yield return Grito();
-            else yield return Agua();
+            else
+            {
+                yield return Agua();
+                // Furiosa no se deja tirar desde un solo lugar: se esfuma y reaparece en el otro extremo
+                if (Furiosa && EstadoActual == Estado.Agua) yield return Desvanecerse();
+            }
         }
     }
 
@@ -156,17 +169,34 @@ public class JefeLlorona : MonoBehaviour
         yield return new WaitForSeconds(avisoGrito / Ritmo);
         if (EstadoActual != Estado.Grito || prefabOnda == null) yield break;
 
+        LanzarOndas(Furiosa ? 3 : 1, objetivo.position.y);
+        if (Furiosa)
+        {
+            // Segundo grito: apunta a donde Mateo quedó tras esquivar el primero (a la altura del suelo, para que
+            // saltarlo siga siendo posible)
+            yield return new WaitForSeconds(retrasoSegundoGrito);
+            if (EstadoActual != Estado.Grito) yield break;
+            MirarAlObjetivo();
+            Pose("Grito");
+            GestorAudio.Reproducir(Sfx.GritoLlorona, 0f);
+            LanzarOndas(3, ySuelo);
+        }
+        yield return new WaitForSeconds(0.55f);
+    }
+
+    /// <summary>Ondas en abanico hacia la x de Mateo, a la altura de su pecho si estuviera parado en <paramref name="yPies"/>.</summary>
+    void LanzarOndas(int cuantas, float yPies)
+    {
         Vector2 origen = (Vector2)transform.position + new Vector2(Direccion * boca.x, boca.y);
-        Vector2 hacia = (Vector2)objetivo.position + Vector2.up * 1.2f - origen;
-        int cuantas = Furiosa ? 3 : 1;
+        Vector2 hacia = new Vector2(objetivo.position.x, yPies + 1.2f) - origen;
         for (int i = 0; i < cuantas; i++)
         {
             float angulo = (i - (cuantas - 1) / 2f) * 16f;
             Vector2 dir = Quaternion.Euler(0f, 0f, angulo) * hacia;
             Reciclaje.Sacar(prefabOnda, origen, Quaternion.identity).Disparar(dir, velocidadOnda, danoOnda);
+            OndasLanzadas++;
         }
         Camera.main?.GetComponent<CameraFollow>()?.Sacudir(0.2f, 0.12f);
-        yield return new WaitForSeconds(0.55f);
     }
 
     IEnumerator Agua()
@@ -177,9 +207,22 @@ public class JefeLlorona : MonoBehaviour
         yield return new WaitForSeconds(0.45f / Ritmo);
         if (EstadoActual != Estado.Agua || prefabChorro == null) yield break;
 
-        // Uno bajo los pies de Mateo y los demás a sus lados, de adentro hacia afuera
+        yield return Tanda(Furiosa ? 2 : 1);
+        if (Furiosa)
+        {
+            // La segunda tanda brota donde Mateo fue a parar al esquivar la primera
+            yield return new WaitForSeconds(retrasoPersecucion);
+            if (EstadoActual != Estado.Agua) yield break;
+            yield return Tanda(1);
+        }
+        if (EstadoActual != Estado.Agua) yield break;
+        yield return new WaitForSeconds(0.8f);
+    }
+
+    /// <summary>Uno bajo los pies de Mateo y los demás a sus lados, de adentro hacia afuera.</summary>
+    IEnumerator Tanda(int aCadaLado)
+    {
         float centro = objetivo.position.x;
-        int aCadaLado = Furiosa ? 2 : 1;
         Sacar(centro);
         for (int i = 1; i <= aCadaLado; i++)
         {
@@ -188,13 +231,13 @@ public class JefeLlorona : MonoBehaviour
             Sacar(centro - i * separacionChorros);
             Sacar(centro + i * separacionChorros);
         }
-        yield return new WaitForSeconds(0.8f);
     }
 
     void Sacar(float x)
     {
         if (x < minX || x > maxX) return;                  // Fuera de la orilla no hay agua
         Reciclaje.Sacar(prefabChorro, new Vector3(x, ySuelo, 0f), Quaternion.identity);
+        ChorrosLanzados++;
     }
 
     IEnumerator Desvanecerse()
