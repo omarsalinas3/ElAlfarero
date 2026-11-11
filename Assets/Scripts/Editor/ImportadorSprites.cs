@@ -37,7 +37,8 @@ public class ImportadorSprites : AssetPostprocessor
         importador.ReadTextureSettings(ajustes);
         bool pivoteEnPies = carpeta == "Player" || (carpeta == "Enemies" && !nombre.StartsWith("bruja_")) || carpeta == "Allies"
                             || carpeta == "Bosses" || (carpeta == "Obstacles" && !nombre.StartsWith("maceta"))    // La bruja vuela: pivote al centro
-                            || nombre.StartsWith("huella_") || nombre.StartsWith("chorro_");                      // Las huellas y los chorros salen del suelo
+                            || nombre.StartsWith("huella_") || nombre.StartsWith("chorro_")                       // Las huellas y los chorros salen del suelo
+                            || nombre.StartsWith("charro_llamarada");                                             // y las llamaradas del Charro también
         ajustes.spriteAlignment = (int)(pivoteEnPies ? SpriteAlignment.BottomCenter : SpriteAlignment.Center);
         ajustes.spriteMeshType = SpriteMeshType.FullRect;
         importador.SetTextureSettings(ajustes);
@@ -68,6 +69,12 @@ public class ImportadorSprites : AssetPostprocessor
         if (nombre.StartsWith("llorona_")) return 40f;        // La Llorona (#59): ~4.3 u de alto, flotando sobre Mateo
         if (nombre.StartsWith("onda_sonica")) return 32f;     // Onda sónica de la Llorona: ~1 x 1.6 u (pixel art)
         if (nombre.StartsWith("chorro_")) return 32f;         // Chorro de agua de la Llorona: ~1.5 u de ancho y 4 de alto
+        // El Charro Negro (#89): las dos hojas salieron a escalas distintas; montado mide más que el Jinete y a pie
+        // queda de ~3.8 u, el mismo tamaño que tiene sentado en el caballo
+        if (nombre.StartsWith("charro_caballo")) return 36f;  // ~5.1 u de alto y ~7 de largo: el jefe más grande
+        if (nombre.StartsWith("charro_pie")) return 45f;      // ~3.8 u de alto: más alto que Mateo (~2.5)
+        if (nombre.StartsWith("charro_fuego")) return 95f;    // Ráfaga de fuego infernal: ~2 u con todo y estela
+        if (nombre.StartsWith("charro_llamarada")) return 80f; // Llamarada del suelo: ~4.5 u, más alta que el salto de Mateo (~3.3)
         if (nombre.StartsWith("huella_fuego")) return 32f;    // Herradura en llamas del viaje a Pozos: ~0.9 u (pixel art de 28 px)
         // Armas de la carpeta Modelos (#33), recortadas a 2K
         if (nombre.StartsWith("caja_")) return 330f;          // Cajas de arma: ~1 u, como la de Talavera
