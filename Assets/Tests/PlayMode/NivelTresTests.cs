@@ -213,6 +213,75 @@ public class NivelTresTests
         Assert.AreEqual(4, GestorGuardado.Datos.nivelDesbloqueado);
     }
 
+    /// <summary>Espera a que la jefa empiece un ataque desde el principio y lo termine; deja en resultado cuántas ondas y chorros lanzó.</summary>
+    IEnumerator MedirAtaque(JefeLlorona jefa, JefeLlorona.Estado ataque, int[] resultado)
+    {
+        float limite = Time.time + 12f;
+        while (jefa.EstadoActual == ataque && Time.time < limite) yield return null;      // Si ya iba a la mitad, el siguiente
+        while (jefa.EstadoActual != ataque && Time.time < limite) yield return null;
+        Assert.AreEqual(ataque, jefa.EstadoActual, $"Llega a usar el ataque {ataque}");
+        int ondas = jefa.OndasLanzadas, chorros = jefa.ChorrosLanzados;
+        while (jefa.EstadoActual == ataque && Time.time < limite) yield return null;
+        resultado[0] = jefa.OndasLanzadas - ondas;
+        resultado[1] = jefa.ChorrosLanzados - chorros;
+    }
+
+    [UnityTest]
+    public IEnumerator Llorona_AguantaElDobleQueElJinete()
+    {
+        yield return SceneManager.LoadSceneAsync(Escenas.Nivel2, LoadSceneMode.Single);
+        yield return null;
+        int vidaJinete = Object.FindObjectsByType<JefeJinete>(FindObjectsInactive.Include).First().GetComponent<Health>().VidaMaxima;
+
+        yield return CargarNivel3();
+        var llorona = Object.FindObjectsByType<JefeLlorona>(FindObjectsInactive.Include).First();
+        Assert.GreaterOrEqual(llorona.GetComponent<Health>().VidaMaxima, vidaJinete * 2,
+            "La Talavera no la tumba en segundos: aguanta al menos el doble que el jefe anterior");
+    }
+
+    [UnityTest]
+    [Timeout(90000)]
+    public IEnumerator Llorona_FuriosaGritaDosVecesSusChorrosPersiguenYCambiaDeLado()
+    {
+        yield return CargarNivel3();
+        var jugador = Object.FindFirstObjectByType<PlayerController>();
+        jugador.GetComponent<Health>().HacerInvulnerable(999f);
+        yield return EmpezarPelea(Object.FindFirstObjectByType<EncuentroLlorona>(), jugador);
+        var jefa = Object.FindFirstObjectByType<JefeLlorona>();
+
+        // Mateo quieto a media orilla, para que ningún chorro quede fuera de la arena
+        var rb = jugador.GetComponent<Rigidbody2D>();
+        Vector2 centro = new Vector2(GameObject.Find("Arena_Llorona").transform.position.x, rb.position.y + 0.1f);
+        rb.position = centro;
+        jugador.transform.position = centro;
+
+        var r = new int[2];
+        yield return MedirAtaque(jefa, JefeLlorona.Estado.Grito, r);
+        Assert.AreEqual(1, r[0], "Tranquila grita una sola onda");
+        yield return MedirAtaque(jefa, JefeLlorona.Estado.Agua, r);
+        Assert.AreEqual(3, r[1], "Tranquila saca tres chorros");
+
+        float limite = Time.time + 5f;
+        while (jefa.Salud.EsInvulnerable && Time.time < limite) yield return null;
+        jefa.Salud.RecibirDano(jefa.Salud.VidaMaxima / 2 + 1);
+        limite = Time.time + 3f;
+        while (!jefa.Furiosa && Time.time < limite) yield return null;
+        Assert.IsTrue(jefa.Furiosa);
+
+        yield return MedirAtaque(jefa, JefeLlorona.Estado.Grito, r);
+        Assert.AreEqual(6, r[0], "Furiosa grita dos veces, tres ondas cada vez");
+        yield return MedirAtaque(jefa, JefeLlorona.Estado.Agua, r);
+        Assert.Greater(r[1], 5, "Furiosa saca cinco chorros y una segunda tanda donde quedó Mateo");
+
+        bool desvanecida = false;
+        for (float t = 0f; t < 1f && !desvanecida; t += Time.deltaTime)
+        {
+            desvanecida = jefa.EstadoActual == JefeLlorona.Estado.Desvanecida;
+            yield return null;
+        }
+        Assert.IsTrue(desvanecida, "Tras el agua se esfuma para cambiar de lado");
+    }
+
     [Test]
     public void Audio_MusicaYEfectosDelNivelYDeLaPelea()
     {

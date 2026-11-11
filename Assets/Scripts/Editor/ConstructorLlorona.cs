@@ -81,7 +81,9 @@ public static partial class ConstructorJuego
 
         var salud = go.AddComponent<Health>();
         var soS = new SerializedObject(salud);
-        soS.FindProperty("vidaMaxima").intValue = 600;          // Más que el Jinete (500): es el tercer jefe
+        // El doble que el Jinete (500): con 600 la Talavera (~80 de daño por segundo) la tumbaba en segundos y en el
+        // Avance 3 pidieron una pelea más difícil
+        soS.FindProperty("vidaMaxima").intValue = 1200;
         soS.FindProperty("destruirAlMorir").boolValue = false;
         soS.ApplyModifiedPropertiesWithoutUndo();
         Asignar(go.AddComponent<ParpadeoDano>(), "sprite", sr);
@@ -93,7 +95,7 @@ public static partial class ConstructorJuego
 
         var dano = go.AddComponent<DanoPorContacto>();
         var soD = new SerializedObject(dano);
-        soD.FindProperty("dano").intValue = 12;
+        soD.FindProperty("dano").intValue = 15;
         soD.FindProperty("empuje").floatValue = 9f;
         soD.FindProperty("capasObjetivo").FindPropertyRelative("m_Bits").intValue = 1 << CapaPlayer;
         soD.ApplyModifiedPropertiesWithoutUndo();

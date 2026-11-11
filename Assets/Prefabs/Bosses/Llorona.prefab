@@ -239,7 +239,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 149200097c9ced749aca1232d7a0c274, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Alfarero.Runtime::Health
-  vidaMaxima: 600
+  vidaMaxima: 1200
   destruirAlMorir: 0
 --- !u!114 &6838503107634295424
 MonoBehaviour:
@@ -283,7 +283,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f8697abd04dfc841b148e8877f5da23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Alfarero.Runtime::DanoPorContacto
-  dano: 12
+  dano: 15
   empuje: 9
   capasObjetivo:
     serializedVersion: 2
@@ -302,17 +302,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Alfarero.Runtime::JefeLlorona
   velocidad: 2.6
   distanciaIdeal: 7
-  multiplicadorFuriosa: 1.4
-  pausaEntreAtaques: 1.3
+  multiplicadorFuriosa: 1.5
+  pausaEntreAtaques: 1
   amplitudFlote: 0.25
   prefabOnda: {fileID: 4590030838730199974, guid: 1af6f6b3a5e4bff4da380e269bfe7536, type: 3}
   avisoGrito: 0.55
-  velocidadOnda: 9
-  danoOnda: 14
+  velocidadOnda: 11
+  danoOnda: 18
   boca: {x: 1.2, y: 3.4}
+  retrasoSegundoGrito: 0.7
   prefabChorro: {fileID: 6211666383149713023, guid: 9a91c4d2b5a916345b86921e4999a169, type: 3}
   separacionChorros: 3
   retrasoEntreChorros: 0.15
+  retrasoPersecucion: 0.6
   ySuelo: -4.5
   distanciaDesvanecer: 3
   duracionFundido: 0.35
