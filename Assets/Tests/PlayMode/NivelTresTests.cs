@@ -114,8 +114,16 @@ public class NivelTresTests
         var siguiente = Object.FindObjectsByType<Button>().FirstOrDefault(b => b.name == "Siguiente");
         Assert.IsNotNull(siguiente, "La victoria de Pozos ofrece seguir al panteón");
         Assert.AreEqual(3, GestorGuardado.Datos.nivelDesbloqueado);
+        // Primero las viñetas del viaje al panteón (#92); se saltan con Esc
         siguiente.onClick.Invoke();
         float limite = Time.realtimeSinceStartup + 8f;
+        while (SceneManager.GetActiveScene().name != Escenas.TransicionPanteon && Time.realtimeSinceStartup < limite) yield return null;
+        Assert.AreEqual(Escenas.TransicionPanteon, SceneManager.GetActiveScene().name, "Antes del panteón se ven las viñetas");
+        yield return new WaitForSeconds(0.6f);
+        InputSystem.QueueStateEvent(teclado, new KeyboardState(Key.Escape));
+        yield return null;
+        InputSystem.QueueStateEvent(teclado, new KeyboardState());
+        limite = Time.realtimeSinceStartup + 8f;
         while (SceneManager.GetActiveScene().name != Escenas.Nivel3 && Time.realtimeSinceStartup < limite) yield return null;
         Assert.AreEqual(Escenas.Nivel3, SceneManager.GetActiveScene().name);
     }

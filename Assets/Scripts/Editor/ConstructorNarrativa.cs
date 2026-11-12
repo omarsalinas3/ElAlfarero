@@ -144,4 +144,29 @@ public static partial class ConstructorJuego
     /// <summary>Del Nivel 1 al viaje montado: el alebrije liberado, el Charro se lleva a Carmen y Mateo la sigue.</summary>
     static void CrearEscenaTransicion() =>
         CrearEscenaVinetas(RutaTransicion, "Transicion", VinetasTransicion, Escenas.Viaje);
+
+    // ================================================================== Entre niveles (#92)
+    const string RutaTransicionPanteon = "Assets/Scenes/Transicion_Panteon.unity";
+    const string RutaTransicionTuneles = "Assets/Scenes/Transicion_Tuneles.unity";
+
+    static readonly (string img, string txt)[] VinetasPanteon =
+    {
+        ("panteon_01", "El Jinete sin Cabeza cayó y su caballo se deshizo en humo. En el patio de la capilla quedó un listón de Carmen."),
+        ("panteon_02", "Las huellas de fuego bajaban del pueblo fantasma hacia el río, rumbo a un panteón que nadie se atreve a cruzar de noche."),
+        ("panteon_03", "Entre la niebla se oía un llanto: «¡Ay, mis hijos!». Mateo apretó su Talavera y entró al panteón."),
+    };
+
+    // Al liberar a La Llorona baja el río y aparece la entrada a los túneles
+    static readonly (string img, string txt)[] VinetasTuneles =
+    {
+        ("tuneles_01", "Libre del hechizo, La Llorona dejó de llorar. Por primera vez en siglos, el río guardó silencio."),
+        ("tuneles_02", "Las aguas bajaron y en la orilla apareció una boca de piedra: la entrada a los túneles de Guanajuato."),
+        ("tuneles_03", "Desde lo hondo llegaba una risa... y la voz de Carmen. Mateo bajó a los túneles: el amanecer ya estaba cerca."),
+    };
+
+    static void CrearEscenasTransicionNiveles()
+    {
+        CrearEscenaVinetas(RutaTransicionPanteon, "TransicionPanteon", VinetasPanteon, Escenas.Nivel3);
+        CrearEscenaVinetas(RutaTransicionTuneles, "TransicionTuneles", VinetasTuneles, Escenas.Nivel4);
+    }
 }

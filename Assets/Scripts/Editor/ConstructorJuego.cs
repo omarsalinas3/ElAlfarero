@@ -77,6 +77,7 @@ public static partial class ConstructorJuego
         CrearEscenaMenu();
         CrearEscenaIntro();
         CrearEscenaTransicion();
+        CrearEscenasTransicionNiveles();   // Pozos → panteón → túneles (#92)
         CrearEscenaSplash();
 
         EditorBuildSettings.scenes = new[]
@@ -88,7 +89,9 @@ public static partial class ConstructorJuego
             new EditorBuildSettingsScene(RutaTransicion, true),   // Viñetas del Nivel 1 al viaje (#35)
             new EditorBuildSettingsScene(RutaViaje, true),
             new EditorBuildSettingsScene(RutaNivel2, true),
+            new EditorBuildSettingsScene(RutaTransicionPanteon, true),
             new EditorBuildSettingsScene(RutaNivel3, true),
+            new EditorBuildSettingsScene(RutaTransicionTuneles, true),
             new EditorBuildSettingsScene(RutaEscena, true),   // Sandbox de pruebas
         };
         PlayerSettings.productName = "El Alfarero de Dolores";

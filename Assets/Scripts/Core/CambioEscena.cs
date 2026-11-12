@@ -13,7 +13,10 @@ public static class Escenas
     public const string Transicion = "Transicion_Pozos"; // Viñetas entre el Nivel 1 y el viaje (#35)
     public const string Viaje = "Viaje_Pozos";          // Escena corta entre el Nivel 1 y el 2 (no es un nivel)
     public const string Nivel2 = "Nivel2_Pozos";
+    public const string TransicionPanteon = "Transicion_Panteon";   // Viñetas de Pozos al panteón (#92)
     public const string Nivel3 = "Nivel3_Panteon";
+    public const string TransicionTuneles = "Transicion_Tuneles";   // Viñetas del panteón a los túneles (#92)
+    public const string Nivel4 = "Nivel4_Tuneles";
 
     // En orden: el número de nivel del guardado es su posición + 1
     static readonly string[] Niveles = { Nivel1, Nivel2, Nivel3 };
