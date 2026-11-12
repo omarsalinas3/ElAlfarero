@@ -132,7 +132,7 @@ Las cajas de armas salen de los **huacales**. Cuando se acaba la munición de un
 1. **Dolores Hidalgo.** Calles y parroquia de noche. Bandidos y mineros esqueleto, una emboscada en oleadas y el **Alebrije Gigante**. Al vencerlo se libera del hechizo y se vuelve tu montura.
 2. **Mineral de Pozos.** Pueblo fantasma y ruinas mineras. La **Bruja de Fuego** ataca desde el aire, hay una **estampida de nahuales** en la cañada y espera el **Jinete sin Cabeza** en la capilla.
 3. **Panteón junto al río** *(en desarrollo: ya se puede recorrer hasta la orilla del río; la pelea con la **Llorona** llega en el Sprint 4).*
-4. **Túneles de Guanajuato** *(en desarrollo).* El **Charro Negro**.
+4. **Túneles de Guanajuato.** Bajo la ciudad, de la boca del túnel a la guarida del **Charro Negro**. En la galería de vigas el techo se viene abajo (**derrumbe**) y en los túneles bajo la luna roja espera la emboscada más grande. *(La pelea final con el Charro está en desarrollo.)*
 
 ---
 
@@ -142,6 +142,7 @@ Las cajas de armas salen de los **huacales**. Cuando se acaba la munición de un
 - **Rompe todo:** los huacales y hornos traen curación, monedas y armas. El Barro Negro rompe varios de un golpe.
 - **Guarda una caguama para el jefe:** 5 segundos de invencibilidad cambian la pelea.
 - **Salta a los nahuales:** en la estampida hay un aviso antes de cada manada; salta o evade cuando lo veas.
+- **Mira el suelo en el derrumbe:** cada roca marca su sombra antes de caer y algunas caen justo donde estás; no te quedes quieto.
 - **Mira hacia arriba:** la Bruja de Fuego vuela; apunta con el mouse, el stick derecho o Espacio + ↑.
 - **Montado eres más fuerte:** el alebrije corre más, salta más y tiene su propia vida; si se la acaban te bajas y sigues a pie.
 - **Busca los exvotos:** golpea los muros agrietados y sube a las vigas altas.

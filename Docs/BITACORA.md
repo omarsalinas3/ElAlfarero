@@ -91,7 +91,7 @@ Registro por fecha de qué se hizo, quién lo hizo, qué problemas salieron y qu
 
 ---
 
-## Sprint 3 (29 de octubre – 12 de noviembre de 2026)
+## Sprint 3 (29 de octubre – 6 de noviembre de 2026)
 
 **Meta:** armas de la Unidad 1, opciones, pulido (efectos, controles por plataforma, resoluciones), narrativa, base del Nivel 3 y documentación de entrega.
 
@@ -116,6 +116,32 @@ Registro por fecha de qué se hizo, quién lo hizo, qué problemas salieron y qu
 - Los diálogos no detienen la acción: aparecen arriba, debajo del objetivo, y avanzan solos (Enter/Select adelanta, Retroceso o mantener Select salta).
 - Los controles táctiles usan los controles en pantalla del Input System sobre un gamepad virtual; solo aparecen si se usa el dedo. Montar en táctil usa L3 porque LB también cambia de arma.
 - El Nivel 3 se queda con una meta provisional en la orilla del río hasta que la Llorona tenga su IA (Sprint 4).
+
+---
+
+## Sprint 4 (6–13 de noviembre de 2026)
+
+**Meta:** Nivel 4 (Túneles de Guanajuato) con su derrumbe, El Charro Negro, el final y la narrativa entre niveles.
+
+### 5–10 de noviembre — Trabajo de Omar
+| Quién | Qué se hizo |
+|---|---|
+| Omar | Nivel 3 completo y la pelea con La Llorona (#102), más dificultad tras la retroalimentación del Avance 3 (#103), sprites del Charro Negro a caballo y a pie con su fuego infernal (#89, #104) |
+
+### 12 de noviembre — Trabajo de Noé
+| Quién | Qué se hizo |
+|---|---|
+| Noé | Nivel 4: 5 tramos de túneles (2 de la carpeta Modelos y 3 pedidos a Flow con ellos de referencia), suelo, muros, cámara, HUD y entrada a Continuar (#86); recorrido con bandidos, mineros y Brujas, emboscada de 4 oleadas, poca curación y 3 exvotos, con la guarida libre y plana para el Charro (#87); derrumbe de mina con rocas que marcan su sombra y sonidos sintetizados (#88); viñetas de Pozos al panteón y del panteón a los túneles (el río baja y aparece la entrada) y diálogo de inicio del Nivel 4 (#92) |
+
+**Problemas:**
+- Los fondos de túneles de la carpeta Modelos (y uno de Flow) traían **llantas de hule**, que no existían en el siglo XIX. Se taparon con el rincón izquierdo de la misma imagen reflejado (`Docs/Arte/retocar_esquina.py`).
+- Flow había cerrado la sesión y al volver se entró con otra cuenta: el proyecto "oct 28" es de la cuenta arin01246.
+- En batch, `WaitForEndOfFrame` no avanza: no se pueden tomar capturas de pantalla desde las pruebas; lo visual se revisa armando las imágenes con Python.
+
+**Decisiones:**
+- El derrumbe reutiliza la estructura de la estampida (cámara fija, avisos, tandas) y la caída de las macetas, que pasó a una clase común (`Caida`).
+- Hasta que entre la pelea del Charro (#90), llegar a su guarida completa el Nivel 4 (meta provisional); la arena queda marcada como `Arena_Charro`.
+- La victoria de Pozos y la del panteón pasan por sus viñetas antes del siguiente nivel.
 
 ---
 
