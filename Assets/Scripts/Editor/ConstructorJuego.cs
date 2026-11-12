@@ -197,6 +197,8 @@ public static partial class ConstructorJuego
             (Sfx.AbrirCofre, new[] { "abrir_cofre" }, 0.8f),
             (Sfx.GritoLlorona, new[] { "grito_llorona" }, 0.8f),
             (Sfx.ChorroAgua, new[] { "chorro_agua" }, 0.7f),
+            (Sfx.Derrumbe, new[] { "derrumbe" }, 0.9f),
+            (Sfx.RocaImpacto, new[] { "roca_impacto_1", "roca_impacto_2" }, 0.75f),
         };
         b.efectos = efectos.Select(e => new BibliotecaAudio.EntradaSfx
         {

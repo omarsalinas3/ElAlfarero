@@ -36,7 +36,7 @@ public class ImportadorSprites : AssetPostprocessor
         var ajustes = new TextureImporterSettings();
         importador.ReadTextureSettings(ajustes);
         bool pivoteEnPies = carpeta == "Player" || (carpeta == "Enemies" && !nombre.StartsWith("bruja_")) || carpeta == "Allies"
-                            || carpeta == "Bosses" || (carpeta == "Obstacles" && !nombre.StartsWith("maceta"))    // La bruja vuela: pivote al centro
+                            || carpeta == "Bosses" || (carpeta == "Obstacles" && !nombre.StartsWith("maceta") && !nombre.StartsWith("roca_"))    // La bruja vuela: pivote al centro
                             || nombre.StartsWith("huella_") || nombre.StartsWith("chorro_")                       // Las huellas y los chorros salen del suelo
                             || nombre.StartsWith("charro_llamarada");                                             // y las llamaradas del Charro también
         ajustes.spriteAlignment = (int)(pivoteEnPies ? SpriteAlignment.BottomCenter : SpriteAlignment.Center);
@@ -87,6 +87,8 @@ public class ImportadorSprites : AssetPostprocessor
         if (nombre.StartsWith("tiro_mina")) return 100f;      // Bocamina de ~3 u
         if (nombre.StartsWith("exvoto")) return 150f;         // ~1 u de alto
         if (nombre.StartsWith("cofre_")) return 190f;         // ~1.2 u
+        if (nombre.StartsWith("roca_")) return 300f;          // Rocas del derrumbe (#88): ~1.3 u
+        if (nombre.StartsWith("sombra_")) return 110f;        // Sombra donde va a caer la roca: ~1.5 u de ancho
 
         switch (carpeta)
         {
