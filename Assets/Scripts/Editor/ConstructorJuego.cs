@@ -73,6 +73,7 @@ public static partial class ConstructorJuego
         CrearEscenaNivel1(p);
         CrearEscenaNivel2(p);
         CrearEscenaNivel3(p);
+        CrearEscenaNivel4(p);     // Túneles de Guanajuato (#86-#88)
         CrearEscenaViaje();
         CrearEscenaMenu();
         CrearEscenaIntro();
@@ -92,6 +93,7 @@ public static partial class ConstructorJuego
             new EditorBuildSettingsScene(RutaTransicionPanteon, true),
             new EditorBuildSettingsScene(RutaNivel3, true),
             new EditorBuildSettingsScene(RutaTransicionTuneles, true),
+            new EditorBuildSettingsScene(RutaNivel4, true),
             new EditorBuildSettingsScene(RutaEscena, true),   // Sandbox de pruebas
         };
         PlayerSettings.productName = "El Alfarero de Dolores";
