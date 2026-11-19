@@ -12,12 +12,12 @@
 
 | Estado | Cantidad |
 |---|---|
-| ✅ Implementadas tal cual | 14 |
+| ✅ Implementadas tal cual | 15 |
 | 🔁 Implementadas con cambios | 14 |
-| ⏳ Pendientes | 4 |
+| ⏳ Pendientes | 3 |
 | ➕ Agregadas | 10 |
 
-Lo esencial del GDD ya funciona: movimiento con salto y evasión, las cuatro cerámicas (Talavera, Barro Vidriado, Barro Negro y Maceta Escudo), cajas de armas, emboscadas en oleadas, estampida, bandidos y calaveras con IA, tres jefes de leyenda (Alebrije, Jinete sin Cabeza y La Llorona), la interfaz de barro y las cerámicas definidas con *ScriptableObjects*. Lo pendiente es el jefe del Nivel 4 (El Charro Negro), el derrumbe de mina y el *parallax*.
+Lo esencial del GDD ya funciona: movimiento con salto y evasión, las cuatro cerámicas (Talavera, Barro Vidriado, Barro Negro y Maceta Escudo), cajas de armas, emboscadas en oleadas, estampida, bandidos y calaveras con IA, tres jefes de leyenda (Alebrije, Jinete sin Cabeza y La Llorona), la interfaz de barro y las cerámicas definidas con *ScriptableObjects*. Lo pendiente es el jefe del Nivel 4 (El Charro Negro) y el *parallax*.
 
 ---
 
@@ -51,7 +51,7 @@ Lo esencial del GDD ya funciona: movimiento con salto y evasión, las cuatro cer
 |---|---|---|---|
 | Emboscadas que obligan a sobrevivir oleadas | ✅ | La cámara se fija y entran bandidos por ambos lados: 2 oleadas en Dolores y 3 en Pozos | `Emboscada` |
 | Estampidas de animales | 🔁 | **Estampida de nahuales** en la cañada de Pozos: la cámara se fija y cruzan manadas a toda velocidad, con aviso antes de cada una; se esquivan saltando o evadiendo | `Estampida`, `Nahual` (#53) |
-| Derrumbes de minas | ⏳ | Evento del Nivel 4 (Túneles de Guanajuato), Sprint 4 | — |
+| Derrumbes de minas | ✅ | **Derrumbe** en la galería de vigas del Nivel 4: la cámara se fija y el techo cae en 4 tandas cada vez más tupidas, con temblor y retumbo antes de cada una; cada roca marca su sombra en el suelo antes de caer y algunas caen donde está Mateo. Reutiliza la estructura de la estampida y la caída de las macetas | `Derrumbe`, `RocaQueCae`, `Caida` (#88) |
 
 ### 2.4 Personajes y enemigos
 
@@ -139,8 +139,8 @@ Lo esencial del GDD ya funciona: movimiento con salto y evasión, las cuatro cer
 
 | Pendiente | Sprint | Issue o responsable |
 |---|---|---|
-| Nivel 4 (Túneles de Guanajuato), **El Charro Negro** y **derrumbe de mina** | 4 | Por repartir |
-| Rescate de Carmen al amanecer (final) | 4 | Por repartir |
+| **El Charro Negro** (el Nivel 4 y su derrumbe ya están, #86-#88) | 4 | #90 (Omar) |
+| Rescate de Carmen al amanecer (final) | 4 | #91 (Omar) |
 | Build para móvil y pruebas en celular | 5 | Por repartir |
 | *Parallax* en los fondos | 6 | Mejora si da tiempo |
 | Playtesting con jugadores externos, kit de prensa, tráiler y publicación en itch.io | 6 | Equipo |

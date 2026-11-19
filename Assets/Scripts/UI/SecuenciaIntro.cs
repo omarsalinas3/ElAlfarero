@@ -26,6 +26,8 @@ public class SecuenciaIntro : MonoBehaviour
     [SerializeField] string escenaSiguiente = Escenas.Nivel1;
 
     InputAction accionAvanzar, accionSaltar;
+
+    public int Vinetas => vinetas.Length;
     bool avanzarPedido;
 
     void Awake()

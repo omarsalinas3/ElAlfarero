@@ -121,7 +121,7 @@ public static partial class ConstructorJuego
         so.FindProperty("menuPausa").objectReferenceValue = pausa;
         so.FindProperty("pantallaGameOver").objectReferenceValue = gameOver;
         so.FindProperty("pantallaVictoria").objectReferenceValue = victoria;
-        so.FindProperty("escenaSiguiente").stringValue = Escenas.Nivel3;
+        so.FindProperty("escenaSiguiente").stringValue = Escenas.TransicionPanteon;   // Viñetas y luego el panteón (#92)
         so.FindProperty("numeroNivel").intValue = 2;
         so.FindProperty("tituloMision").stringValue = "MISION 2";
         so.FindProperty("nombreNivel").stringValue = "MINERAL DE POZOS";

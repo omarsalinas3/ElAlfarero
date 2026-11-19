@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using UnityEditor;
 using UnityEditor.Animations;
 using UnityEditor.SceneManagement;
@@ -205,7 +205,6 @@ public static partial class ConstructorJuego
 
     // ================================================================== Encuentro y arena (#90)
     const string Mateo = "MATEO";
-    const string RutaArenaCharro = "Assets/Scenes/Arena_Charro.unity";
 
     /// <summary>El pacto de la leyenda: el Charro ofrece oro a cambio de que Mateo renuncie a Carmen.</summary>
     static readonly (string quien, string texto)[] DialogoPacto =
@@ -249,49 +248,6 @@ public static partial class ConstructorJuego
         }
         so.ApplyModifiedPropertiesWithoutUndo();
         return enc;
-    }
-
-    /// <summary>
-    /// Arena de pruebas del Charro mientras no exista el Nivel 4 (#86): dos tramos del panteón y la arena al final, sin
-    /// enemigos. No entra en los builds del juego (ConstruirWeb la deja fuera, como al Sandbox). El Nivel 4 usa el
-    /// mismo CrearEncuentroCharro, así que lo que se prueba aquí es lo que llega al juego.
-    /// </summary>
-    static void CrearEscenaArenaCharro()
-    {
-        Scene escena = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-        var prefabAlfarero = AssetDatabase.LoadAssetAtPath<GameObject>(RutaPrefabAlfarero);
-        var tramos = new (string archivo, int solapePx)[] { ("lvl3_seg04.png", 0), ("lvl3_seg05.png", 320) };
-        GameObject jugador = CrearBaseNivel(prefabAlfarero, tramos, out _, out float derecha);
-        var enemigos = new GameObject("Enemigos").transform;
-        float inicioArena = derecha - ArenaLargo;
-
-        CrearEventSystem();
-        var hud = CrearHud(jugador, out BannerMision banner);
-        EncuentroCharro encuentro = CrearEncuentroCharro(inicioArena, derecha, CrearBarraJefe(hud.transform), enemigos);
-        MenuPausa pausa = CrearMenuPausa();
-        PantallaFinal gameOver = CrearPantallaFinal("GameOver", new Color(0.95f, 0.2f, 0.15f), new Color(0.12f, 0f, 0f, 0.8f), "REINTENTAR", 40);
-        PantallaFinal victoria = CrearPantallaFinal("Victoria", Dorado, new Color(0f, 0.04f, 0.14f, 0.8f), "JUGAR DE NUEVO", 41, true);
-
-        var gestor = new GameObject("GestorNivel").AddComponent<GestorNivel>();
-        var so = new SerializedObject(gestor);
-        so.FindProperty("saludJugador").objectReferenceValue = jugador.GetComponent<Health>();
-        so.FindProperty("controlJugador").objectReferenceValue = jugador.GetComponent<PlayerController>();
-        so.FindProperty("inventario").objectReferenceValue = jugador.GetComponent<InventarioJugador>();
-        so.FindProperty("banner").objectReferenceValue = banner;
-        so.FindProperty("menuPausa").objectReferenceValue = pausa;
-        so.FindProperty("pantallaGameOver").objectReferenceValue = gameOver;
-        so.FindProperty("pantallaVictoria").objectReferenceValue = victoria;
-        so.FindProperty("numeroNivel").intValue = 4;
-        so.FindProperty("tituloMision").stringValue = "PRUEBA";
-        so.FindProperty("nombreNivel").stringValue = "ARENA DEL CHARRO";
-        so.FindProperty("musica").enumValueIndex = (int)Musica.Nivel3;
-        so.FindProperty("objetivoRecorrido").stringValue = "LLEGA A LA ARENA";
-        so.FindProperty("xInicioRecorrido").floatValue = jugador.transform.position.x;
-        so.FindProperty("xFinRecorrido").floatValue = encuentro.transform.position.x;
-        so.ApplyModifiedPropertiesWithoutUndo();
-        Asignar(hud, "gestor", gestor);
-
-        EditorSceneManager.SaveScene(escena, RutaArenaCharro);
     }
 
     /// <summary>La ráfaga de fuego infernal: una BalaEnemiga más (se recicla y solo choca con Mateo y el suelo).</summary>

@@ -7,8 +7,7 @@ using UnityEngine;
 /// Menú Alfarero > Construir WebGL (itch.io). Genera el juego para el navegador en Builds/WebGL con los ajustes
 /// que pide itch.io: Gzip con descompresión en el navegador (Brotli da errores ahí; sin compresión, itch comprime al
 /// servir y el cargador de Unity se queda en 90 % con "Invalid binary data file size"), plantilla Default y 960x600.
-/// Deja fuera las escenas Sandbox y Arena_Charro, que solo son para las pruebas. También arma la versión de Windows
-/// (Builds/Windows).
+/// Deja fuera la escena Sandbox, que solo es para las pruebas. También arma la versión de Windows (Builds/Windows).
 /// En consola (Unity cerrado): Unity -batchmode -quit -buildTarget WebGL -executeMethod ConstruirWeb.Construir
 /// </summary>
 public static class ConstruirWeb
@@ -17,7 +16,7 @@ public static class ConstruirWeb
     public const string CarpetaWindows = "Builds/Windows";
 
     static string[] EscenasDelJuego() => EditorBuildSettings.scenes
-        .Where(e => e.enabled && !e.path.EndsWith("Sandbox.unity") && !e.path.EndsWith("Arena_Charro.unity"))
+        .Where(e => e.enabled && !e.path.EndsWith("Sandbox.unity"))
         .Select(e => e.path).ToArray();
 
     [MenuItem("Alfarero/Construir Windows")]
