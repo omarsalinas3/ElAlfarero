@@ -73,6 +73,7 @@ public static partial class ConstructorJuego
         CrearEscenaNivel1(p);
         CrearEscenaNivel2(p);
         CrearEscenaNivel3(p);
+        CrearEscenaArenaCharro();   // Solo pruebas, hasta que exista el Nivel 4 (#86)
         CrearEscenaViaje();
         CrearEscenaMenu();
         CrearEscenaIntro();
@@ -90,6 +91,7 @@ public static partial class ConstructorJuego
             new EditorBuildSettingsScene(RutaNivel2, true),
             new EditorBuildSettingsScene(RutaNivel3, true),
             new EditorBuildSettingsScene(RutaEscena, true),   // Sandbox de pruebas
+            new EditorBuildSettingsScene(RutaArenaCharro, true),   // Arena de pruebas del Charro (ConstruirWeb la deja fuera)
         };
         PlayerSettings.productName = "El Alfarero de Dolores";
 

@@ -38,8 +38,9 @@ public static partial class ConstructorJuego
         RuntimeAnimatorController llamarada = ControladorCharro("Llamarada", "Brotar",
             CrearClip("Charro/Llamarada_Brotar", Cuadros("Projectiles/charro_llamarada", 5), 8f, false));
 
-        GameObject prefab = CrearPrefabCharro(caballo, pie);
-        CrearFuegoCharro(fuego);
+        BalaEnemiga bala = CrearFuegoCharro(fuego);
+        Llamarada llama = CrearLlamaradaCharro();
+        GameObject prefab = CrearPrefabCharro(caballo, pie, bala, llama);
         PonerGaleriaCharro(prefab, fuego, llamarada);
     }
 
@@ -123,16 +124,174 @@ public static partial class ConstructorJuego
     }
 
     /// <summary>
-    /// Solo el aspecto del Charro: una cara por fase. "Pie" empieza apagado y la IA (#90) lo enciende cuando cae el
-    /// caballo; ahí también se agregan su vida, colisiones y daño.
+    /// El Charro (#90): cuerpo cinemático con la IA (JefeCharro) y una cara por fase, cada una con su vida para que la
+    /// barra del jefe se llene de nuevo. "Pie" empieza apagada y la IA la enciende cuando cae el caballo.
+    /// Vida total 2000 (700 + 1300): más que La Llorona (1200), porque es el jefe final.
     /// </summary>
-    static GameObject CrearPrefabCharro(RuntimeAnimatorController caballo, RuntimeAnimatorController pie)
+    static GameObject CrearPrefabCharro(RuntimeAnimatorController caballo, RuntimeAnimatorController pie, BalaEnemiga fuego, Llamarada llamarada)
     {
         Directory.CreateDirectory("Assets/Prefabs/Bosses");
         var go = new GameObject("Charro") { layer = CapaEnemy };
-        HijoAnimado(go.transform, "Caballo", "Bosses/charro_caballo_reposo_00.png", caballo, 6);
-        HijoAnimado(go.transform, "Pie", "Bosses/charro_pie_reposo_00.png", pie, 6).SetActive(false);
+        var rb = go.AddComponent<Rigidbody2D>();
+        rb.bodyType = RigidbodyType2D.Kinematic;
+        rb.useFullKinematicContacts = true;
+        rb.interpolation = RigidbodyInterpolation2D.Interpolate;
+
+        // Fase 1: el collider cubre el caballo y la silla, a una altura que el salto de Mateo alcanza a librar en las embestidas
+        GameObject cCaballo = HijoAnimado(go.transform, "Caballo", "Bosses/charro_caballo_reposo_00.png", caballo, 6);
+        Health sCaballo = CaraDelCharro(cCaballo, new Vector2(4.2f, 2.6f), new Vector2(0.2f, 1.3f), 700, 2000, Sfx.Estampida, 22, 12f);
+        GameObject cPie = HijoAnimado(go.transform, "Pie", "Bosses/charro_pie_reposo_00.png", pie, 6);
+        Health sPie = CaraDelCharro(cPie, new Vector2(1.6f, 3.4f), new Vector2(0f, 1.7f), 1300, 5000, Sfx.RugidoAlebrije, 16, 10f);
+        cPie.SetActive(false);
+
+        var jefe = go.AddComponent<JefeCharro>();
+        var so = new SerializedObject(jefe);
+        so.FindProperty("saludCaballo").objectReferenceValue = sCaballo;
+        so.FindProperty("saludPie").objectReferenceValue = sPie;
+        so.FindProperty("animCaballo").objectReferenceValue = cCaballo.GetComponent<Animator>();
+        so.FindProperty("animPie").objectReferenceValue = cPie.GetComponent<Animator>();
+        so.FindProperty("prefabFuego").objectReferenceValue = fuego;
+        so.FindProperty("prefabLlamarada").objectReferenceValue = llamarada;
+        so.FindProperty("capaJugador").FindPropertyRelative("m_Bits").intValue = 1 << CapaPlayer;
+        so.FindProperty("ySuelo").floatValue = YSuelo;
+        so.ApplyModifiedPropertiesWithoutUndo();
         return Guardar(go, RutaPrefabCharro);
+    }
+
+    /// <summary>Collider, vida, destello al recibir golpes, puntos y daño al tocarla, para una cara del Charro.</summary>
+    static Health CaraDelCharro(GameObject cara, Vector2 tam, Vector2 centro, int vida, int puntos, Sfx sonido, int danoContacto, float empuje)
+    {
+        var col = cara.AddComponent<BoxCollider2D>();
+        col.isTrigger = true;
+        col.size = tam;
+        col.offset = centro;
+        var salud = cara.AddComponent<Health>();
+        var soS = new SerializedObject(salud);
+        soS.FindProperty("vidaMaxima").intValue = vida;
+        soS.FindProperty("destruirAlMorir").boolValue = false;
+        soS.ApplyModifiedPropertiesWithoutUndo();
+        Asignar(cara.AddComponent<ParpadeoDano>(), "sprite", cara.GetComponent<SpriteRenderer>());
+        var basico = cara.AddComponent<EnemigoBasico>();
+        var soB = new SerializedObject(basico);
+        soB.FindProperty("sonidoMuerte").enumValueIndex = (int)sonido;
+        soB.FindProperty("puntos").intValue = puntos;
+        soB.ApplyModifiedPropertiesWithoutUndo();
+        var dano = cara.AddComponent<DanoPorContacto>();
+        var soD = new SerializedObject(dano);
+        soD.FindProperty("dano").intValue = danoContacto;
+        soD.FindProperty("empuje").floatValue = empuje;
+        soD.FindProperty("capasObjetivo").FindPropertyRelative("m_Bits").intValue = 1 << CapaPlayer;
+        soD.ApplyModifiedPropertiesWithoutUndo();
+        return salud;
+    }
+
+    /// <summary>Llamarada que brota del suelo (#90): grieta de aviso y columna de fuego; sale de Reciclaje.</summary>
+    static Llamarada CrearLlamaradaCharro()
+    {
+        var go = new GameObject("Llamarada_Charro");
+        var sr = go.AddComponent<SpriteRenderer>();
+        Sprite[] cuadros = Cuadros("Projectiles/charro_llamarada", 5);
+        sr.sprite = cuadros[0];
+        sr.sortingOrder = 18;
+        var llama = go.AddComponent<Llamarada>();
+        var so = new SerializedObject(llama);
+        so.FindProperty("sprite").objectReferenceValue = sr;
+        so.FindProperty("cuadroAviso").objectReferenceValue = cuadros[0];
+        ArregloObjetos(so.FindProperty("cuadrosFuego"), new[] { cuadros[1], cuadros[2], cuadros[3], cuadros[4] });
+        so.FindProperty("capaJugador").FindPropertyRelative("m_Bits").intValue = 1 << CapaPlayer;
+        so.ApplyModifiedPropertiesWithoutUndo();
+        return Guardar(go, "Assets/Prefabs/Projectiles/Llamarada_Charro.prefab").GetComponent<Llamarada>();
+    }
+
+    // ================================================================== Encuentro y arena (#90)
+    const string Mateo = "MATEO";
+    const string RutaArenaCharro = "Assets/Scenes/Arena_Charro.unity";
+
+    /// <summary>El pacto de la leyenda: el Charro ofrece oro a cambio de que Mateo renuncie a Carmen.</summary>
+    static readonly (string quien, string texto)[] DialogoPacto =
+    {
+        (Charro, "Mataste a mi caballo, alfarero. Pocos llegan tan lejos en mis túneles."),
+        (Charro, "Toma este oro y olvídate de Carmen. Vete por donde viniste y vivirás."),
+        (Mateo, "Guárdate tu oro, Charro. ¡Vine por Carmen y no me voy sin ella!"),
+        (Charro, "Entonces arderás con las demás almas de esta mina."),
+    };
+
+    /// <summary>
+    /// El Charro, dormido fuera de la pantalla, y el disparador de su cinemática al entrar a la arena. Lo llama el
+    /// constructor del Nivel 4 con las últimas ~21 u libres y planas (igual que CrearEncuentroLlorona en el Nivel 3).
+    /// </summary>
+    static EncuentroCharro CrearEncuentroCharro(float inicioArena, float derecha, BarraJefe barra, Transform enemigos)
+    {
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(RutaPrefabCharro);
+        var charro = (GameObject)PrefabUtility.InstantiatePrefab(prefab, enemigos);
+        charro.transform.position = new Vector3(derecha + 4f, YSuelo, 0f);
+
+        var go = new GameObject("Encuentro_Charro");
+        go.transform.position = new Vector3(inicioArena + 2f, YSuelo + 2f, 0f);
+        var col = go.AddComponent<BoxCollider2D>();
+        col.isTrigger = true;
+        col.size = new Vector2(1f, 8f);
+        var enc = go.AddComponent<EncuentroCharro>();
+        var so = new SerializedObject(enc);
+        so.FindProperty("jefe").objectReferenceValue = charro.GetComponent<JefeCharro>();
+        so.FindProperty("barraJefe").objectReferenceValue = barra;
+        so.FindProperty("xAparicion").floatValue = derecha + 4f;
+        so.FindProperty("xLlegada").floatValue = derecha - 6f;
+        so.FindProperty("ySuelo").floatValue = YSuelo;
+        var lista = so.FindProperty("pacto");
+        lista.arraySize = DialogoPacto.Length;
+        for (int i = 0; i < DialogoPacto.Length; i++)
+        {
+            var e = lista.GetArrayElementAtIndex(i);
+            e.FindPropertyRelative("personaje").stringValue = DialogoPacto[i].quien;
+            e.FindPropertyRelative("retrato").objectReferenceValue = DialogoPacto[i].quien == Mateo ? null : Retrato(DialogoPacto[i].quien);
+            e.FindPropertyRelative("texto").stringValue = DialogoPacto[i].texto;
+        }
+        so.ApplyModifiedPropertiesWithoutUndo();
+        return enc;
+    }
+
+    /// <summary>
+    /// Arena de pruebas del Charro mientras no exista el Nivel 4 (#86): dos tramos del panteón y la arena al final, sin
+    /// enemigos. No entra en los builds del juego (ConstruirWeb la deja fuera, como al Sandbox). El Nivel 4 usa el
+    /// mismo CrearEncuentroCharro, así que lo que se prueba aquí es lo que llega al juego.
+    /// </summary>
+    static void CrearEscenaArenaCharro()
+    {
+        Scene escena = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+        var prefabAlfarero = AssetDatabase.LoadAssetAtPath<GameObject>(RutaPrefabAlfarero);
+        var tramos = new (string archivo, int solapePx)[] { ("lvl3_seg04.png", 0), ("lvl3_seg05.png", 320) };
+        GameObject jugador = CrearBaseNivel(prefabAlfarero, tramos, out _, out float derecha);
+        var enemigos = new GameObject("Enemigos").transform;
+        float inicioArena = derecha - ArenaLargo;
+
+        CrearEventSystem();
+        var hud = CrearHud(jugador, out BannerMision banner);
+        EncuentroCharro encuentro = CrearEncuentroCharro(inicioArena, derecha, CrearBarraJefe(hud.transform), enemigos);
+        MenuPausa pausa = CrearMenuPausa();
+        PantallaFinal gameOver = CrearPantallaFinal("GameOver", new Color(0.95f, 0.2f, 0.15f), new Color(0.12f, 0f, 0f, 0.8f), "REINTENTAR", 40);
+        PantallaFinal victoria = CrearPantallaFinal("Victoria", Dorado, new Color(0f, 0.04f, 0.14f, 0.8f), "JUGAR DE NUEVO", 41, true);
+
+        var gestor = new GameObject("GestorNivel").AddComponent<GestorNivel>();
+        var so = new SerializedObject(gestor);
+        so.FindProperty("saludJugador").objectReferenceValue = jugador.GetComponent<Health>();
+        so.FindProperty("controlJugador").objectReferenceValue = jugador.GetComponent<PlayerController>();
+        so.FindProperty("inventario").objectReferenceValue = jugador.GetComponent<InventarioJugador>();
+        so.FindProperty("banner").objectReferenceValue = banner;
+        so.FindProperty("menuPausa").objectReferenceValue = pausa;
+        so.FindProperty("pantallaGameOver").objectReferenceValue = gameOver;
+        so.FindProperty("pantallaVictoria").objectReferenceValue = victoria;
+        so.FindProperty("numeroNivel").intValue = 4;
+        so.FindProperty("tituloMision").stringValue = "PRUEBA";
+        so.FindProperty("nombreNivel").stringValue = "ARENA DEL CHARRO";
+        so.FindProperty("musica").enumValueIndex = (int)Musica.Nivel3;
+        so.FindProperty("objetivoRecorrido").stringValue = "LLEGA A LA ARENA";
+        so.FindProperty("xInicioRecorrido").floatValue = jugador.transform.position.x;
+        so.FindProperty("xFinRecorrido").floatValue = encuentro.transform.position.x;
+        so.ApplyModifiedPropertiesWithoutUndo();
+        Asignar(hud, "gestor", gestor);
+
+        EditorSceneManager.SaveScene(escena, RutaArenaCharro);
     }
 
     /// <summary>La ráfaga de fuego infernal: una BalaEnemiga más (se recicla y solo choca con Mateo y el suelo).</summary>
