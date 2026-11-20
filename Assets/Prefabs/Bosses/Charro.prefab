@@ -11,6 +11,11 @@ GameObject:
   - component: {fileID: 7672027189402788291}
   - component: {fileID: 2041913417680590024}
   - component: {fileID: 8971982611085616908}
+  - component: {fileID: 1548459946122456901}
+  - component: {fileID: 8230496700185634983}
+  - component: {fileID: 4032876830612115232}
+  - component: {fileID: 670614462547460626}
+  - component: {fileID: 9213348796755166206}
   m_Layer: 8
   m_Name: Pie
   m_TagString: Untagged
@@ -115,6 +120,113 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!61 &1548459946122456901
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2590569206095033859}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 1.7}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0}
+    oldSize: {x: 5.911111, y: 4.2222223}
+    newSize: {x: 5.911111, y: 4.2222223}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 1.6, y: 3.4}
+  m_EdgeRadius: 0
+--- !u!114 &8230496700185634983
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2590569206095033859}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 149200097c9ced749aca1232d7a0c274, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Alfarero.Runtime::Health
+  vidaMaxima: 1300
+  destruirAlMorir: 0
+--- !u!114 &4032876830612115232
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2590569206095033859}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e30be0b78967fd54e81a1168463fb473, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Alfarero.Runtime::ParpadeoDano
+  sprite: {fileID: 2041913417680590024}
+  colorGolpe: {r: 1, g: 0.45, b: 0.45, a: 1}
+  duracion: 0.07
+--- !u!114 &670614462547460626
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2590569206095033859}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b34f5fb62eb030e4596760c8bc3c2093, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Alfarero.Runtime::EnemigoBasico
+  efectoMuerte: {fileID: 0}
+  sonidoMuerte: 22
+  puntos: 5000
+--- !u!114 &9213348796755166206
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2590569206095033859}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f8697abd04dfc841b148e8877f5da23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Alfarero.Runtime::DanoPorContacto
+  dano: 16
+  empuje: 10
+  capasObjetivo:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!1 &2686217939651015501
 GameObject:
   m_ObjectHideFlags: 0
@@ -126,6 +238,11 @@ GameObject:
   - component: {fileID: 6077768699783409033}
   - component: {fileID: 5056630632273880343}
   - component: {fileID: 5030545222202381484}
+  - component: {fileID: 6013252226700085821}
+  - component: {fileID: 2753698621357209208}
+  - component: {fileID: 4118592920286512010}
+  - component: {fileID: 749389938307031151}
+  - component: {fileID: 6316580296729991356}
   m_Layer: 8
   m_Name: Caballo
   m_TagString: Untagged
@@ -230,6 +347,113 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!61 &6013252226700085821
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2686217939651015501}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0.2, y: 1.3}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0}
+    oldSize: {x: 7.888889, y: 5.111111}
+    newSize: {x: 7.888889, y: 5.111111}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 4.2, y: 2.6}
+  m_EdgeRadius: 0
+--- !u!114 &2753698621357209208
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2686217939651015501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 149200097c9ced749aca1232d7a0c274, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Alfarero.Runtime::Health
+  vidaMaxima: 700
+  destruirAlMorir: 0
+--- !u!114 &4118592920286512010
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2686217939651015501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e30be0b78967fd54e81a1168463fb473, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Alfarero.Runtime::ParpadeoDano
+  sprite: {fileID: 5056630632273880343}
+  colorGolpe: {r: 1, g: 0.45, b: 0.45, a: 1}
+  duracion: 0.07
+--- !u!114 &749389938307031151
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2686217939651015501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b34f5fb62eb030e4596760c8bc3c2093, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Alfarero.Runtime::EnemigoBasico
+  efectoMuerte: {fileID: 0}
+  sonidoMuerte: 24
+  puntos: 2000
+--- !u!114 &6316580296729991356
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2686217939651015501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f8697abd04dfc841b148e8877f5da23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Alfarero.Runtime::DanoPorContacto
+  dano: 22
+  empuje: 12
+  capasObjetivo:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!1 &3553194819184500187
 GameObject:
   m_ObjectHideFlags: 0
@@ -239,6 +463,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6299451328307157839}
+  - component: {fileID: 2847954906973999368}
+  - component: {fileID: 6121229701513063235}
   m_Layer: 8
   m_Name: Charro
   m_TagString: Untagged
@@ -263,3 +489,70 @@ Transform:
   - {fileID: 7672027189402788291}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!50 &2847954906973999368
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3553194819184500187}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 1
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 1
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
+--- !u!114 &6121229701513063235
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3553194819184500187}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84a0883430b638f49abfdbf675f2fae2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Alfarero.Runtime::JefeCharro
+  saludCaballo: {fileID: 2753698621357209208}
+  saludPie: {fileID: 8230496700185634983}
+  animCaballo: {fileID: 5030545222202381484}
+  animPie: {fileID: 8971982611085616908}
+  velocidadCaballo: 3.5
+  pausaCaballo: 1.1
+  avisoEmbestida: 0.75
+  velocidadEmbestida: 16
+  velocidadPie: 2.8
+  pausaPie: 0.9
+  multiplicadorFurioso: 1.4
+  distanciaEspadazo: 3.2
+  avisoEspadazo: 0.35
+  danoEspadazo: 25
+  cajaEspadazo: {x: 3.4, y: 3.2}
+  prefabLlamarada: {fileID: 240915130159223352, guid: eebc74772ddcbdd42bd10c12c380c820, type: 3}
+  retrasoLlamaradas: 0.45
+  prefabFuego: {fileID: 2989461484559429431, guid: bf8b12c67227f844f93fac494cd445a1, type: 3}
+  velocidadFuego: 10
+  danoFuego: 18
+  manoCaballo: {x: 1.6, y: 3.4}
+  manoPie: {x: 1.4, y: 2.4}
+  objetivo: {fileID: 0}
+  capaJugador:
+    serializedVersion: 2
+    m_Bits: 128
+  ySuelo: -4.5
+  esperaVictoria: 3.5

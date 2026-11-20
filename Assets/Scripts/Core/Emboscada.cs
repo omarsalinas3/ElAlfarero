@@ -29,6 +29,9 @@ public class Emboscada : MonoBehaviour
     public bool Terminada { get; private set; }
     public int OleadaActual { get; private set; } = -1;
     public float Centro { get; private set; }
+    public int Oleadas => oleadas.Length;
+    /// <summary>Bandidos de todas las oleadas (para comparar la dificultad entre niveles).</summary>
+    public int TotalBandidos { get { int n = 0; foreach (var o in oleadas) n += o.bandidos.Length; return n; } }
 
     readonly List<IABandido> vivos = new List<IABandido>();
     IABandido[][] listos;            // Creados al cargar el nivel y apagados: entrar no cuesta un tirón

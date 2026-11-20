@@ -104,7 +104,8 @@ public static partial class ConstructorJuego
         EncuentroLlorona encuentro = CrearEncuentroLlorona(inicioArena, derecha, CrearBarraJefe(hud.transform), enemigos);
         MenuPausa pausa = CrearMenuPausa();
         PantallaFinal gameOver = CrearPantallaFinal("GameOver", new Color(0.95f, 0.2f, 0.15f), new Color(0.12f, 0f, 0f, 0.8f), "REINTENTAR", 40);
-        PantallaFinal victoria = CrearPantallaFinal("Victoria", Dorado, new Color(0f, 0.04f, 0.14f, 0.8f), "JUGAR DE NUEVO", 41, true);
+        PantallaFinal victoria = CrearPantallaFinal("Victoria", Dorado, new Color(0f, 0.04f, 0.14f, 0.8f), "JUGAR DE NUEVO", 41, true,
+                                                    "¡A LOS TUNELES!");
 
         var gestor = new GameObject("GestorNivel").AddComponent<GestorNivel>();
         var so = new SerializedObject(gestor);
@@ -122,6 +123,7 @@ public static partial class ConstructorJuego
         so.FindProperty("objetivoRecorrido").stringValue = "LLEGA A LA ORILLA DEL RIO";
         so.FindProperty("xInicioRecorrido").floatValue = jugador.transform.position.x;
         so.FindProperty("xFinRecorrido").floatValue = encuentro.transform.position.x;   // Donde arranca la jefa
+        so.FindProperty("escenaSiguiente").stringValue = Escenas.TransicionTuneles;   // El río baja y aparecen los túneles (#92)
         so.ApplyModifiedPropertiesWithoutUndo();
         Asignar(hud, "gestor", gestor);
         CrearDialogoInicio(DialogoPanteon, 3.2f);

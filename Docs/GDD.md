@@ -45,8 +45,8 @@ Mateo toma sus piezas de alfarería **consagradas** (la Talavera bendita rompe l
 |---|---|---|---|---|---|
 | 1 | **Dolores Hidalgo** (calles y parroquia de noche) | Mineros esqueleto, bandidos (revólver, rifle, escopeta, machete) | Emboscada de 2 oleadas | **Alebrije Gigante**; al vencerlo se vuelve montura | Jugable |
 | 2 | **Mineral de Pozos** (pueblo fantasma y ruinas mineras) | Bandidos, mineros esqueleto, **Bruja de Fuego** (voladora) | **Estampida de nahuales** y emboscada de 3 oleadas | **Jinete sin Cabeza** | Jugable |
-| 3 | **Panteón junto al río** | Esqueletos y almas en pena | Por definir | **La Llorona** (ataques sónicos y de agua) | Escena base y fondos (Sprint 3); pelea en el Sprint 4 |
-| 4 | **Túneles de Guanajuato** | Bandidos y esqueletos | Derrumbe de mina | **El Charro Negro** (montado, fuego infernal); rescate de Carmen | Sprint 5 |
+| 3 | **Panteón junto al río** | Esqueletos, bandidos y Brujas de Fuego | Emboscada de 3 oleadas en las capillas | **La Llorona** (ataques sónicos y de agua) | Jugable |
+| 4 | **Túneles de Guanajuato** | Bandidos, esqueletos y Brujas de Fuego | **Derrumbe de mina** y emboscada de 4 oleadas | **El Charro Negro** (montado, fuego infernal); rescate de Carmen | Recorrido completo; pelea final en curso (Sprint 4) |
 
 **(cambio)** La versión 2 proponía cinco zonas; se ajustó a cuatro niveles con un jefe cada uno para que el alcance quepa en 12 semanas.
 
@@ -81,7 +81,7 @@ Al vencer al Alebrije, Mateo puede montarlo: +40 % de velocidad, +20 % de salto,
 #### Eventos especiales
 - **Emboscadas:** la cámara se fija y entran oleadas de bandidos por ambos lados.
 - **Estampida de nahuales:** manadas que cruzan la cañada con aviso; se esquivan saltando o evadiendo.
-- **Derrumbe de mina** (Nivel 4).
+- **Derrumbe de mina** (Nivel 4): el techo de la galería cae en tandas; temblor y retumbo antes de cada tanda y la sombra de cada roca en el suelo antes de que caiga.
 
 ### 2.4 Personajes y enemigos
 
@@ -138,10 +138,10 @@ Se guarda al ganar cada nivel en un JSON: nivel desbloqueado, puntaje máximo y 
 |---|---|---|---|
 | 1 | 1–14 oct | Movimiento, salto, evasión, disparo de Talavera, vida y daño, Sandbox, fondo de Dolores, arquitectura | Hecho |
 | 2 | 15–29 oct | IA de bandidos y esqueletos, emboscada, Alebrije y montura, guardado, HUD, splash, menús, tutorial, Nivel 2, estampida, Jinete | Hecho |
-| 3 | 29 oct–12 nov | Armas (Barro Negro, Vidriado, Maceta), combo, secretos, opciones, Bruja de Fuego, viaje al Nivel 2, créditos, efectos visuales, narrativa, gamepad y táctil, resoluciones, base del Nivel 3 y sprites de la Llorona, documentación | En cierre |
-| 4 | 12–26 nov | Nivel 3 completo y pelea con La Llorona | Pendiente |
-| 5 | 26 nov–10 dic | Nivel 4, derrumbe de mina y El Charro Negro | Pendiente |
-| 6 | 10–24 dic | Balance, playtesting externo, cinemática final, empaquetado y publicación | Pendiente |
+| 3 | 29 oct–6 nov | Armas (Barro Negro, Vidriado, Maceta), combo, secretos, opciones, Bruja de Fuego, viaje al Nivel 2, créditos, efectos visuales, narrativa, gamepad y táctil, resoluciones, Nivel 3 con La Llorona, documentación | Hecho |
+| 4 | 6–13 nov | Nivel 4 (túneles, recorrido, derrumbe de mina), viñetas entre niveles, El Charro Negro y el final | En curso |
+| 5 | 13–20 nov | Builds de Web y Móvil, pruebas y corrección de errores | Pendiente |
+| 6 | 20–27 nov | Balance, playtesting externo, juego terminado en las 3 plataformas, documentación y presentación | Pendiente |
 
 **(cambio)** La IA de enemigos se adelantó del Sprint 4 al Sprint 2 porque sin ella el *vertical slice* no se podía jugar.
 

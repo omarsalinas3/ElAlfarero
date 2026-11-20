@@ -34,24 +34,9 @@ public class MacetaQueCae : MonoBehaviour
         }
         maceta.position = inicio;
 
-        var dano = maceta.GetComponent<DanoPorContacto>();
-        var col = maceta.GetComponent<Collider2D>();
-        float velocidad = 0f;
-        float mitadAlto = col != null ? col.bounds.extents.y : 0.3f;
-
-        while (maceta.position.y - mitadAlto > ySuelo)
-        {
-            velocidad += gravedad * Time.deltaTime;
-            maceta.position += Vector3.down * velocidad * Time.deltaTime;
-
-            // Golpe directo al jugador
-            if (col != null && dano != null)
-            {
-                var golpeado = Physics2D.OverlapBox(col.bounds.center, col.bounds.size, 0f, capaJugador);
-                if (golpeado != null && dano.Aplicar(golpeado)) break;
-            }
-            yield return null;
-        }
+        // La caída la comparte con las rocas del derrumbe (Caida)
+        yield return new Caida().Caer(maceta, maceta.GetComponent<Collider2D>(), maceta.GetComponent<DanoPorContacto>(),
+                                      capaJugador, gravedad, ySuelo);
 
         GestorAudio.Reproducir(Sfx.ImpactoCeramica);
         if (prefabRota != null) Reciclaje.Sacar(prefabRota, maceta.position, Quaternion.identity);

@@ -68,15 +68,17 @@ public static partial class ConstructorJuego
         ConstructorAnimaciones.Construir();
         Prefabs p = CrearPrefabs();
         CrearPrefabLlorona();   // Jefa del Nivel 3
-        CrearArteCharro();      // Jefe final (#89): sus dos fases y su fuego; la IA llega con la #90
+        CrearArteCharro();      // Jefe final (#89, #90): sus dos fases, su fuego y su IA
 
         CrearEscenaNivel1(p);
         CrearEscenaNivel2(p);
         CrearEscenaNivel3(p);
+        CrearEscenaNivel4(p);     // Túneles de Guanajuato (#86-#88); al final, la pelea con el Charro (#90)
         CrearEscenaViaje();
         CrearEscenaMenu();
         CrearEscenaIntro();
         CrearEscenaTransicion();
+        CrearEscenasTransicionNiveles();   // Pozos → panteón → túneles (#92)
         CrearEscenaSplash();
 
         EditorBuildSettings.scenes = new[]
@@ -88,7 +90,10 @@ public static partial class ConstructorJuego
             new EditorBuildSettingsScene(RutaTransicion, true),   // Viñetas del Nivel 1 al viaje (#35)
             new EditorBuildSettingsScene(RutaViaje, true),
             new EditorBuildSettingsScene(RutaNivel2, true),
+            new EditorBuildSettingsScene(RutaTransicionPanteon, true),
             new EditorBuildSettingsScene(RutaNivel3, true),
+            new EditorBuildSettingsScene(RutaTransicionTuneles, true),
+            new EditorBuildSettingsScene(RutaNivel4, true),
             new EditorBuildSettingsScene(RutaEscena, true),   // Sandbox de pruebas
         };
         PlayerSettings.productName = "El Alfarero de Dolores";
@@ -197,6 +202,8 @@ public static partial class ConstructorJuego
             (Sfx.AbrirCofre, new[] { "abrir_cofre" }, 0.8f),
             (Sfx.GritoLlorona, new[] { "grito_llorona" }, 0.8f),
             (Sfx.ChorroAgua, new[] { "chorro_agua" }, 0.7f),
+            (Sfx.Derrumbe, new[] { "derrumbe" }, 0.9f),
+            (Sfx.RocaImpacto, new[] { "roca_impacto_1", "roca_impacto_2" }, 0.75f),
         };
         b.efectos = efectos.Select(e => new BibliotecaAudio.EntradaSfx
         {

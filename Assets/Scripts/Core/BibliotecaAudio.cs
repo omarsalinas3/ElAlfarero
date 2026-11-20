@@ -12,7 +12,8 @@ public enum Sfx
     CambioArma, RecogerArma, LanzarVidriado, Explosion, BloqueoEscudo, RomperEscudo,
     PunoLigero, PunoFuerte,
     Exvoto, AbrirCofre,
-    GritoLlorona, ChorroAgua
+    GritoLlorona, ChorroAgua,
+    Derrumbe, RocaImpacto                     // Derrumbe de mina del Nivel 4 (#88)
 }
 
 public enum Musica { Ninguna, Menu, Intro, Nivel1, Nivel2, Nivel3, Llorona }

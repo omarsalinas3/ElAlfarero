@@ -47,13 +47,14 @@ public class IntegracionTests
         GestorGuardado.RegistrarVictoria(1, 1200, 95f, 14);
         GestorGuardado.RegistrarVictoria(2, 3400, 210f, 20);
         GestorGuardado.RegistrarVictoria(3, 5000, 180f, 6);
+        GestorGuardado.RegistrarVictoria(4, 6200, 240f, 0);      // Los túneles (#86): ya son el último nivel
         GestorGuardado.DesbloquearArma("BarroNegro");
         GestorGuardado.RegistrarExvoto(1, 0);
         GestorGuardado.RegistrarExvoto(2, 2);
 
         GestorGuardado.Cargar();                                  // Como si se cerrara y abriera el juego: se lee del disco
         var d = GestorGuardado.Datos;
-        Assert.AreEqual(4, d.nivelDesbloqueado);
+        Assert.AreEqual(5, d.nivelDesbloqueado);
         Assert.AreEqual(40, d.monedas, "Monedas de los tres niveles");
         Assert.AreEqual(3400, d.Record(2).puntajeMaximo);
         CollectionAssert.Contains(d.armasDesbloqueadas, "BarroNegro");
@@ -69,8 +70,8 @@ public class IntegracionTests
         yield return new WaitForSeconds(0.3f);
         Object.FindObjectsByType<Button>().First(b => b.name == "Continuar" && b.transform.parent.name == "PanelMenu").onClick.Invoke();
         float limite = Time.realtimeSinceStartup + 8f;
-        while (SceneManager.GetActiveScene().name != Escenas.Nivel3 && Time.realtimeSinceStartup < limite) yield return null;
-        Assert.AreEqual(Escenas.Nivel3, SceneManager.GetActiveScene().name);
+        while (SceneManager.GetActiveScene().name != Escenas.Nivel4 && Time.realtimeSinceStartup < limite) yield return null;
+        Assert.AreEqual(Escenas.Nivel4, SceneManager.GetActiveScene().name);
     }
 
     [UnityTest]

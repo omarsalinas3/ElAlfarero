@@ -21,7 +21,7 @@ Público objetivo: jugadores de 12 años en adelante y adultos nostálgicos de l
 | 1 | **Dolores Hidalgo** (calles y parroquia de noche) | Mineros esqueleto, bandidos del Charro (revólver, rifle, escopeta y machete) | Emboscada de bandidos en oleadas | **Alebrije Gigante**: sale de entre las torres de la parroquia. Al vencerlo se rompe el hechizo y se vuelve la **montura** de Mateo |
 | 2 | **Mineral de Pozos** (pueblo fantasma y ruinas mineras) | Bandidos, mineros esqueleto, **Bruja de Fuego** | **Estampida de nahuales** en la cañada y emboscada de 3 oleadas | **Jinete sin Cabeza**, en el patio de la capilla en ruinas |
 | 3 | **Panteón junto al río** | Esqueletos, bandidos y Brujas de Fuego | Emboscada de 3 oleadas en las capillas | **La Llorona** (ataques sónicos y de agua), en la orilla del río |
-| 4 | **Túneles de Guanajuato** | Bandidos y esqueletos | Derrumbe de mina | **El Charro Negro** (jefe final); rescate de Carmen al amanecer |
+| 4 | **Túneles de Guanajuato** (bajo la ciudad, de la boca del túnel a la guarida del Charro) | Bandidos, mineros esqueleto y Brujas de Fuego | **Derrumbe de mina** en la galería de vigas y emboscada de 4 oleadas | **El Charro Negro** (jefe final); rescate de Carmen al amanecer |
 
 La dificultad sube de nivel en nivel: más enemigos y más resistentes, ataques desde el aire y menos curación.
 
@@ -74,7 +74,7 @@ El proyecto se divide en **6 sprints**, cada uno cierra con una entrega del curs
 | 1 | 1–14 oct | Núcleo: movimiento, salto, evasión, disparo de Talavera, vida y daño, menú, intro y Nivel 1 base | **Hecho** |
 | 2 | 15–29 oct | Nivel 1 completo (IA, emboscada, Alebrije), guardado, HUD, splash, Nivel 2 (Mineral de Pozos), tutorial | **Hecho** |
 | 3 | 29 oct–6 nov | Armas nuevas, combo, secretos, Bruja de Fuego, opciones, créditos, efectos, narrativa, gamepad y táctil, resoluciones, Nivel 3 con La Llorona, GDD y manual | **Cerrando** (Avance 3) |
-| 4 | 6–13 nov | Nivel 4, El Charro Negro, derrumbe de mina, final y narrativa entre niveles | Pendiente (Avance 4) |
+| 4 | 6–13 nov | Nivel 4, El Charro Negro, derrumbe de mina, final y narrativa entre niveles | **En curso** (Avance 4) |
 | 5 | 13–20 nov | Builds de Web y Móvil, pruebas y corrección de errores | Pendiente (Avance 5) |
 | 6 | 20–27 nov | Balance, juego terminado en las 3 plataformas, documentación y presentación | Pendiente (Final) |
 
@@ -85,16 +85,17 @@ Lo que **ya existe**:
 - **Nivel 1 (Dolores Hidalgo):** tutorial al inicio, mineros esqueleto animados, bandidos con IA (revólver, rifle, escopeta y machete), emboscada en oleadas y el Alebrije Gigante con su cinemática.
 - **Nivel 2 (Mineral de Pozos):** pueblo fantasma de noche, Brujas de Fuego, emboscada de 3 oleadas y estampida de nahuales.
 - **Nivel 3 (Panteón junto al río):** 5 tramos con neblina, emboscada de 3 oleadas, Brujas de Fuego, secretos y La Llorona con su propia música de pelea.
+- **Nivel 4 (Túneles de Guanajuato):** 5 tramos de túneles, el recorrido más difícil (emboscada de 4 oleadas y poca curación), **derrumbe de mina** con rocas que avisan con su sombra, 3 exvotos y la guarida libre para la pelea final.
 - **Guardado:** nivel desbloqueado, récord y mejor tiempo por nivel, monedas y armas.
 - **HUD de barro:** vida, caguamas, puntaje, tiempo y objetivo con barra de progreso.
 - **Sonido:** música por pantalla y nivel, y efectos para cada acción.
 - **Pruebas automáticas** de PlayMode del movimiento, el disparo, la IA, los niveles, el guardado, los menús y el rendimiento.
 
-- **Narrativa:** diálogos con retrato (Don Toribio, Carmen y el Charro Negro) y cinemática de viñetas entre los niveles 1 y 2.
+- **Narrativa:** diálogos con retrato (Don Toribio, Carmen y el Charro Negro) al empezar cada nivel y cinemáticas de viñetas entre todos los niveles (al liberar a La Llorona el río baja y aparece la entrada a los túneles).
 - **Controles:** teclado y mouse, gamepad completo y controles táctiles en pantalla; las ayudas muestran el botón del dispositivo que se esté usando.
 - **Interfaz adaptable** a 16:9, 16:10, 4:3, 21:9 y celulares (Safe Area), con partículas, *hit stop* y créditos con licencias ([Docs/CREDITOS.md](Docs/CREDITOS.md)).
 
-Lo que **todavía no**: el Nivel 4 con El Charro Negro y el final, y el build para móvil. La comparación completa con el GDD (qué está implementado, qué cambió y por qué, y qué falta) está en [Docs/MECANICAS.md](Docs/MECANICAS.md).
+Lo que **todavía no**: la pelea con El Charro Negro (el Nivel 4 ya se recorre completo y por ahora termina al llegar a su guarida), el final y el build para móvil. La comparación completa con el GDD (qué está implementado, qué cambió y por qué, y qué falta) está en [Docs/MECANICAS.md](Docs/MECANICAS.md).
 
 ## Cómo ejecutarlo
 
