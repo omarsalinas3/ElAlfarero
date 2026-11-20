@@ -159,7 +159,8 @@ public class NivelCuatroTests
 
         Assert.IsTrue(derrumbe.Terminado, "Pasó por el derrumbe");
         Assert.IsTrue(emboscada.Terminada, "Pasó por la emboscada");
-        Assert.AreEqual(GestorNivel.Estado.Victoria, gestor.EstadoActual, "Llega a la guarida del Charro");
+        Assert.IsTrue(Object.FindAnyObjectByType<EncuentroCharro>().PeleaEmpezada, "Peleó con el Charro en su guarida");
+        Assert.AreEqual(GestorNivel.Estado.Victoria, gestor.EstadoActual, "Vencer al Charro completa el nivel");
         Assert.AreEqual(5, GestorGuardado.Datos.nivelDesbloqueado, "y queda guardado");
     }
 

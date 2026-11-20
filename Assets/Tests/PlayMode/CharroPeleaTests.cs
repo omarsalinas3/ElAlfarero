@@ -8,13 +8,10 @@ using UnityEngine.TestTools;
 /// <summary>
 /// La pelea final con El Charro Negro (#90): cinemática de entrada, fase 1 a caballo (embestidas y ráfagas), caída del
 /// caballo y pacto, fase 2 a pie (espadazo, abanico y llamaradas) con furia a media vida, una barra por fase, victoria
-/// y reintento desde la fase 2. Se prueba en la arena de pruebas (Arena_Charro) mientras no exista el Nivel 4; el
-/// Nivel 4 usará el mismo CrearEncuentroCharro.
+/// y reintento desde la fase 2. Se prueba en la guarida del Nivel 4 (Túneles de Guanajuato).
 /// </summary>
 public class CharroPeleaTests
 {
-    const string Arena = "Arena_Charro";
-
     [UnitySetUp]
     public IEnumerator Preparar()
     {
@@ -33,7 +30,11 @@ public class CharroPeleaTests
 
     IEnumerator CargarArena()
     {
-        yield return SceneManager.LoadSceneAsync(Arena, LoadSceneMode.Single);
+        yield return SceneManager.LoadSceneAsync(Escenas.Nivel4, LoadSceneMode.Single);
+        // El diálogo del inicio del nivel saldría encima del pacto: se deja salir y se salta
+        float limite = Time.time + 6f;
+        while (!(CuadroDialogo.Actual != null && CuadroDialogo.Actual.Activo) && Time.time < limite) yield return null;
+        CuadroDialogo.Actual?.Saltar();
         yield return new WaitForSeconds(0.5f);
     }
 

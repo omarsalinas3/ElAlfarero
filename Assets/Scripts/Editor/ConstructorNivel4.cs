@@ -15,7 +15,7 @@ using static ConfigurarSprint1;
 /// Los tramos 2 y 4 son los fondos de túneles de la carpeta Modelos (de noche y con el cielo rojo); 1, 3 y 5 se
 /// pidieron a Flow con ellos de referencia. Se preparan con Docs/Arte/preparar_tramos.py.
 /// El más difícil: más bandidos y mineros que el panteón, una oleada más en la emboscada, el derrumbe y casi nada de
-/// curación antes del jefe. Mientras la pelea del Charro no esté (#90), llegar a la guarida completa el nivel.
+/// curación antes del jefe. En la guarida espera El Charro Negro (#90, ConstructorCharro): vencerlo completa el nivel.
 /// </summary>
 public static partial class ConstructorJuego
 {
@@ -104,14 +104,13 @@ public static partial class ConstructorJuego
         float inicioArena = derecha - ArenaLargo;
         var arena = new GameObject("Arena_Charro");
         arena.transform.position = new Vector3(inicioArena + ArenaLargo / 2f, YSuelo + 2f, 0f);
-        var meta = new GameObject("Meta_Provisional");            // Hasta que entre la pelea (#90)
-        meta.transform.position = new Vector3(inicioArena + 4f, YSuelo + 2f, 0f);
-        meta.AddComponent<BoxCollider2D>().size = new Vector2(1f, 8f);
-        meta.AddComponent<MetaNivel>();
 
         // Interfaz
         CrearEventSystem();
         var hud = CrearHud(jugador, out BannerMision banner);
+
+        // Jefe final: el Charro Negro llega galopando a la guarida; a caballo y, cuando cae el caballo, a pie (#90)
+        EncuentroCharro encuentro = CrearEncuentroCharro(inicioArena, derecha, CrearBarraJefe(hud.transform), enemigos);
         MenuPausa pausa = CrearMenuPausa();
         PantallaFinal gameOver = CrearPantallaFinal("GameOver", new Color(0.95f, 0.2f, 0.15f), new Color(0.12f, 0f, 0f, 0.8f), "REINTENTAR", 40);
         PantallaFinal victoria = CrearPantallaFinal("Victoria", Dorado, new Color(0f, 0.04f, 0.14f, 0.8f), "JUGAR DE NUEVO", 41, true);
@@ -131,7 +130,7 @@ public static partial class ConstructorJuego
         so.FindProperty("musica").enumValueIndex = (int)Musica.Nivel3;   // La música propia del nivel es la #93
         so.FindProperty("objetivoRecorrido").stringValue = "LLEGA A LA GUARIDA DEL CHARRO";
         so.FindProperty("xInicioRecorrido").floatValue = jugador.transform.position.x;
-        so.FindProperty("xFinRecorrido").floatValue = meta.transform.position.x;
+        so.FindProperty("xFinRecorrido").floatValue = encuentro.transform.position.x;   // Donde arranca el Charro
         so.ApplyModifiedPropertiesWithoutUndo();
         Asignar(hud, "gestor", gestor);
         CrearDialogoInicio(DialogoTuneles, 3.2f);

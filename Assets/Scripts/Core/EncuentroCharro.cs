@@ -143,6 +143,8 @@ public class EncuentroCharro : MonoBehaviour
     {
         Iniciado = true;
         Retomado = true;
+        var dialogoInicio = FindFirstObjectByType<DialogoInicio>();
+        if (dialogoInicio != null) dialogoInicio.gameObject.SetActive(false);   // Ya lo oyó: no se repite en plena pelea
         yield return null;                                // Que el nivel termine de arrancar
 
         var jugador = FindFirstObjectByType<PlayerController>();
