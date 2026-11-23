@@ -1,6 +1,6 @@
 # Documento de Diseño de Juego (GDD) — El Alfarero de Dolores
 
-*Versión 3 · actualizada al cierre del Sprint 3 (noviembre de 2026)*
+*Versión 3 · actualizada para la entrega final, con el juego completo (23 de noviembre de 2026)*
 
 *Equipo: Omar Salinas (@omarsalinas3) y Noé Chavero (@SekiroK5) · Creación de Videojuegos · UTNG · grupo GIDS6102 · profesor Gabriel Barrón*
 
@@ -36,8 +36,10 @@ Mateo toma sus piezas de alfarería **consagradas** (la Talavera bendita rompe l
 **Narrativa en el juego:**
 - **Intro** con viñetas ilustradas y texto letra por letra (se puede saltar).
 - **Diálogos** con retrato de **Don Toribio** (el viejo alfarero que presenta la misión al inicio del Nivel 1), **Carmen** y **El Charro Negro**, en un cuadro que no detiene la acción y se puede adelantar o saltar.
-- **Cinemática de transición** del Nivel 1 al Nivel 2: el alebrije liberado se une a Mateo, el Charro se lleva a Carmen al desierto y Mateo sigue sus huellas de fuego montado en el alebrije.
-- **Cinemáticas de jefe** (Alebrije y Jinete) con cámara fija, letreros y sacudidas.
+- **Cinemáticas de transición** entre todos los niveles: el alebrije liberado se une a Mateo y siguen las huellas de fuego del Charro hasta Pozos; del pueblo fantasma al panteón; y, al liberar a La Llorona, el río baja y deja al descubierto la entrada a los túneles.
+- **Cinemáticas de jefe** (Alebrije, Jinete, La Llorona y El Charro Negro) con cámara fija, letreros y sacudidas.
+- **El pacto (cambio):** a media pelea, cuando cae su caballo, el Charro le ofrece a Mateo oro a cambio de renunciar a Carmen, fiel a la leyenda; Mateo se niega.
+- **Final:** viñetas del rescate al amanecer. El Charro cae de rodillas, el Alebrije regresa a ayudar, Carmen lanza la última Talavera consagrada y el Charro se deshace en humo; Mateo y Carmen vuelven a Dolores al salir el sol. Después pasan los créditos.
 
 ### 2.2 Niveles
 
@@ -46,7 +48,7 @@ Mateo toma sus piezas de alfarería **consagradas** (la Talavera bendita rompe l
 | 1 | **Dolores Hidalgo** (calles y parroquia de noche) | Mineros esqueleto, bandidos (revólver, rifle, escopeta, machete) | Emboscada de 2 oleadas | **Alebrije Gigante**; al vencerlo se vuelve montura | Jugable |
 | 2 | **Mineral de Pozos** (pueblo fantasma y ruinas mineras) | Bandidos, mineros esqueleto, **Bruja de Fuego** (voladora) | **Estampida de nahuales** y emboscada de 3 oleadas | **Jinete sin Cabeza** | Jugable |
 | 3 | **Panteón junto al río** | Esqueletos, bandidos y Brujas de Fuego | Emboscada de 3 oleadas en las capillas | **La Llorona** (ataques sónicos y de agua) | Jugable |
-| 4 | **Túneles de Guanajuato** | Bandidos, esqueletos y Brujas de Fuego | **Derrumbe de mina** y emboscada de 4 oleadas | **El Charro Negro** (montado, fuego infernal); rescate de Carmen | Recorrido completo; pelea final en curso (Sprint 4) |
+| 4 | **Túneles de Guanajuato** | Bandidos, esqueletos y Brujas de Fuego | **Derrumbe de mina** y emboscada de 4 oleadas | **El Charro Negro** en dos fases: a caballo (embestidas y fuego infernal) y a pie (espadazo, abanico de fuego y llamaradas) **(cambio)**; al vencerlo, rescate de Carmen | Jugable |
 
 **(cambio)** La versión 2 proponía cinco zonas; se ajustó a cuatro niveles con un jefe cada uno para que el alcance quepa en 12 semanas.
 
@@ -92,7 +94,7 @@ Al vencer al Alebrije, Mateo puede montarlo: +40 % de velocidad, +20 % de salto,
 | Enemigos comunes | Bandidos del Charro (revólver, rifle, escopeta, machete), mineros esqueleto (las "calaveras animadas"), Bruja de Fuego, nahuales (como estampida) **(cambio)** |
 | Jefes | Alebrije Gigante, Jinete sin Cabeza **(cambio: nuevo)**, La Llorona, El Charro Negro |
 
-**IA:** los bandidos disparan a distancia con un aviso previo o pelean cuerpo a cuerpo; los esqueletos patrullan, persiguen, brincan obstáculos y embisten; la Bruja vuela, lanza bolas de fuego y se lanza en picada; los jefes tienen fases con ataques distintos.
+**IA:** los bandidos disparan a distancia con un aviso previo o pelean cuerpo a cuerpo; los esqueletos patrullan, persiguen, brincan obstáculos y embisten; la Bruja vuela, lanza bolas de fuego y se lanza en picada; los jefes tienen fases con ataques distintos y se enfurecen a media vida. El Charro Negro, jefe final, tiene dos fases con una barra de vida cada una (700 + 1300) y, si Mateo cae en la segunda, el reintento empieza ahí.
 
 ### 2.5 Interfaz
 
@@ -126,7 +128,7 @@ Los controles táctiles solo aparecen en pantallas táctiles. El detalle está e
 - Música por pantalla y nivel, y un efecto de sonido para cada acción.
 
 ### 2.8 Guardado
-Se guarda al ganar cada nivel en un JSON: nivel desbloqueado, puntaje máximo y mejor tiempo por nivel, monedas, armas desbloqueadas y exvotos encontrados. *Continuar* carga el último nivel desbloqueado.
+Se guarda al ganar cada nivel en un JSON: nivel desbloqueado, puntaje máximo y mejor tiempo por nivel, monedas, armas desbloqueadas, exvotos encontrados y si el juego ya se terminó (al ver el final). *Continuar* carga el último nivel desbloqueado.
 
 ---
 
@@ -139,9 +141,9 @@ Se guarda al ganar cada nivel en un JSON: nivel desbloqueado, puntaje máximo y 
 | 1 | 1–14 oct | Movimiento, salto, evasión, disparo de Talavera, vida y daño, Sandbox, fondo de Dolores, arquitectura | Hecho |
 | 2 | 15–29 oct | IA de bandidos y esqueletos, emboscada, Alebrije y montura, guardado, HUD, splash, menús, tutorial, Nivel 2, estampida, Jinete | Hecho |
 | 3 | 29 oct–6 nov | Armas (Barro Negro, Vidriado, Maceta), combo, secretos, opciones, Bruja de Fuego, viaje al Nivel 2, créditos, efectos visuales, narrativa, gamepad y táctil, resoluciones, Nivel 3 con La Llorona, documentación | Hecho |
-| 4 | 6–13 nov | Nivel 4 (túneles, recorrido, derrumbe de mina), viñetas entre niveles, El Charro Negro y el final | En curso |
-| 5 | 13–20 nov | Builds de Web y Móvil, pruebas y corrección de errores | Pendiente |
-| 6 | 20–27 nov | Balance, playtesting externo, juego terminado en las 3 plataformas, documentación y presentación | Pendiente |
+| 4 | 6–13 nov | Nivel 4 (túneles, recorrido, derrumbe de mina), viñetas entre niveles, El Charro Negro, el final y su música | Hecho (terminó el 23 de noviembre) |
+| 5 | 13–20 nov | Builds de Web y Móvil, pruebas y corrección de errores | En curso: Web y Windows listos, falta Android |
+| 6 | 20–27 nov | Balance, playtesting externo, juego terminado en las 3 plataformas, documentación y presentación | En curso |
 
 **(cambio)** La IA de enemigos se adelantó del Sprint 4 al Sprint 2 porque sin ella el *vertical slice* no se podía jugar.
 
@@ -159,7 +161,7 @@ Se guarda al ganar cada nivel en un JSON: nivel desbloqueado, puntaje máximo y 
 
 ## 5. Pruebas
 
-- **Pruebas automáticas de PlayMode** (más de 100) que cubren movimiento, disparo, armas, IA, emboscadas, jefes, niveles completos, guardado, menús, opciones, créditos, resoluciones, controles y rendimiento. Corren en Unity o en consola antes de cada PR.
+- **Pruebas automáticas de PlayMode** (164) que cubren movimiento, disparo, armas, IA, emboscadas, jefes, niveles completos, guardado, menús, opciones, créditos, resoluciones, controles y rendimiento. Corren en Unity o en consola antes de cada PR.
 - **Tablero Kanban** (GitHub Projects) con historias, errores y criterios de aceptación.
 - **(cambio)** El playtesting semanal con jugadores externos se mueve al Sprint 6, con el juego completo; antes se usan las pruebas automáticas y sesiones internas del equipo.
 
@@ -189,7 +191,7 @@ Se guarda al ganar cada nivel en un JSON: nivel desbloqueado, puntaje máximo y 
 | 10 | Física coherente | Rigidbody 2D, capas de colisión, salto con gravedad variable |
 | 11 | Sonido con créditos y licencias | `BibliotecaAudio`, [CREDITOS.md](CREDITOS.md) |
 | 12 | Retroalimentación visual | Partículas, sacudida, *hit stop*, fundidos |
-| 13 | Narrativa | Intro, diálogos con retrato y cinemática entre niveles |
+| 13 | Narrativa | Intro, diálogos con retrato, cinemáticas entre niveles, el pacto con el Charro y el final |
 | 14 | Guardado | `GestorGuardado` |
 | 15 | Controles por plataforma | Teclado y mouse, gamepad y táctil |
 | 16 | Interfaz adaptable | Zona 16:9, *Safe Area* y escalado *Expand* |
