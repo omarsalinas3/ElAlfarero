@@ -79,6 +79,7 @@ public static partial class ConstructorJuego
         CrearEscenaIntro();
         CrearEscenaTransicion();
         CrearEscenasTransicionNiveles();   // Pozos → panteón → túneles (#92)
+        CrearEscenaFinal();                // Rescate de Carmen al amanecer y créditos (#91)
         CrearEscenaSplash();
 
         EditorBuildSettings.scenes = new[]
@@ -94,6 +95,7 @@ public static partial class ConstructorJuego
             new EditorBuildSettingsScene(RutaNivel3, true),
             new EditorBuildSettingsScene(RutaTransicionTuneles, true),
             new EditorBuildSettingsScene(RutaNivel4, true),
+            new EditorBuildSettingsScene(RutaFinal, true),
             new EditorBuildSettingsScene(RutaEscena, true),   // Sandbox de pruebas
         };
         PlayerSettings.productName = "El Alfarero de Dolores";

@@ -36,7 +36,18 @@ public class MenuPrincipal : MonoBehaviour
     bool enTitulo = true;
     Panel[] paneles;
 
+    // El final del juego (#91) pide que el menú abra directo en los créditos
+    static bool creditosPendientes;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    static void ReiniciarEstaticos() => creditosPendientes = false;
+
+    /// <summary>La próxima vez que se abra el menú, empieza en los créditos (lo llama el final del juego).</summary>
+    public static void PedirCreditos() => creditosPendientes = true;
+    public static void OlvidarCreditos() => creditosPendientes = false;
+
     public bool EnTitulo => enTitulo;
+    public bool EnCreditos => panelCreditos != null && panelCreditos.gameObject.activeSelf;
 
     void Awake()
     {
@@ -59,7 +70,16 @@ public class MenuPrincipal : MonoBehaviour
         grupoTitulo.SetActive(true);
     }
 
-    void Start() { GestorAudio.CambiarMusica(Musica.Menu, 1.2f); }
+    void Start()
+    {
+        GestorAudio.CambiarMusica(Musica.Menu, 1.2f);
+        if (!creditosPendientes) return;
+        // Viene del final: sin portada, directo a los créditos; "Volver" lleva al menú
+        creditosPendientes = false;
+        enTitulo = false;
+        if (textoPresiona != null) textoPresiona.SetActive(false);
+        Cambiar(panelCreditos);
+    }
 
     void Update()
     {

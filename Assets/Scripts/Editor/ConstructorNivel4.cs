@@ -113,7 +113,8 @@ public static partial class ConstructorJuego
         EncuentroCharro encuentro = CrearEncuentroCharro(inicioArena, derecha, CrearBarraJefe(hud.transform), enemigos);
         MenuPausa pausa = CrearMenuPausa();
         PantallaFinal gameOver = CrearPantallaFinal("GameOver", new Color(0.95f, 0.2f, 0.15f), new Color(0.12f, 0f, 0f, 0.8f), "REINTENTAR", 40);
-        PantallaFinal victoria = CrearPantallaFinal("Victoria", Dorado, new Color(0f, 0.04f, 0.14f, 0.8f), "JUGAR DE NUEVO", 41, true);
+        PantallaFinal victoria = CrearPantallaFinal("Victoria", Dorado, new Color(0f, 0.04f, 0.14f, 0.8f), "JUGAR DE NUEVO", 41, true,
+                                                    "¡RESCATA A CARMEN!");   // Lleva al final (#91)
 
         var gestor = new GameObject("GestorNivel").AddComponent<GestorNivel>();
         var so = new SerializedObject(gestor);
@@ -125,6 +126,7 @@ public static partial class ConstructorJuego
         so.FindProperty("pantallaGameOver").objectReferenceValue = gameOver;
         so.FindProperty("pantallaVictoria").objectReferenceValue = victoria;
         so.FindProperty("numeroNivel").intValue = 4;
+        so.FindProperty("escenaSiguiente").stringValue = Escenas.Final;   // Vencer al Charro lleva al final (#91)
         so.FindProperty("tituloMision").stringValue = "MISION 4";
         so.FindProperty("nombreNivel").stringValue = "TUNELES DE GUANAJUATO";
         so.FindProperty("musica").enumValueIndex = (int)Musica.Nivel3;   // La música propia del nivel es la #93

@@ -169,4 +169,28 @@ public static partial class ConstructorJuego
         CrearEscenaVinetas(RutaTransicionPanteon, "TransicionPanteon", VinetasPanteon, Escenas.Nivel3);
         CrearEscenaVinetas(RutaTransicionTuneles, "TransicionTuneles", VinetasTuneles, Escenas.Nivel4);
     }
+
+    // ================================================================== Final (#91)
+    const string RutaFinal = "Assets/Scenes/Final.unity";
+
+    // Viñetas compuestas con Docs/Arte/componer_vinetas.py final: el Alebrije regresa, Carmen lanza la última
+    // Talavera y amanece sobre Dolores
+    static readonly (string img, string txt)[] VinetasFinal =
+    {
+        ("final_01", "El Charro Negro cayó de rodillas en su guarida. Allá arriba, la luna roja empezó a apagarse."),
+        ("final_02", "Un rugido retumbó en los túneles: el Alebrije, libre y leal, había seguido a Mateo hasta el final."),
+        ("final_03", "Carmen, libre al fin, tomó la última pieza de Talavera consagrada y la lanzó. El Charro Negro se deshizo en humo para siempre."),
+        ("final_04", "Al salir de los túneles amanecía sobre Dolores. Mateo y Carmen volvían a casa, y la Talavera brillaba con el primer sol."),
+    };
+
+    /// <summary>
+    /// El final: viñetas del rescate al amanecer que terminan en el menú, abierto en los créditos. FinalDelJuego deja
+    /// la partida marcada como terminada.
+    /// </summary>
+    static void CrearEscenaFinal()
+    {
+        CrearEscenaVinetas(RutaFinal, "Final", VinetasFinal, Escenas.Menu);
+        new GameObject("FinalDelJuego").AddComponent<FinalDelJuego>();
+        EditorSceneManager.SaveScene(SceneManager.GetActiveScene(), RutaFinal);
+    }
 }

@@ -5,7 +5,8 @@ vecino más cercano (no se suaviza el pixel art) + viñeteado en las orillas, co
 
 Uso (desde la raíz del repo):  python -I Docs/Arte/componer_vinetas.py <grupo>
 Grupos: panteon (Pozos → panteón) · tuneles (panteón → túneles; la 2 es la ilustración de Flow
-Docs/Arte/Flow/vineta_rio_baja_flow.jpg: el río del panteón seco y la boca de los túneles)
+Docs/Arte/Flow/vineta_rio_baja_flow.jpg: el río del panteón seco y la boca de los túneles) · final (el rescate de
+Carmen al amanecer, #91)
 """
 import os
 import sys
@@ -26,8 +27,23 @@ def fondo(ruta, brillo=0.8, tinte=None, fuerza=0.25):
     return im.convert("RGBA")
 
 
-def pegar(base, ruta, alto, x, pie_y, espejo=False, alfa=1.0, sombra=True):
+def sin_magenta(sp):
+    """Quita el fondo magenta de los modelos de la carpeta Modelos (p. ej. Allies/carmen.png) y las motas sueltas."""
+    from scipy import ndimage
+    a = np.array(sp)
+    r, g, b = [a[..., i].astype(int) for i in range(3)]
+    a[(r > 170) & (b > 170) & (g < 120), 3] = 0
+    etiquetas, n = ndimage.label(a[..., 3] > 0)
+    if n > 1:
+        tam = ndimage.sum(np.ones_like(etiquetas), etiquetas, range(1, n + 1))
+        a[etiquetas != int(np.argmax(tam)) + 1, 3] = 0       # Solo la figura más grande
+    return Image.fromarray(a)
+
+
+def pegar(base, ruta, alto, x, pie_y, espejo=False, alfa=1.0, sombra=True, magenta=False):
     sp = Image.open(os.path.join(S, ruta)).convert("RGBA")
+    if magenta:
+        sp = sin_magenta(sp)
     sp = sp.crop(sp.getbbox())
     sp = sp.resize((max(1, int(sp.width * alto / sp.height)), int(alto)), Image.NEAREST)
     if espejo:
@@ -89,9 +105,39 @@ def tuneles(fondo_tunel="Environment/lvl4_seg01.png"):
     guardar("tuneles_03", im)
 
 
+def final():
+    """El final del juego (#91): el rescate de Carmen al amanecer."""
+    # 1. El Charro Negro cae de rodillas en su guarida; la luna roja se apaga
+    im = fondo("Environment/lvl4_seg05.png", 0.7, (70, 0, 10), 0.25)
+    pegar(im, "Bosses/charro_pie_muerte_00.png", 300, 1080, 850)
+    pegar(im, "Player/mateo_idle_00.png", 250, 480, 860)
+    guardar("final_01", im)
+
+    # 2. El Alebrije, libre y leal, llega rugiendo a la guarida
+    im = fondo("Environment/lvl4_seg05.png", 0.8, (40, 10, 60), 0.2)
+    pegar(im, "Player/mateo_idle_00.png", 250, 420, 860)
+    pegar(im, "Bosses/alebrije_rugido_00.png", 420, 1100, 865)
+    guardar("final_02", im)
+
+    # 3. Carmen lanza la última Talavera consagrada y el Charro se deshace en humo
+    im = fondo("Environment/lvl4_seg05.png", 0.85, (120, 60, 0), 0.15)
+    pegar(im, "Allies/carmen.png", 270, 420, 865, magenta=True)
+    pegar(im, "Projectiles/talavera_shot_02.png", 70, 800, 560, sombra=False)
+    pegar(im, "Bosses/charro_pie_muerte_01.png", 230, 1150, 850, alfa=0.6)
+    guardar("final_03", im)
+
+    # 4. Amanece sobre Dolores: Mateo y Carmen vuelven a casa
+    im = fondo("Environment/lvl1_seg02.png", 1.3, (255, 175, 90), 0.2)
+    pegar(im, "Player/mateo_idle_00.png", 250, 700, 860)
+    pegar(im, "Allies/carmen.png", 255, 900, 862, espejo=True, magenta=True)
+    guardar("final_04", im)
+
+
 if __name__ == "__main__":
     grupo = sys.argv[1]
     if grupo == "panteon":
         panteon()
+    elif grupo == "final":
+        final()
     else:
         tuneles()
