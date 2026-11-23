@@ -16,7 +16,7 @@ public enum Sfx
     Derrumbe, RocaImpacto                     // Derrumbe de mina del Nivel 4 (#88)
 }
 
-public enum Musica { Ninguna, Menu, Intro, Nivel1, Nivel2, Nivel3, Llorona }
+public enum Musica { Ninguna, Menu, Intro, Nivel1, Nivel2, Nivel3, Llorona, Nivel4, Charro }
 
 /// <summary>
 /// Tabla de sonidos del juego (un solo asset en Resources/BibliotecaAudio). El código pide sonidos por nombre (Sfx / Musica)

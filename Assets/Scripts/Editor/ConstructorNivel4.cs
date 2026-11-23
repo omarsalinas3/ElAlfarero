@@ -129,7 +129,7 @@ public static partial class ConstructorJuego
         so.FindProperty("escenaSiguiente").stringValue = Escenas.Final;   // Vencer al Charro lleva al final (#91)
         so.FindProperty("tituloMision").stringValue = "MISION 4";
         so.FindProperty("nombreNivel").stringValue = "TUNELES DE GUANAJUATO";
-        so.FindProperty("musica").enumValueIndex = (int)Musica.Nivel3;   // La música propia del nivel es la #93
+        so.FindProperty("musica").enumValueIndex = (int)Musica.Nivel4;   // Túneles bajo la luna roja (#93)
         so.FindProperty("objetivoRecorrido").stringValue = "LLEGA A LA GUARIDA DEL CHARRO";
         so.FindProperty("xInicioRecorrido").floatValue = jugador.transform.position.x;
         so.FindProperty("xFinRecorrido").floatValue = encuentro.transform.position.x;   // Donde arranca el Charro

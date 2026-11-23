@@ -186,6 +186,22 @@ public class CharroPeleaTests
         Assert.AreEqual(5, r[0], "Furioso lanza cinco ráfagas");
     }
 
+    [Test]
+    public void Audio_MusicaPropiaDelNivel4YDeLaPeleaFinal()
+    {
+        var biblioteca = Resources.Load<BibliotecaAudio>("BibliotecaAudio");
+        Assert.IsTrue(biblioteca.musicas.Any(m => m.id == Musica.Nivel4 && m.clip != null), "Pista de los túneles");
+        Assert.IsTrue(biblioteca.musicas.Any(m => m.id == Musica.Charro && m.clip != null), "Pista de la pelea con el Charro");
+    }
+
+    [UnityTest]
+    public IEnumerator Charro_ElNivel4YLaPeleaUsanSuMusica()
+    {
+        yield return CargarArena();
+        Assert.AreEqual(Musica.Charro, Object.FindFirstObjectByType<EncuentroCharro>().MusicaPelea, "La pelea suena con su pista");
+        Assert.AreEqual(Musica.Nivel4, GestorNivel.Actual.MusicaNivel, "Los túneles tienen su pista");
+    }
+
     [UnityTest]
     [Timeout(90000)]
     public IEnumerator Charro_VencerloCompletaElNivel()

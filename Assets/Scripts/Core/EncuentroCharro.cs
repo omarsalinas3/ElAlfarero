@@ -18,7 +18,7 @@ public class EncuentroCharro : MonoBehaviour
     [SerializeField] float xAparicion = 90f;                          // Sale de la oscuridad, a la derecha de la arena
     [SerializeField] float xLlegada = 84f;
     [SerializeField] float ySuelo = -4.5f;
-    [SerializeField] Musica musicaPelea = Musica.Llorona;             // Provisional: la pista propia llega con la #93
+    [SerializeField] Musica musicaPelea = Musica.Charro;              // Su pista propia (#93)
     [SerializeField] LineaDialogo[] pacto;
 
     public bool Iniciado { get; private set; }
@@ -27,6 +27,7 @@ public class EncuentroCharro : MonoBehaviour
     /// <summary>La escena empezó desde el punto de control de la fase 2.</summary>
     public bool Retomado { get; private set; }
     public LineaDialogo[] LineasPacto => pacto;
+    public Musica MusicaPelea => musicaPelea;
 
     float min, max;
 
