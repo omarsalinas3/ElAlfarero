@@ -140,6 +140,7 @@ public class GestorNivel : MonoBehaviour
     public int ExvotosEnNivel => exvotosEnNivel;
     public int ExvotosEncontrados => GestorGuardado.ExvotosEncontrados(numeroNivel);
     public int NumeroNivel => numeroNivel;
+    public Musica MusicaNivel => musica;
 
     /// <summary>Lo llama un Exvoto al tocarlo: queda guardado aunque no se gane el nivel.</summary>
     public void EncontrarExvoto(int id)

@@ -215,7 +215,7 @@ public static partial class ConstructorJuego
         }).ToArray();
 
         // Música: se toma lo que haya en Assets/Audio/Music (menu, intro, nivel1 en .ogg/.mp3/.wav)
-        (Musica id, string nombre, float vol)[] pistas = { (Musica.Menu, "menu", 0.55f), (Musica.Intro, "intro", 0.55f), (Musica.Nivel1, "nivel1", 0.5f), (Musica.Nivel2, "nivel2", 0.5f), (Musica.Nivel3, "nivel3", 0.5f), (Musica.Llorona, "llorona", 0.55f) };
+        (Musica id, string nombre, float vol)[] pistas = { (Musica.Menu, "menu", 0.55f), (Musica.Intro, "intro", 0.55f), (Musica.Nivel1, "nivel1", 0.5f), (Musica.Nivel2, "nivel2", 0.5f), (Musica.Nivel3, "nivel3", 0.5f), (Musica.Llorona, "llorona", 0.55f), (Musica.Nivel4, "nivel4", 0.5f), (Musica.Charro, "charro", 0.55f) };
         b.musicas = pistas.Select(m => new BibliotecaAudio.EntradaMusica { id = m.id, volumen = m.vol, clip = BuscarMusica(m.nombre) })
                           .Where(m => m.clip != null).ToArray();
 
