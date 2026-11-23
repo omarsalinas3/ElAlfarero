@@ -143,6 +143,21 @@ Registro por fecha de qué se hizo, quién lo hizo, qué problemas salieron y qu
 - Hasta que entre la pelea del Charro (#90), llegar a su guarida completa el Nivel 4 (meta provisional); la arena queda marcada como `Arena_Charro`.
 - La victoria de Pozos y la del panteón pasan por sus viñetas antes del siguiente nivel.
 
+### 18–23 de noviembre — Trabajo de Omar
+| Quién | Qué se hizo |
+|---|---|
+| Omar | Pelea final con El Charro Negro en dos fases (a caballo y a pie), con el pacto, llamaradas, furia, una barra por fase y reintento desde la fase 2; se juntó con el Nivel 4 de Noé, cuya rama no tenía PR, y entró en su guarida en lugar de la meta provisional (#90, PR #105). Final con 4 viñetas del rescate de Carmen al amanecer, juego marcado como terminado y paso a los créditos (#91, PR #106). Música propia de los túneles y de la pelea con Flow Music (#93, PR #107). Builds de Windows y WebGL del juego completo y `main` al día con `develop` |
+
+**Problemas:**
+- La primera vez que se construyó la #90 no compiló: una propiedad (`Pacto`) se llamaba igual que una corrutina. Se renombró antes de subir.
+- La victoria del Nivel 4 no tenía botón "Siguiente" porque antes era el último nivel; lo detectó la prueba del final.
+- Una construcción en batch no corrió porque Unity estaba abierto; hay que cerrarlo siempre antes.
+
+**Decisiones:**
+- El Charro pelea en dos fases (aprobado por Omar el 10 de noviembre): el arte de referencia lo tenía a pie y la tarjeta lo pedía a caballo. Cada fase tiene su propia vida para que la barra del jefe se llene de nuevo.
+- Las viñetas del final se compusieron con los fondos y sprites del juego (`componer_vinetas.py final`), igual que las transiciones de Noé, en lugar de pedirlas a Flow.
+- La música se procesa con un script (`Docs/Audio/procesar_musica.py`) en lugar de a mano, para que cualquiera pueda cambiar una pista.
+
 ---
 
 ## Plantilla para la siguiente entrada

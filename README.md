@@ -2,7 +2,7 @@
 
 Videojuego 2D de acción *run and gun* de desplazamiento lateral (al estilo Metal Slug) ambientado en un Guanajuato sobrenatural y tétrico. Proyecto de la materia Creación de Videojuegos (10.º cuatrimestre), desarrollado en **Unity 6.6** para **PC** (Windows y navegador).
 
-> Estado actual: **Sprint 3 de 6** (niveles 1, 2 y 3 jugables). Todavía no es un juego completo; ver [Hasta dónde llega el proyecto](#hasta-dónde-llega-el-proyecto). Manual: [Docs/MANUAL_USUARIO.md](Docs/MANUAL_USUARIO.md) · GDD: [Docs/GDD.md](Docs/GDD.md).
+> Estado actual: **juego completo** (4 niveles con sus jefes, la pelea final con El Charro Negro y el rescate de Carmen) en el **Sprint 6 de 6**; entrega final el viernes 27 de noviembre. Ver [Hasta dónde llega el proyecto](#hasta-dónde-llega-el-proyecto). Manual: [Docs/MANUAL_USUARIO.md](Docs/MANUAL_USUARIO.md) · GDD: [Docs/GDD.md](Docs/GDD.md).
 
 ## ¿De qué trata?
 
@@ -21,7 +21,7 @@ Público objetivo: jugadores de 12 años en adelante y adultos nostálgicos de l
 | 1 | **Dolores Hidalgo** (calles y parroquia de noche) | Mineros esqueleto, bandidos del Charro (revólver, rifle, escopeta y machete) | Emboscada de bandidos en oleadas | **Alebrije Gigante**: sale de entre las torres de la parroquia. Al vencerlo se rompe el hechizo y se vuelve la **montura** de Mateo |
 | 2 | **Mineral de Pozos** (pueblo fantasma y ruinas mineras) | Bandidos, mineros esqueleto, **Bruja de Fuego** | **Estampida de nahuales** en la cañada y emboscada de 3 oleadas | **Jinete sin Cabeza**, en el patio de la capilla en ruinas |
 | 3 | **Panteón junto al río** | Esqueletos, bandidos y Brujas de Fuego | Emboscada de 3 oleadas en las capillas | **La Llorona** (ataques sónicos y de agua), en la orilla del río |
-| 4 | **Túneles de Guanajuato** (bajo la ciudad, de la boca del túnel a la guarida del Charro) | Bandidos, mineros esqueleto y Brujas de Fuego | **Derrumbe de mina** en la galería de vigas y emboscada de 4 oleadas | **El Charro Negro** (jefe final); rescate de Carmen al amanecer |
+| 4 | **Túneles de Guanajuato** (bajo la ciudad, de la boca del túnel a la guarida del Charro) | Bandidos, mineros esqueleto y Brujas de Fuego | **Derrumbe de mina** en la galería de vigas y emboscada de 4 oleadas | **El Charro Negro** (jefe final, en dos fases: a caballo y a pie); al vencerlo, rescate de Carmen al amanecer |
 
 La dificultad sube de nivel en nivel: más enemigos y más resistentes, ataques desde el aire y menos curación.
 
@@ -36,6 +36,7 @@ El GDD original solo daba ejemplos de jefes ("figuras icónicas como La Llorona,
 | Alebrije Gigante | Jefe que se destruye | Jefe que, liberado del hechizo, se vuelve montura | Da una mecánica nueva (montar) y explica el viaje de Dolores a Pozos |
 | Charro Negro | Villano que secuestra a Carmen | Además, líder de los bandidos y quien hechiza a las leyendas | Une a todos los enemigos en una sola historia |
 | Nahuales | Sin uso definido | Estampida como evento especial del Nivel 2 | Da el "evento especial" del GDD sin ser otro jefe |
+| Pelea con el Charro Negro | Jefe montado con ráfagas de fuego infernal | Dos fases: a caballo y, cuando cae el caballo, a pie con los ataques más difíciles, tras ofrecer el pacto de la leyenda | Conserva al Charro montado del GDD y lo vuelve el jefe más largo y difícil, como corresponde al final |
 
 ## Cómo se juega
 
@@ -73,29 +74,31 @@ El proyecto se divide en **6 sprints**, cada uno cierra con una entrega del curs
 |---|---|---|---|
 | 1 | 1–14 oct | Núcleo: movimiento, salto, evasión, disparo de Talavera, vida y daño, menú, intro y Nivel 1 base | **Hecho** |
 | 2 | 15–29 oct | Nivel 1 completo (IA, emboscada, Alebrije), guardado, HUD, splash, Nivel 2 (Mineral de Pozos), tutorial | **Hecho** |
-| 3 | 29 oct–6 nov | Armas nuevas, combo, secretos, Bruja de Fuego, opciones, créditos, efectos, narrativa, gamepad y táctil, resoluciones, Nivel 3 con La Llorona, GDD y manual | **Cerrando** (Avance 3) |
-| 4 | 6–13 nov | Nivel 4, El Charro Negro, derrumbe de mina, final y narrativa entre niveles | **En curso** (Avance 4) |
-| 5 | 13–20 nov | Builds de Web y Móvil, pruebas y corrección de errores | Pendiente (Avance 5) |
-| 6 | 20–27 nov | Balance, juego terminado en las 3 plataformas, documentación y presentación | Pendiente (Final) |
+| 3 | 29 oct–6 nov | Armas nuevas, combo, secretos, Bruja de Fuego, opciones, créditos, efectos, narrativa, gamepad y táctil, resoluciones, Nivel 3 con La Llorona, GDD y manual | **Hecho** (Avance 3) |
+| 4 | 6–13 nov | Nivel 4, El Charro Negro, derrumbe de mina, final, música y narrativa entre niveles | **Hecho** (se terminó el 23 de noviembre) |
+| 5 | 13–20 nov | Builds de Web y Móvil, pruebas y corrección de errores | **En curso**: builds de Web y Windows listos; falta Android |
+| 6 | 20–27 nov | Balance, juego terminado en las 3 plataformas, documentación y presentación | **En curso** (Final) |
 
-**Meta final:** publicar el juego en [itch.io](https://itch.io) con un nivel jugable por zona y los jefes de leyenda.
+**Meta final:** publicar el juego completo en [itch.io](https://itch.io), con un nivel por zona y los jefes de leyenda.
 
 Lo que **ya existe**:
-- **Flujo completo:** splash con el logo del equipo, menú principal (Jugar, Continuar, Opciones, Créditos, Salir), intro con viñetas, niveles 1, 2 y 3 jugables, pausa, game over y misión cumplida con récord.
+- **Flujo completo:** splash con el logo del equipo, menú principal (Jugar, Continuar, Opciones, Créditos, Salir), intro con viñetas, los 4 niveles con sus jefes, pausa, game over, misión cumplida con récord, el final y los créditos.
 - **Nivel 1 (Dolores Hidalgo):** tutorial al inicio, mineros esqueleto animados, bandidos con IA (revólver, rifle, escopeta y machete), emboscada en oleadas y el Alebrije Gigante con su cinemática.
 - **Nivel 2 (Mineral de Pozos):** pueblo fantasma de noche, Brujas de Fuego, emboscada de 3 oleadas y estampida de nahuales.
 - **Nivel 3 (Panteón junto al río):** 5 tramos con neblina, emboscada de 3 oleadas, Brujas de Fuego, secretos y La Llorona con su propia música de pelea.
-- **Nivel 4 (Túneles de Guanajuato):** 5 tramos de túneles, el recorrido más difícil (emboscada de 4 oleadas y poca curación), **derrumbe de mina** con rocas que avisan con su sombra, 3 exvotos y la guarida libre para la pelea final.
-- **Guardado:** nivel desbloqueado, récord y mejor tiempo por nivel, monedas y armas.
+- **Nivel 4 (Túneles de Guanajuato):** 5 tramos de túneles, el recorrido más difícil (emboscada de 4 oleadas y poca curación), **derrumbe de mina** con rocas que avisan con su sombra, 3 exvotos y la guarida del Charro.
+- **El Charro Negro (jefe final):** entra galopando en su caballo de fuego; a caballo embiste y lanza ráfagas de fuego infernal. Cuando cae el caballo ofrece el pacto de la leyenda (oro a cambio de Carmen) y, rechazado, sigue a pie con espadazos, abanicos de fuego y llamaradas que brotan del suelo; se enfurece a media vida. Si Mateo cae en la segunda fase, el reintento empieza ahí.
+- **Final:** viñetas del rescate de Carmen al amanecer (el Alebrije regresa, Carmen lanza la última Talavera) y créditos.
+- **Guardado:** nivel desbloqueado, récord y mejor tiempo por nivel, monedas, armas, exvotos y si el juego ya se terminó.
 - **HUD de barro:** vida, caguamas, puntaje, tiempo y objetivo con barra de progreso.
-- **Sonido:** música por pantalla y nivel, y efectos para cada acción.
-- **Pruebas automáticas** de PlayMode del movimiento, el disparo, la IA, los niveles, el guardado, los menús y el rendimiento.
+- **Sonido:** música propia por pantalla, nivel y jefe, y efectos para cada acción.
+- **Pruebas automáticas:** 164 de PlayMode del movimiento, el disparo, la IA, los jefes, los niveles completos, el final, el guardado, los menús y el rendimiento.
 
 - **Narrativa:** diálogos con retrato (Don Toribio, Carmen y el Charro Negro) al empezar cada nivel y cinemáticas de viñetas entre todos los niveles (al liberar a La Llorona el río baja y aparece la entrada a los túneles).
 - **Controles:** teclado y mouse, gamepad completo y controles táctiles en pantalla; las ayudas muestran el botón del dispositivo que se esté usando.
 - **Interfaz adaptable** a 16:9, 16:10, 4:3, 21:9 y celulares (Safe Area), con partículas, *hit stop* y créditos con licencias ([Docs/CREDITOS.md](Docs/CREDITOS.md)).
 
-Lo que **todavía no**: la pelea con El Charro Negro (el Nivel 4 ya se recorre completo y por ahora termina al llegar a su guarida), el final y el build para móvil. La comparación completa con el GDD (qué está implementado, qué cambió y por qué, y qué falta) está en [Docs/MECANICAS.md](Docs/MECANICAS.md).
+Lo que **todavía no**: el build para Android y el playtesting con jugadores externos. La comparación completa con el GDD (qué está implementado, qué cambió y por qué, y qué falta) está en [Docs/MECANICAS.md](Docs/MECANICAS.md).
 
 ## Cómo ejecutarlo
 
@@ -120,7 +123,7 @@ Assets/
   Prefabs/            Alfarero, enemigos, jefes, proyectiles, obstáculos, pickups y efectos
   Resources/          BibliotecaAudio (qué archivo suena para cada efecto/música)
   ScriptableObjects/  Datos de las cerámicas (daño, velocidad, cadencia)
-  Scenes/             Splash, MenuPrincipal, Intro, Nivel1_Dolores, Nivel2_Pozos y Sandbox (pruebas)
+  Scenes/             Splash, MenuPrincipal, Intro, los 4 niveles, las viñetas entre niveles, Final y Sandbox (pruebas)
   Scripts/            Core, Player, Combat, Enemies, UI y Editor (constructores)
   Tests/PlayMode/     Pruebas automáticas
 Docs/                 ARQUITECTURA.md, BITACORA.md, contexto del proyecto y originales del arte

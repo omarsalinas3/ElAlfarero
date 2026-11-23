@@ -1,6 +1,6 @@
 # Manual de usuario — El Alfarero de Dolores
 
-*Versión del Sprint 3 (noviembre de 2026) · Omar Salinas y Noé Chavero · Creación de Videojuegos, UTNG*
+*Versión final (noviembre de 2026) · Omar Salinas y Noé Chavero · Creación de Videojuegos, UTNG*
 
 ---
 
@@ -17,7 +17,7 @@ En cada nivel avanzas de izquierda a derecha, rompes huacales y hornos para cons
 ### Jugar en el navegador (recomendado)
 
 1. Abre la página del juego en **itch.io** con Chrome, Edge o Firefox actualizados.
-2. Presiona **Run game** y espera a que cargue (la primera vez descarga unos 60 MB).
+2. Presiona **Run game** y espera a que cargue (descarga unos 100 MB; puede tardar un par de minutos).
 3. Para pantalla completa usa el botón de la esquina inferior derecha del reproductor.
 
 Funciona con teclado y mouse, con gamepad (conéctalo y presiona cualquier botón para que el navegador lo detecte) y en celulares o tabletas con pantalla táctil (gira el teléfono en horizontal).
@@ -39,7 +39,7 @@ Funciona con teclado y mouse, con gamepad (conéctalo y presiona cualquier botó
 
 ### Partida guardada
 
-El juego guarda solo al ganar cada nivel (nivel desbloqueado, puntaje máximo, mejor tiempo, armas y exvotos encontrados). En Windows se guarda en la carpeta de datos de la aplicación; en el navegador, en el almacenamiento del sitio (si borras los datos del navegador se pierde). Para empezar de cero usa *Opciones > Borrar partida*.
+El juego guarda solo al ganar cada nivel (nivel desbloqueado, puntaje máximo, mejor tiempo, armas y exvotos encontrados) y al llegar al final, que deja la partida marcada como terminada. En Windows se guarda en la carpeta de datos de la aplicación; en el navegador, en el almacenamiento del sitio (si borras los datos del navegador se pierde). Para empezar de cero usa *Opciones > Borrar partida*.
 
 ---
 
@@ -84,7 +84,7 @@ Presiona cualquier tecla (o Start, o toca la pantalla) para abrir el menú princ
 - **Salir.**
 
 ### Historia y diálogos
-La partida empieza con una **intro** ilustrada. Al iniciar cada nivel hablan los personajes (Don Toribio, Carmen, el Charro Negro) en un cuadro con su retrato que no detiene el juego. Entre el Nivel 1 y el 2 hay una **cinemática** de viñetas. Todo se puede adelantar o saltar (ver *Controles*).
+La partida empieza con una **intro** ilustrada. Al iniciar cada nivel hablan los personajes (Don Toribio, Carmen, el Charro Negro) en un cuadro con su retrato que no detiene el juego. Entre un nivel y otro hay **cinemáticas** de viñetas, y al vencer al Charro Negro llega el **final** con el rescate de Carmen; al terminar se abren los créditos. Todo se puede adelantar o saltar (ver *Controles*).
 
 ### Menú de pausa
 Continuar, Reiniciar el nivel, Opciones y volver al Menú principal.
@@ -131,8 +131,15 @@ Las cajas de armas salen de los **huacales**. Cuando se acaba la munición de un
 ### Niveles
 1. **Dolores Hidalgo.** Calles y parroquia de noche. Bandidos y mineros esqueleto, una emboscada en oleadas y el **Alebrije Gigante**. Al vencerlo se libera del hechizo y se vuelve tu montura.
 2. **Mineral de Pozos.** Pueblo fantasma y ruinas mineras. La **Bruja de Fuego** ataca desde el aire, hay una **estampida de nahuales** en la cañada y espera el **Jinete sin Cabeza** en la capilla.
-3. **Panteón junto al río** *(en desarrollo: ya se puede recorrer hasta la orilla del río; la pelea con la **Llorona** llega en el Sprint 4).*
-4. **Túneles de Guanajuato.** Bajo la ciudad, de la boca del túnel a la guarida del **Charro Negro**. En la galería de vigas el techo se viene abajo (**derrumbe**) y en los túneles bajo la luna roja espera la emboscada más grande. *(La pelea final con el Charro está en desarrollo.)*
+3. **Panteón junto al río.** Capillas, nichos y la orilla del río entre la neblina. Tres Brujas de Fuego, una emboscada de tres oleadas y **La Llorona**, que grita ondas sónicas y hace brotar chorros de agua del suelo; furiosa grita dos veces seguidas y sus chorros te persiguen.
+4. **Túneles de Guanajuato.** Bajo la ciudad, de la boca del túnel a la guarida del **Charro Negro**. En la galería de vigas el techo se viene abajo (**derrumbe**) y en los túneles bajo la luna roja espera la emboscada más grande.
+
+### El Charro Negro (jefe final)
+La pelea tiene **dos fases**, cada una con su propia barra de vida:
+1. **A caballo.** Cuando el caballo se encabrita, viene una **embestida** de lado a lado: sáltala o evádela. Cuando se le enciende la mano, lanza una **ráfaga de fuego**.
+2. **A pie.** Al caer el caballo, el Charro te ofrece un pacto; después pelea con los ataques más difíciles del juego. Si estás cerca da un **espadazo**; de lejos lanza un **abanico de fuego** o clava la espada y hace brotar **llamaradas** bajo tus pies (una grieta encendida avisa dónde). A media vida se enfurece y todo se vuelve más rápido.
+
+Si caes durante la segunda fase, **Reintentar** te regresa directo contra el Charro a pie. Al vencerlo verás el final.
 
 ---
 
@@ -146,6 +153,8 @@ Las cajas de armas salen de los **huacales**. Cuando se acaba la munición de un
 - **Mira hacia arriba:** la Bruja de Fuego vuela; apunta con el mouse, el stick derecho o Espacio + ↑.
 - **Montado eres más fuerte:** el alebrije corre más, salta más y tiene su propia vida; si se la acaban te bajas y sigues a pie.
 - **Busca los exvotos:** golpea los muros agrietados y sube a las vigas altas.
+- **Contra el Charro a pie, no te quedes quieto:** cada llamarada brota donde estás parado; muévete en cuanto veas la grieta.
+- **Guarda la Barro Negro para el final:** la explosión le quita mucha vida al Charro cuando se acerca a darte un espadazo.
 
 ---
 

@@ -1,7 +1,7 @@
 # Mecánicas de la Unidad 1 y modificaciones justificadas
 
 > Documento de la issue #34 (punto 6 del avance: *mecánicas de la Unidad 1 implementadas fielmente o modificaciones justificadas por escrito*).
-> Compara el **GDD de la Unidad 1** (*GDD_El_Alfarero_De_Dolores*, septiembre de 2026) con lo que hay en el juego al **3 de noviembre de 2026** (Sprint 3).
+> Compara el **GDD de la Unidad 1** (*GDD_El_Alfarero_De_Dolores*, septiembre de 2026) con lo que hay en el juego al **23 de noviembre de 2026** (juego completo, Sprint 6).
 > Equipo: Omar Salinas (@omarsalinas3) y Noé Chavero (@SekiroK5).
 
 **Leyenda:** ✅ Implementada tal cual · 🔁 Implementada con cambios (ver justificación) · ⏳ Pendiente (con el sprint en que se planea) · ➕ Agregada (no venía en el GDD)
@@ -13,11 +13,11 @@
 | Estado | Cantidad |
 |---|---|
 | ✅ Implementadas tal cual | 15 |
-| 🔁 Implementadas con cambios | 14 |
-| ⏳ Pendientes | 3 |
-| ➕ Agregadas | 10 |
+| 🔁 Implementadas con cambios | 15 |
+| ⏳ Pendientes | 2 |
+| ➕ Agregadas | 11 |
 
-Lo esencial del GDD ya funciona: movimiento con salto y evasión, las cuatro cerámicas (Talavera, Barro Vidriado, Barro Negro y Maceta Escudo), cajas de armas, emboscadas en oleadas, estampida, bandidos y calaveras con IA, tres jefes de leyenda (Alebrije, Jinete sin Cabeza y La Llorona), la interfaz de barro y las cerámicas definidas con *ScriptableObjects*. Lo pendiente es el jefe del Nivel 4 (El Charro Negro) y el *parallax*.
+Lo esencial del GDD ya funciona: movimiento con salto y evasión, las cuatro cerámicas (Talavera, Barro Vidriado, Barro Negro y Maceta Escudo), cajas de armas, emboscadas en oleadas, estampida, bandidos y calaveras con IA, los cuatro jefes de leyenda (Alebrije, Jinete sin Cabeza, La Llorona y El Charro Negro), el rescate de Carmen como final, la interfaz de barro y las cerámicas definidas con *ScriptableObjects*. Lo pendiente es la publicación final en itch.io, el build de Android y el *parallax*.
 
 ---
 
@@ -58,13 +58,13 @@ Lo esencial del GDD ya funciona: movimiento con salto y evasión, las cuatro cer
 | Mecánica del GDD | Estado | En el juego | Dónde |
 |---|---|---|---|
 | El Alfarero (jugable) | ✅ | **Mateo**, alfarero de Dolores Hidalgo | Prefab `Alfarero` |
-| Su esposa | 🔁 | **Carmen**: aparece en la intro y en el mensaje de derrota; su rescate al amanecer será el final del Nivel 4 | `SecuenciaIntro` |
+| Su esposa | 🔁 | **Carmen**: aparece en la intro, en los diálogos y en el mensaje de derrota; en el **final** se libera, lanza la última Talavera contra el Charro y vuelve a Dolores con Mateo al amanecer | `SecuenciaIntro`, `FinalDelJuego` (#91) |
 | Bandidos del desierto | ✅ | Cuatro tipos con IA: revólver, rifle y escopeta disparan con aviso; el de machete pelea cuerpo a cuerpo | `IABandido` |
 | Calaveras animadas | 🔁 | **Mineros esqueleto** con pico: patrullan, persiguen, brincan obstáculos bajos, embisten y regresan a su zona | `IAEsqueleto` (#51) |
 | Nahuales menores | 🔁 | No son enemigos comunes: forman la **estampida** del Nivel 2 | `Estampida` (#53) |
 | Jefe: Alebrijes Gigantes (ataques físicos y transformaciones) | 🔁 | **Alebrije Gigante** del Nivel 1: acecho, zarpazo, salto con onda de choque y transformación al 50 % de vida. Al vencerlo **se libera del hechizo y se vuelve la montura de Mateo** | `JefeAlebrije`, `MonturaAlebrije` (#50) |
 | Jefe: La Llorona (ataques sónicos y de agua) | ✅ | Jefa del Nivel 3: onda sónica y chorros de agua; se desvanece si Mateo se le pega y se enfurece a media vida. Furiosa grita dos veces seguidas, sus chorros persiguen a Mateo con una segunda tanda y tras cada ataque de agua reaparece en el otro extremo. Se endureció tras la retroalimentación del Avance 3 (el doble de vida que el Jinete y más daño). Al liberarla se completa el nivel | `JefeLlorona`, `ChorroAgua`, `EncuentroLlorona` |
-| Jefe: El Charro Negro (montado, ráfagas de fuego infernal) | ⏳ | Jefe final del Nivel 4, Sprint 4 | — |
+| Jefe: El Charro Negro (montado, ráfagas de fuego infernal) | 🔁 | Jefe final del Nivel 4, **en dos fases**. A caballo: embestidas de lado a lado (avisa encabritándose) y ráfagas de fuego infernal. Al vencer al caballo, este cae y se hace humo, y el Charro ofrece el **pacto de la leyenda** (oro a cambio de renunciar a Carmen); Mateo se niega y sigue la pelea a pie: espadazo, abanico de ráfagas y **llamaradas** que brotan bajo Mateo con una grieta de aviso. Furioso a media vida. Una barra por fase (700 + 1300 de vida) y, si Mateo cae a pie, el reintento empieza en la fase 2 | `JefeCharro`, `EncuentroCharro`, `Llamarada` (#89, #90) |
 
 ### 2.5 Desarrollo, arte y lanzamiento
 
@@ -73,10 +73,10 @@ Lo esencial del GDD ya funciona: movimiento con salto y evasión, las cuatro cer
 | *Vertical slice*: nivel completo con bandidos, cambio de cerámica, emboscada y alebrije | ✅ | Nivel 1 (Dolores Hidalgo) completo, con tutorial, armas, emboscada y Alebrije | `Nivel1_Dolores` |
 | Escenarios multicapa con *parallax* | 🔁 | Fondos de **una sola capa por tramo**, unidos con degradado (5 tramos por nivel); sin *parallax* por ahora | `ConfigurarSprint1.CrearFondos` |
 | Interfaz rústica de barro | ✅ | HUD con jarrito de vida que se cuartea, barra de barro, marco de azulejo y botones de barro | `HudJuego` (#29) |
-| Sprites y animaciones del alfarero y los jefes | 🔁 | Generados con Google Flow y procesados (recorte, alineado por los pies, animación por código); el fuego del Charro y el aura de la Llorona quedan para sus niveles | `Docs/Arte/Flow`, `ConstructorAnimaciones` |
+| Sprites y animaciones del alfarero y los jefes | 🔁 | Generados con Google Flow y procesados (recorte, alineado por los pies, animación por código); el Charro tiene dos hojas (a caballo y a pie) y su fuego infernal va como efecto aparte | `Docs/Arte/Flow`, `ConstructorAnimaciones` |
 | Efectos de sonido y música | ✅ | Música por pantalla y nivel (Flow Music) y efectos propios para cada acción | `BibliotecaAudio` |
-| Playtesting semanal desde el Sprint 3 y tablero Kanban de errores | 🔁 | Tablero de GitHub Projects con issues, sprints y estimación; **139 pruebas automáticas** de PlayMode (incluye recorrer el Nivel 2 completo) en lugar de sesiones semanales con externos, que quedan para el Sprint 6 | Tablero del proyecto, `Assets/Tests/PlayMode` (#40) |
-| Publicación en itch.io | ⏳ | Página en borrador con build WebGL; se publica en el Sprint 6 | `ConstruirWeb` (#38) |
+| Playtesting semanal desde el Sprint 3 y tablero Kanban de errores | 🔁 | Tablero de GitHub Projects con issues, sprints y estimación; **164 pruebas automáticas** de PlayMode (incluye recorrer los niveles completos y la pelea final) en lugar de sesiones semanales con externos, que quedan para el Sprint 6 | Tablero del proyecto, `Assets/Tests/PlayMode` (#40) |
+| Publicación en itch.io | ⏳ | La página es pública desde el Avance 3 con el build de 3 niveles; los builds del juego completo (WebGL y Windows) ya están armados y se suben para la entrega final | `ConstruirWeb` (#38, #98) |
 | Kit de prensa y tráiler de un minuto | ⏳ | Sprint 6 | — |
 | Plataforma PC | 🔁 | PC (Windows) **y navegador** (WebGL para itch.io) | `ConstruirWeb` (#38) |
 
@@ -139,8 +139,6 @@ Lo esencial del GDD ya funciona: movimiento con salto y evasión, las cuatro cer
 
 | Pendiente | Sprint | Issue o responsable |
 |---|---|---|
-| **El Charro Negro** (el Nivel 4 y su derrumbe ya están, #86-#88) | 4 | #90 (Omar) |
-| Rescate de Carmen al amanecer (final) | 4 | #91 (Omar) |
-| Build para móvil y pruebas en celular | 5 | Por repartir |
+| Build para Android y pruebas en celular | 5 | #94 (Omar) |
 | *Parallax* en los fondos | 6 | Mejora si da tiempo |
 | Playtesting con jugadores externos, kit de prensa, tráiler y publicación en itch.io | 6 | Equipo |
