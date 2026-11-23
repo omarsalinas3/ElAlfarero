@@ -39,6 +39,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Nivel4_Tuneles.unity
     guid: b1bcf4b78745a1447937b137070a3c9d
   - enabled: 1
+    path: Assets/Scenes/Final.unity
+    guid: a208048a576290d47ba1a8a1ef52ee35
+  - enabled: 1
     path: Assets/Scenes/Sandbox.unity
     guid: 9751e4d69832b5f49ae3947eba6a97c7
   m_configObjects:

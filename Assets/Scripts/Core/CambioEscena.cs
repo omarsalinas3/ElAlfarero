@@ -17,6 +17,7 @@ public static class Escenas
     public const string Nivel3 = "Nivel3_Panteon";
     public const string TransicionTuneles = "Transicion_Tuneles";   // Viñetas del panteón a los túneles (#92)
     public const string Nivel4 = "Nivel4_Tuneles";
+    public const string Final = "Final";                // Rescate de Carmen al amanecer y créditos (#91)
 
     // En orden: el número de nivel del guardado es su posición + 1
     static readonly string[] Niveles = { Nivel1, Nivel2, Nivel3, Nivel4 };

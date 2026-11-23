@@ -13,6 +13,7 @@ public class DatosGuardado
     public List<RecordNivel> records = new List<RecordNivel>();
     public List<string> armasDesbloqueadas = new List<string> { "Talavera" };
     public List<ExvotosNivel> exvotos = new List<ExvotosNivel>();   // Secretos encontrados (#63)
+    public bool juegoTerminado;                                   // Venció al Charro Negro y vio el final (#91)
 
     public RecordNivel Record(int nivel) => records.Find(r => r.nivel == nivel);
     public ExvotosNivel Exvotos(int nivel) => exvotos.Find(e => e.nivel == nivel);
@@ -147,6 +148,14 @@ public static class GestorGuardado
         d.monedas += Mathf.Max(0, monedas);
         Guardar();
         return resultado;
+    }
+
+    /// <summary>El juego queda terminado: se llegó al final tras vencer al Charro Negro (#91).</summary>
+    public static void MarcarJuegoTerminado()
+    {
+        if (Datos.juegoTerminado) return;
+        Datos.juegoTerminado = true;
+        Guardar();
     }
 
     public static void DesbloquearArma(string arma)
