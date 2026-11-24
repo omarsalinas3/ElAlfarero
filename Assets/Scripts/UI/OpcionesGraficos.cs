@@ -32,6 +32,7 @@ public class OpcionesGraficos : MonoBehaviour
     {
         resoluciones = ConfiguracionGrafica.Resoluciones();
         botonResolucion.interactable = ConfiguracionGrafica.PuedeCambiarResolucion && resoluciones.Length > 1;
+        botonPantalla.interactable = !Application.isMobilePlatform;   // En el celular siempre es pantalla completa (#94)
         Refrescar();
     }
 

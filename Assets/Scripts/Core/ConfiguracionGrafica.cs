@@ -21,7 +21,8 @@ public static class ConfiguracionGrafica
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     static void Cargar()
     {
-        FijarCalidad(PlayerPrefs.GetInt(ClaveCalidad, 2), false);
+        // En el celular arranca en Media (#94): Alta calienta el teléfono y gasta batería; se puede subir en Opciones
+        FijarCalidad(PlayerPrefs.GetInt(ClaveCalidad, Application.isMobilePlatform ? 1 : 2), false);
         PantallaCompleta = Screen.fullScreen;
         if (PlayerPrefs.HasKey(ClaveCompleta)) FijarPantallaCompleta(PlayerPrefs.GetInt(ClaveCompleta) == 1, false);
         if (PlayerPrefs.HasKey(ClaveAncho) && !Application.isEditor && Application.platform != RuntimePlatform.WebGLPlayer)
@@ -57,7 +58,7 @@ public static class ConfiguracionGrafica
         return lista.ToArray();
     }
 
-    public static bool PuedeCambiarResolucion => Application.platform != RuntimePlatform.WebGLPlayer;
+    public static bool PuedeCambiarResolucion => Application.platform != RuntimePlatform.WebGLPlayer && !Application.isMobilePlatform;
 
     public static void FijarResolucion(int ancho, int alto)
     {

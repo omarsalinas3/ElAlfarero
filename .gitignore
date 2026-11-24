@@ -33,3 +33,6 @@ Thumbs.db
 crashlytics-build.properties
 *.pdb
 *.mdb
+
+# Temporales de Gradle/CMake del build de Android
+.utmp/

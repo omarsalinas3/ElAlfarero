@@ -15,7 +15,7 @@ public static class ConstruirWeb
     public const string Carpeta = "Builds/WebGL";
     public const string CarpetaWindows = "Builds/Windows";
 
-    static string[] EscenasDelJuego() => EditorBuildSettings.scenes
+    public static string[] EscenasDelJuego() => EditorBuildSettings.scenes
         .Where(e => e.enabled && !e.path.EndsWith("Sandbox.unity"))
         .Select(e => e.path).ToArray();
 

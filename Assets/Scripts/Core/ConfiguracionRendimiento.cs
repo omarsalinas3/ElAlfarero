@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// Ajustes de rendimiento que se aplican solos al arrancar el juego (antes de cargar la primera escena):
 /// 60 FPS fijos con VSync. En laptops evita que la GPU trabaje de más, se caliente y baje de velocidad (throttling),
-/// que se siente como tirones.
+/// que se siente como tirones. En el celular (#94) además la pantalla no se apaga mientras se juega.
 /// </summary>
 public static class ConfiguracionRendimiento
 {
@@ -14,5 +14,6 @@ public static class ConfiguracionRendimiento
     {
         QualitySettings.vSyncCount = 1;
         Application.targetFrameRate = FpsObjetivo;   // Respaldo si el monitor/controlador ignora el VSync
+        if (Application.isMobilePlatform) Screen.sleepTimeout = SleepTimeout.NeverSleep;   // Con el control táctil no se toca nada más
     }
 }
