@@ -74,6 +74,56 @@ public class ControlesTests
         Assert.IsTrue(mateo.EstaEvadiendo, "B evade");
     }
 
+    [Test]
+    public void StickIzquierdo_OchoDireccionesSoloAlInclinarArribaOAbajo()
+    {
+        void Revisar(Vector2 stick, Vector2 esperado, string caso)
+        {
+            Assert.IsTrue(PlayerShooter.ApuntadoOchoDirecciones(stick, out Vector2 dir), caso);
+            Assert.AreEqual(esperado.x, dir.x, 0.01f, caso);
+            Assert.AreEqual(esperado.y, dir.y, 0.01f, caso);
+        }
+        float d = Mathf.Sqrt(0.5f);
+        Revisar(new Vector2(0f, 1f), Vector2.up, "arriba");
+        Revisar(new Vector2(0.1f, -0.9f), Vector2.down, "abajo");
+        Revisar(new Vector2(0.7f, 0.7f), new Vector2(d, d), "diagonal arriba a la derecha");
+        Revisar(new Vector2(0.7f, -0.7f), new Vector2(d, -d), "diagonal abajo a la derecha");
+        Revisar(new Vector2(-0.6f, -0.8f), new Vector2(-d, -d), "diagonal abajo a la izquierda");
+        Revisar(new Vector2(-0.6f, 0.8f), new Vector2(-d, d), "diagonal arriba a la izquierda");
+        Assert.IsFalse(PlayerShooter.ApuntadoOchoDirecciones(new Vector2(1f, 0.3f), out _), "Corriendo de lado se lanza al frente");
+        Assert.IsFalse(PlayerShooter.ApuntadoOchoDirecciones(Vector2.zero, out _), "Sin tocar el stick, al frente");
+    }
+
+    [UnityTest]
+    public IEnumerator Gamepad_StickIzquierdoApuntaEnDiagonalYHaciaAbajo()
+    {
+        var tirador = mateo.GetComponent<PlayerShooter>();
+        InputSystem.QueueStateEvent(gamepad, new GamepadState { leftStick = new Vector2(0.7f, -0.7f) });
+        yield return null;
+        yield return null;
+        Assert.Less(tirador.DireccionApuntado.y, -0.5f, "Diagonal abajo: apunta hacia abajo");
+        Assert.Greater(tirador.DireccionApuntado.x, 0.5f, "y hacia la derecha");
+
+        InputSystem.QueueStateEvent(gamepad, new GamepadState { leftStick = new Vector2(-0.7f, 0.7f) });
+        yield return null;
+        yield return null;
+        Assert.Greater(tirador.DireccionApuntado.y, 0.5f, "Diagonal arriba a la izquierda");
+        Assert.Less(tirador.DireccionApuntado.x, -0.5f);
+
+        // Lanzar en diagonal abajo: la cerámica sale hacia abajo
+        // (se busca cada cuadro: hacia abajo pega en el suelo enseguida y vuelve al reciclaje)
+        InputSystem.QueueStateEvent(gamepad, new GamepadState { leftStick = new Vector2(0.7f, -0.7f), buttons = 1u << (int)GamepadButton.West });
+        Projectile lanzada = null;
+        for (float t = 0f; t < 0.5f && lanzada == null; t += Time.deltaTime)
+        {
+            yield return null;
+            lanzada = Object.FindObjectsByType<Projectile>().FirstOrDefault(p => p.gameObject.activeInHierarchy);
+        }
+        InputSystem.QueueStateEvent(gamepad, new GamepadState());
+        Assert.IsNotNull(lanzada, "Lanza cerámica");
+        Assert.Less(lanzada.transform.right.y, -0.3f, "La cerámica sale en diagonal hacia abajo");
+    }
+
     [UnityTest]
     public IEnumerator Gamepad_XLanzaYElStickDerechoApunta()
     {

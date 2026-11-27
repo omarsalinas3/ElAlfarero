@@ -97,7 +97,12 @@ public class PlayerShooter : MonoBehaviour
         DetectarMouse();
         if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame) UsarTeclado();
 
-        // Gamepad (#36): el stick derecho apunta en cualquier dirección; sin él, al frente (o arriba con el izquierdo)
+        // Con el dedo no hay mouse: en el navegador del celular un toque puede llegar como clic y le robaba la puntería
+        // al joystick (apuntaba hacia el botón que se tocaba)
+        if (DispositivoActivo.Actual == TipoDispositivo.Tactil) UsandoMouse = false;
+
+        // Gamepad (#36) y joystick táctil (#94): el stick derecho apunta en cualquier dirección; si no se usa, el izquierdo
+        // apunta en 8 direcciones al estilo Metal Slug (arriba, abajo y diagonales) y sin inclinarlo, al frente
         var g = Gamepad.current;
         if (g != null)
         {
@@ -108,9 +113,9 @@ public class PlayerShooter : MonoBehaviour
                 DireccionApuntado = stick.normalized;
                 return;
             }
-            if (!UsandoMouse && g.leftStick.ReadValue().y > 0.7f)
+            if (!UsandoMouse && ApuntadoOchoDirecciones(g.leftStick.ReadValue(), out Vector2 dir))
             {
-                DireccionApuntado = Vector2.up;
+                DireccionApuntado = dir;
                 return;
             }
         }
@@ -133,6 +138,20 @@ public class PlayerShooter : MonoBehaviour
         {
             DireccionApuntado = direccion.normalized;
         }
+    }
+
+    /// <summary>
+    /// Convierte el stick izquierdo en una de 8 direcciones. Solo cuenta si se inclina hacia arriba o hacia abajo
+    /// (|y| &gt; 0.5): al correr de lado el stick queda casi horizontal y se sigue lanzando al frente, como siempre.
+    /// Con inclinación de lado (|x| &gt; 0.35) la dirección es diagonal; si no, recta hacia arriba o hacia abajo.
+    /// </summary>
+    public static bool ApuntadoOchoDirecciones(Vector2 stick, out Vector2 direccion)
+    {
+        direccion = Vector2.zero;
+        if (Mathf.Abs(stick.y) <= 0.5f) return false;
+        float x = Mathf.Abs(stick.x) > 0.35f ? Mathf.Sign(stick.x) : 0f;
+        direccion = new Vector2(x, Mathf.Sign(stick.y)).normalized;
+        return true;
     }
 
     void DetectarMouse()
